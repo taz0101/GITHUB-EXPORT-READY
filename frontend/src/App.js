@@ -153,13 +153,35 @@ function App() {
     }
   };
 
-  const fetchMainLicense = async () => {
+  const fetchNotifications = async () => {
     try {
-      const response = await fetch(`${BACKEND_URL}/api/license`);
+      const response = await fetch(`${BACKEND_URL}/api/notifications`);
       const data = await response.json();
-      setMainLicense(data);
+      setNotifications(data);
     } catch (error) {
-      console.error('Error fetching main license:', error);
+      console.error('Error fetching notifications:', error);
+    }
+  };
+
+  const fetchBreedingReport = async () => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/reports/breeding`);
+      const data = await response.json();
+      setBreedingReport(data);
+    } catch (error) {
+      console.error('Error fetching breeding report:', error);
+    }
+  };
+
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    try {
+      const params = new URLSearchParams(searchForm);
+      const response = await fetch(`${BACKEND_URL}/api/search?${params}`);
+      const data = await response.json();
+      setSearchResults(data);
+    } catch (error) {
+      console.error('Error searching:', error);
     }
   };
 
