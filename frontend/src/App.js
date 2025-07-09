@@ -531,24 +531,26 @@ function App() {
             <h3 className="text-xl font-bold mb-4">Add New Bird</h3>
             <form onSubmit={handleAddBird} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Name *</label>
-                <input
-                  type="text"
-                  value={birdForm.name}
-                  onChange={(e) => setBirdForm({...birdForm, name: e.target.value})}
-                  className="form-input"
-                  required
-                />
-              </div>
-              <div>
                 <label className="block text-sm font-medium mb-1">Species *</label>
-                <input
-                  type="text"
+                <select
                   value={birdForm.species}
                   onChange={(e) => setBirdForm({...birdForm, species: e.target.value})}
                   className="form-input"
                   required
-                />
+                >
+                  <option value="">Select Species</option>
+                  <option value="African Grey">African Grey</option>
+                  <option value="Cockatiel">Cockatiel</option>
+                  <option value="Lovebird">Lovebird</option>
+                  <option value="Macaw">Macaw</option>
+                  <option value="Conure">Conure</option>
+                  <option value="Budgie">Budgie</option>
+                  <option value="Cockatoo">Cockatoo</option>
+                  <option value="Caique">Caique</option>
+                  <option value="Eclectus">Eclectus</option>
+                  <option value="Amazon">Amazon</option>
+                  <option value="Other">Other</option>
+                </select>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Gender *</label>
