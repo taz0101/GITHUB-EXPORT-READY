@@ -76,13 +76,11 @@ function App() {
     notes: ''
   });
 
-  const [licenseForm, setLicenseForm] = useState({
-    license_number: '',
-    license_type: 'breeding',
-    issue_date: '',
-    expiry_date: '',
-    issuing_authority: '',
-    notes: ''
+  const [searchForm, setSearchForm] = useState({
+    query: '',
+    species: '',
+    status: '',
+    search_type: 'all'
   });
 
   // Fetch data functions
