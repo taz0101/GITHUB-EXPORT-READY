@@ -894,7 +894,10 @@ function App() {
                   onChange={(e) => setClutchForm({...clutchForm, expected_hatch_date: e.target.value})}
                   className="form-input"
                   required
+                  readOnly
+                  style={{backgroundColor: '#f9fafb'}}
                 />
+                <p className="text-xs text-gray-500 mt-1">Auto-calculated based on species incubation period</p>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Fertile Eggs</label>
