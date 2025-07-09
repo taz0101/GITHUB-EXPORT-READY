@@ -1,0 +1,285 @@
+import requests
+import unittest
+import json
+from datetime import datetime, timedelta
+
+# Use the public endpoint from the frontend .env file
+BASE_URL = "https://2c855648-e7c8-466f-9aba-f0a127ab5de4.preview.emergentagent.com"
+
+class ParrotBreedingAPITest(unittest.TestCase):
+    def setUp(self):
+        # Generate unique test data
+        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+        self.test_male_bird = {
+            "name": f"TestMale_{timestamp}",
+            "species": "African Grey",
+            "gender": "male",
+            "birth_date": "2023-01-01",
+            "ring_number": f"M{timestamp}",
+            "color_mutation": "Standard",
+            "notes": "Test male bird"
+        }
+        
+        self.test_female_bird = {
+            "name": f"TestFemale_{timestamp}",
+            "species": "African Grey",
+            "gender": "female",
+            "birth_date": "2023-02-01",
+            "ring_number": f"F{timestamp}",
+            "color_mutation": "Standard",
+            "notes": "Test female bird"
+        }
+        
+        # IDs to be set during tests
+        self.male_bird_id = None
+        self.female_bird_id = None
+        self.breeding_pair_id = None
+        self.breeding_record_id = None
+
+    def test_01_birds_crud(self):
+        """Test bird CRUD operations"""
+        print("\n--- Testing Bird CRUD Operations ---")
+        
+        # Create male bird
+        response = requests.post(f"{BASE_URL}/api/birds", json=self.test_male_bird)
+        self.assertEqual(response.status_code, 200)
+        result = response.json()
+        self.assertIn("bird_id", result)
+        self.male_bird_id = result["bird_id"]
+        print(f"✅ Created male bird with ID: {self.male_bird_id}")
+        
+        # Create female bird
+        response = requests.post(f"{BASE_URL}/api/birds", json=self.test_female_bird)
+        self.assertEqual(response.status_code, 200)
+        result = response.json()
+        self.assertIn("bird_id", result)
+        self.female_bird_id = result["bird_id"]
+        print(f"✅ Created female bird with ID: {self.female_bird_id}")
+        
+        # Get all birds
+        response = requests.get(f"{BASE_URL}/api/birds")
+        self.assertEqual(response.status_code, 200)
+        result = response.json()
+        self.assertIn("birds", result)
+        self.assertIsInstance(result["birds"], list)
+        print(f"✅ Retrieved all birds: {len(result['birds'])} birds found")
+        
+        # Get specific bird
+        response = requests.get(f"{BASE_URL}/api/birds/{self.male_bird_id}")
+        self.assertEqual(response.status_code, 200)
+        bird = response.json()
+        self.assertEqual(bird["id"], self.male_bird_id)
+        self.assertEqual(bird["name"], self.test_male_bird["name"])
+        print(f"✅ Retrieved specific bird: {bird['name']}")
+        
+        # Update bird
+        update_data = {"name": f"Updated_{self.test_male_bird['name']}", 
+                      "species": self.test_male_bird["species"],
+                      "gender": self.test_male_bird["gender"],
+                      "birth_date": self.test_male_bird["birth_date"],
+                      "ring_number": self.test_male_bird["ring_number"],
+                      "color_mutation": "Updated Mutation",
+                      "notes": "Updated notes"}
+        
+        response = requests.put(f"{BASE_URL}/api/birds/{self.male_bird_id}", json=update_data)
+        self.assertEqual(response.status_code, 200)
+        print(f"✅ Updated bird successfully")
+        
+        # Verify update
+        response = requests.get(f"{BASE_URL}/api/birds/{self.male_bird_id}")
+        self.assertEqual(response.status_code, 200)
+        bird = response.json()
+        self.assertEqual(bird["color_mutation"], "Updated Mutation")
+        print(f"✅ Verified bird update: {bird['color_mutation']}")
+
+    def test_02_breeding_pairs(self):
+        """Test breeding pair operations"""
+        print("\n--- Testing Breeding Pair Operations ---")
+        
+        # Skip if bird IDs are not set
+        if not self.male_bird_id or not self.female_bird_id:
+            self.skipTest("Bird IDs not set, skipping breeding pair tests")
+        
+        # Create breeding pair
+        today = datetime.now().strftime("%Y-%m-%d")
+        pair_data = {
+            "male_bird_id": self.male_bird_id,
+            "female_bird_id": self.female_bird_id,
+            "pair_name": f"Test Pair {datetime.now().strftime('%Y%m%d%H%M%S')}",
+            "pair_date": today,
+            "notes": "Test breeding pair"
+        }
+        
+        response = requests.post(f"{BASE_URL}/api/breeding-pairs", json=pair_data)
+        self.assertEqual(response.status_code, 200)
+        result = response.json()
+        self.assertIn("pair_id", result)
+        self.breeding_pair_id = result["pair_id"]
+        print(f"✅ Created breeding pair with ID: {self.breeding_pair_id}")
+        
+        # Get all breeding pairs
+        response = requests.get(f"{BASE_URL}/api/breeding-pairs")
+        self.assertEqual(response.status_code, 200)
+        result = response.json()
+        self.assertIn("breeding_pairs", result)
+        self.assertIsInstance(result["breeding_pairs"], list)
+        print(f"✅ Retrieved all breeding pairs: {len(result['breeding_pairs'])} pairs found")
+        
+        # Get specific breeding pair
+        response = requests.get(f"{BASE_URL}/api/breeding-pairs/{self.breeding_pair_id}")
+        self.assertEqual(response.status_code, 200)
+        pair = response.json()
+        self.assertEqual(pair["id"], self.breeding_pair_id)
+        self.assertEqual(pair["pair_name"], pair_data["pair_name"])
+        self.assertIn("male_bird", pair)
+        self.assertIn("female_bird", pair)
+        print(f"✅ Retrieved specific breeding pair: {pair['pair_name']}")
+        
+        # Test invalid gender combination
+        invalid_pair = {
+            "male_bird_id": self.male_bird_id,
+            "female_bird_id": self.male_bird_id,  # Using male bird as female
+            "pair_name": "Invalid Pair",
+            "pair_date": today,
+            "notes": "This should fail"
+        }
+        
+        response = requests.post(f"{BASE_URL}/api/breeding-pairs", json=invalid_pair)
+        self.assertEqual(response.status_code, 400)
+        print(f"✅ Correctly rejected invalid gender combination")
+
+    def test_03_breeding_records(self):
+        """Test breeding record operations"""
+        print("\n--- Testing Breeding Record Operations ---")
+        
+        # Skip if breeding pair ID is not set
+        if not self.breeding_pair_id:
+            self.skipTest("Breeding pair ID not set, skipping breeding record tests")
+        
+        # Create breeding record
+        today = datetime.now().strftime("%Y-%m-%d")
+        expected_hatch = (datetime.now() + timedelta(days=21)).strftime("%Y-%m-%d")
+        record_data = {
+            "breeding_pair_id": self.breeding_pair_id,
+            "breeding_cycle_number": 1,
+            "egg_laying_date": today,
+            "eggs_laid": 4,
+            "expected_hatch_date": expected_hatch,
+            "notes": "Test breeding record"
+        }
+        
+        response = requests.post(f"{BASE_URL}/api/breeding-records", json=record_data)
+        self.assertEqual(response.status_code, 200)
+        result = response.json()
+        self.assertIn("record_id", result)
+        self.breeding_record_id = result["record_id"]
+        print(f"✅ Created breeding record with ID: {self.breeding_record_id}")
+        
+        # Get all breeding records
+        response = requests.get(f"{BASE_URL}/api/breeding-records")
+        self.assertEqual(response.status_code, 200)
+        result = response.json()
+        self.assertIn("breeding_records", result)
+        self.assertIsInstance(result["breeding_records"], list)
+        print(f"✅ Retrieved all breeding records: {len(result['breeding_records'])} records found")
+        
+        # Get specific breeding record
+        response = requests.get(f"{BASE_URL}/api/breeding-records/{self.breeding_record_id}")
+        self.assertEqual(response.status_code, 200)
+        record = response.json()
+        self.assertEqual(record["id"], self.breeding_record_id)
+        self.assertEqual(record["eggs_laid"], record_data["eggs_laid"])
+        self.assertIn("breeding_pair", record)
+        print(f"✅ Retrieved specific breeding record for pair: {record['breeding_pair']['pair_name']}")
+        
+        # Update breeding record with hatched count
+        update_data = {
+            "breeding_pair_id": self.breeding_pair_id,
+            "breeding_cycle_number": 1,
+            "egg_laying_date": today,
+            "eggs_laid": 4,
+            "expected_hatch_date": expected_hatch,
+            "hatched_count": 3,
+            "status": "hatched",
+            "notes": "Updated with hatched count"
+        }
+        
+        response = requests.put(f"{BASE_URL}/api/breeding-records/{self.breeding_record_id}", json=update_data)
+        self.assertEqual(response.status_code, 200)
+        print(f"✅ Updated breeding record with hatched count")
+        
+        # Verify hatch success rate calculation
+        response = requests.get(f"{BASE_URL}/api/breeding-records/{self.breeding_record_id}")
+        self.assertEqual(response.status_code, 200)
+        record = response.json()
+        self.assertIsNotNone(record.get("hatch_success_rate"))
+        expected_rate = (3 / 4) * 100  # 3 hatched out of 4 eggs
+        self.assertEqual(record["hatch_success_rate"], expected_rate)
+        print(f"✅ Verified hatch success rate calculation: {record['hatch_success_rate']}%")
+
+    def test_04_dashboard(self):
+        """Test dashboard statistics"""
+        print("\n--- Testing Dashboard Statistics ---")
+        
+        response = requests.get(f"{BASE_URL}/api/dashboard")
+        self.assertEqual(response.status_code, 200)
+        dashboard = response.json()
+        
+        self.assertIn("stats", dashboard)
+        self.assertIn("total_birds", dashboard["stats"])
+        self.assertIn("total_pairs", dashboard["stats"])
+        self.assertIn("active_breeding_records", dashboard["stats"])
+        self.assertIn("recent_breeding_records", dashboard)
+        
+        print(f"✅ Dashboard statistics retrieved successfully")
+        print(f"   - Total birds: {dashboard['stats']['total_birds']}")
+        print(f"   - Total pairs: {dashboard['stats']['total_pairs']}")
+        print(f"   - Active breeding records: {dashboard['stats']['active_breeding_records']}")
+        print(f"   - Recent records: {len(dashboard['recent_breeding_records'])}")
+
+    def test_05_cleanup(self):
+        """Clean up test data"""
+        print("\n--- Cleaning Up Test Data ---")
+        
+        # Delete breeding record if created
+        if self.breeding_record_id:
+            response = requests.delete(f"{BASE_URL}/api/breeding-records/{self.breeding_record_id}")
+            if hasattr(response, 'status_code') and response.status_code == 200:
+                print(f"✅ Deleted breeding record: {self.breeding_record_id}")
+            else:
+                print(f"⚠️ Could not delete breeding record: {self.breeding_record_id}")
+        
+        # Delete breeding pair if created
+        if self.breeding_pair_id:
+            response = requests.delete(f"{BASE_URL}/api/breeding-pairs/{self.breeding_pair_id}")
+            if hasattr(response, 'status_code') and response.status_code == 200:
+                print(f"✅ Deleted breeding pair: {self.breeding_pair_id}")
+            else:
+                print(f"⚠️ Could not delete breeding pair: {self.breeding_pair_id}")
+        
+        # Delete birds if created
+        if self.male_bird_id:
+            response = requests.delete(f"{BASE_URL}/api/birds/{self.male_bird_id}")
+            if hasattr(response, 'status_code') and response.status_code == 200:
+                print(f"✅ Deleted male bird: {self.male_bird_id}")
+            else:
+                print(f"⚠️ Could not delete male bird: {self.male_bird_id}")
+        
+        if self.female_bird_id:
+            response = requests.delete(f"{BASE_URL}/api/birds/{self.female_bird_id}")
+            if hasattr(response, 'status_code') and response.status_code == 200:
+                print(f"✅ Deleted female bird: {self.female_bird_id}")
+            else:
+                print(f"⚠️ Could not delete female bird: {self.female_bird_id}")
+
+if __name__ == "__main__":
+    # Run tests in order
+    suite = unittest.TestSuite()
+    suite.addTest(ParrotBreedingAPITest("test_01_birds_crud"))
+    suite.addTest(ParrotBreedingAPITest("test_02_breeding_pairs"))
+    suite.addTest(ParrotBreedingAPITest("test_03_breeding_records"))
+    suite.addTest(ParrotBreedingAPITest("test_04_dashboard"))
+    suite.addTest(ParrotBreedingAPITest("test_05_cleanup"))
+    
+    runner = unittest.TextTestRunner(verbosity=2)
+    runner.run(suite)
