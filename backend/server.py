@@ -150,8 +150,6 @@ async def get_license():
             license_doc["alert_level"] = "expired"
         elif days_until_expiry <= 30:
             license_doc["alert_level"] = "critical"
-        elif days_until_expiry <= 60:
-            license_doc["alert_level"] = "warning"
         
         return license_doc
     return None
