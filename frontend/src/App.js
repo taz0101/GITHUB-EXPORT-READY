@@ -810,7 +810,7 @@ function App() {
                   {clutch.breeding_pair?.pair_name || 'Unknown Pair'} - Clutch #{clutch.clutch_number}
                 </h3>
                 <p className="text-sm text-gray-600 mb-2">
-                  {clutch.breeding_pair?.male_bird?.name} × {clutch.breeding_pair?.female_bird?.name}
+                  {clutch.breeding_pair?.male_bird?.species} × {clutch.breeding_pair?.female_bird?.species}
                 </p>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
