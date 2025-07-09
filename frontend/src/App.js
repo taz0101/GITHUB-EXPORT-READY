@@ -730,7 +730,7 @@ function App() {
                 >
                   <option value="">Select Female Bird</option>
                   {birds.filter(bird => bird.gender === 'female' && bird.status === 'active').map(bird => (
-                    <option key={bird.id} value={bird.id}>{bird.name} - {bird.species}</option>
+                    <option key={bird.id} value={bird.id}>{bird.species} - {bird.ring_number || 'No Ring'}</option>
                   ))}
                 </select>
               </div>
