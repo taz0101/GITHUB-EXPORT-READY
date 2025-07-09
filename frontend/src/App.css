@@ -73,6 +73,42 @@
   border-left: 4px solid #10b981;
 }
 
+/* License Alert Styles */
+.license-alerts {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.alert-card {
+  background: #fef3c7;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border-left: 4px solid #f59e0b;
+  margin-bottom: 0.5rem;
+}
+
+.alert-card.alert-critical {
+  background: #fef2f2;
+  border-left-color: #ef4444;
+}
+
+.alert-card.alert-expired {
+  background: #fecaca;
+  border-left-color: #dc2626;
+}
+
+.alert-expired {
+  border: 2px solid #dc2626;
+  background: #fef2f2;
+}
+
+.alert-critical {
+  border: 2px solid #f59e0b;
+  background: #fef3c7;
+}
+
 /* Bird Styles */
 .bird-card {
   background: white;
@@ -129,6 +165,16 @@
   color: #1e40af;
 }
 
+.status-badge.hatching {
+  background: #f3e8ff;
+  color: #7c3aed;
+}
+
+.status-badge.completed {
+  background: #dcfce7;
+  color: #166534;
+}
+
 .status-badge.hatched {
   background: #dcfce7;
   color: #166534;
@@ -137,6 +183,26 @@
 .status-badge.failed {
   background: #fecaca;
   color: #991b1b;
+}
+
+.status-badge.alive {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-badge.deceased {
+  background: #fecaca;
+  color: #991b1b;
+}
+
+.status-badge.sold {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-badge.kept {
+  background: #dbeafe;
+  color: #1e40af;
 }
 
 /* Breeding Pair Styles */
@@ -150,6 +216,45 @@
 
 .bird-info {
   flex: 1;
+}
+
+/* Clutch Styles */
+.clutch-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid #f59e0b;
+}
+
+/* Chick Styles */
+.chick-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid #10b981;
+}
+
+/* Transaction Styles */
+.transaction-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid #6b7280;
+}
+
+.transaction-card.sale {
+  border-left-color: #10b981;
+}
+
+.transaction-card.purchase {
+  border-left-color: #3b82f6;
+}
+
+.transaction-card.expense {
+  border-left-color: #ef4444;
 }
 
 /* Breeding Record Styles */
@@ -266,5 +371,13 @@
   .modal-content {
     margin: 1rem;
     width: calc(100% - 2rem);
+  }
+  
+  .stat-card {
+    padding: 1rem;
+  }
+  
+  .grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   }
 }
