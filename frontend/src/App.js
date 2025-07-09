@@ -378,6 +378,18 @@ function App() {
     });
   };
 
+  // Helper function to get alert class
+  const getAlertClass = (alertLevel) => {
+    switch (alertLevel) {
+      case 'expired':
+        return 'alert-expired';
+      case 'critical':
+        return 'alert-critical';
+      default:
+        return '';
+    }
+  };
+
   // Render Dashboard
   const renderDashboard = () => (
     <div className="dashboard">
