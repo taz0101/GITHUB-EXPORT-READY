@@ -456,7 +456,7 @@ function App() {
                     {clutch.breeding_pair?.pair_name || 'Unknown Pair'} - Clutch #{clutch.clutch_number}
                   </h4>
                   <p className="text-sm text-gray-600">
-                    {clutch.breeding_pair?.male_bird?.name} × {clutch.breeding_pair?.female_bird?.name}
+                    {clutch.breeding_pair?.male_bird?.species} × {clutch.breeding_pair?.female_bird?.species}
                   </p>
                   <p className="text-sm">
                     Eggs: {clutch.eggs_laid} | Hatched: {clutch.hatched_count || 0} | 
