@@ -153,6 +153,16 @@ function App() {
     }
   };
 
+  const fetchMainLicense = async () => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/license`);
+      const data = await response.json();
+      setMainLicense(data);
+    } catch (error) {
+      console.error('Error fetching main license:', error);
+    }
+  };
+
   const fetchNotifications = async () => {
     try {
       const response = await fetch(`${BACKEND_URL}/api/notifications`);
