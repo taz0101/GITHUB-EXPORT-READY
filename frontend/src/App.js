@@ -573,12 +573,14 @@ function App() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Ring Number</label>
+                <label className="block text-sm font-medium mb-1">Ring Number *</label>
                 <input
                   type="text"
                   value={birdForm.ring_number}
                   onChange={(e) => setBirdForm({...birdForm, ring_number: e.target.value})}
                   className="form-input"
+                  required
+                  placeholder="e.g., 2024-001"
                 />
               </div>
               <div>
