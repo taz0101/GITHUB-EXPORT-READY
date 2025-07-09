@@ -975,7 +975,7 @@ function App() {
               From: {chick.clutch?.breeding_pair?.pair_name || 'Unknown Pair'}
             </p>
             <p className="text-sm text-gray-600 mb-2">
-              Parents: {chick.clutch?.breeding_pair?.male_bird?.name} × {chick.clutch?.breeding_pair?.female_bird?.name}
+              Parents: {chick.clutch?.breeding_pair?.male_bird?.species} × {chick.clutch?.breeding_pair?.female_bird?.species}
             </p>
             <div className="text-sm space-y-1">
               <p><strong>Hatched:</strong> {new Date(chick.hatch_date).toLocaleDateString()}</p>
