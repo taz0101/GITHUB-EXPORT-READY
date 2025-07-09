@@ -586,8 +586,8 @@ async def get_breeding_report():
         
         pair_stats.append({
             "pair_name": pair["pair_name"],
-            "male_bird": male_bird["name"] if male_bird else "Unknown",
-            "female_bird": female_bird["name"] if female_bird else "Unknown",
+            "male_bird": f"{male_bird['species']} - {male_bird.get('ring_number', 'No Ring')}" if male_bird else "Unknown",
+            "female_bird": f"{female_bird['species']} - {female_bird.get('ring_number', 'No Ring')}" if female_bird else "Unknown",
             "clutches": len(pair_clutches),
             "eggs_laid": pair_eggs,
             "hatched": pair_hatched,
