@@ -184,6 +184,22 @@ async def create_bird(bird: Bird):
 @app.get("/api/birds")
 async def get_birds():
     birds = list(birds_collection.find({}, {"_id": 0}))
+    
+    # Check license expiry for each bird
+    for bird in birds:
+        if bird.get("license_expiry"):
+            expiry_date = datetime.strptime(bird["license_expiry"], "%Y-%m-%d")
+            today = datetime.now()
+            days_until_expiry = (expiry_date - today).days
+            
+            bird["days_until_expiry"] = days_until_expiry
+            bird["license_alert"] = "none"
+            
+            if days_until_expiry < 0:
+                bird["license_alert"] = "expired"
+            elif days_until_expiry <= 30:
+                bird["license_alert"] = "critical"
+    
     return {"birds": birds}
 
 @app.get("/api/birds/{bird_id}")
