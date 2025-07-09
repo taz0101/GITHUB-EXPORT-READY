@@ -259,7 +259,7 @@ async def get_breeding_pairs():
         pair["male_bird"] = male_bird
         pair["female_bird"] = female_bird
         
-        # Check pair license expiry
+    # Check pair license expiry
         if pair.get("license_expiry"):
             expiry_date = datetime.strptime(pair["license_expiry"], "%Y-%m-%d")
             today = datetime.now()
