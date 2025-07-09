@@ -83,6 +83,15 @@ function App() {
     search_type: 'all'
   });
 
+  const [licenseForm, setLicenseForm] = useState({
+    license_number: '',
+    license_type: 'breeding',
+    issue_date: '',
+    expiry_date: '',
+    issuing_authority: '',
+    notes: ''
+  });
+
   // Fetch data functions
   const fetchBirds = async () => {
     try {
