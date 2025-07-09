@@ -594,6 +594,32 @@ async def get_breeding_report():
             "success_rate": round(pair_success_rate, 2)
         })
     
+    # Species performance analysis
+    species_stats = {}
+    for pair in pairs:
+        male_bird = birds_collection.find_one({"id": pair["male_bird_id"]}, {"_id": 0})
+        female_bird = birds_collection.find_one({"id": pair["female_bird_id"]}, {"_id": 0})
+        
+        if male_bird and female_bird:
+            species_key = f"{male_bird['species']} × {female_bird['species']}"
+            if species_key not in species_stats:
+                species_stats[species_key] = {"clutches": 0, "eggs": 0, "hatched": 0, "pairs": 0}
+            
+            species_stats[species_key]["pairs"] += 1
+            pair_clutches = [c for c in clutches if c["breeding_pair_id"] == pair["id"]]
+            species_stats[species_key]["clutches"] += len(pair_clutches)
+            species_stats[species_key]["eggs"] += sum(c.get("eggs_laid", 0) for c in pair_clutches)
+            species_stats[species_key]["hatched"] += sum(c.get("hatched_count", 0) for c in pair_clutches)
+    
+    # Calculate success rates for species
+    for species in species_stats:
+        if species_stats[species]["eggs"] > 0:
+            species_stats[species]["success_rate"] = round(
+                (species_stats[species]["hatched"] / species_stats[species]["eggs"]) * 100, 2
+            )
+        else:
+            species_stats[species]["success_rate"] = 0
+    
     return {
         "summary": {
             "total_clutches": total_clutches,
@@ -601,7 +627,110 @@ async def get_breeding_report():
             "total_hatched": total_hatched,
             "overall_success_rate": round(overall_success_rate, 2)
         },
-        "pair_performance": pair_stats
+        "pair_performance": pair_stats,
+        "species_performance": species_stats
+    }
+
+@app.get("/api/genealogy/{bird_id}")
+async def get_bird_genealogy(bird_id: str):
+    """Get genealogy information for a bird"""
+    def get_parents(bird_id):
+        # Find clutch this bird came from
+        chick = chicks_collection.find_one({"id": bird_id}, {"_id": 0})
+        if not chick:
+            return None
+            
+        clutch = clutches_collection.find_one({"id": chick["clutch_id"]}, {"_id": 0})
+        if not clutch:
+            return None
+            
+        pair = breeding_pairs_collection.find_one({"id": clutch["breeding_pair_id"]}, {"_id": 0})
+        if not pair:
+            return None
+            
+        male_bird = birds_collection.find_one({"id": pair["male_bird_id"]}, {"_id": 0})
+        female_bird = birds_collection.find_one({"id": pair["female_bird_id"]}, {"_id": 0})
+        
+        return {
+            "father": male_bird,
+            "mother": female_bird,
+            "breeding_pair": pair,
+            "clutch": clutch
+        }
+    
+    def get_offspring(bird_id):
+        # Find all pairs this bird is part of
+        pairs = list(breeding_pairs_collection.find({
+            "$or": [{"male_bird_id": bird_id}, {"female_bird_id": bird_id}]
+        }, {"_id": 0}))
+        
+        offspring = []
+        for pair in pairs:
+            clutches = list(clutches_collection.find({"breeding_pair_id": pair["id"]}, {"_id": 0}))
+            for clutch in clutches:
+                chicks = list(chicks_collection.find({"clutch_id": clutch["id"]}, {"_id": 0}))
+                offspring.extend(chicks)
+        
+        return offspring
+    
+    bird = birds_collection.find_one({"id": bird_id}, {"_id": 0})
+    if not bird:
+        raise HTTPException(status_code=404, detail="Bird not found")
+    
+    parents = get_parents(bird_id)
+    offspring = get_offspring(bird_id)
+    
+    return {
+        "bird": bird,
+        "parents": parents,
+        "offspring": offspring
+    }
+
+@app.get("/api/consanguinity-check/{male_bird_id}/{female_bird_id}")
+async def check_consanguinity(male_bird_id: str, female_bird_id: str):
+    """Check if two birds are related (consanguinity check)"""
+    # This is a simplified version - in reality, you'd need to build a complete family tree
+    # and check for common ancestors within a certain number of generations
+    
+    def get_lineage(bird_id, generations=3, current_gen=0):
+        if current_gen >= generations:
+            return []
+        
+        parents = []
+        chick = chicks_collection.find_one({"id": bird_id}, {"_id": 0})
+        if chick:
+            clutch = clutches_collection.find_one({"id": chick["clutch_id"]}, {"_id": 0})
+            if clutch:
+                pair = breeding_pairs_collection.find_one({"id": clutch["breeding_pair_id"]}, {"_id": 0})
+                if pair:
+                    parents = [pair["male_bird_id"], pair["female_bird_id"]]
+                    # Recursively get lineage of parents
+                    for parent_id in parents:
+                        parents.extend(get_lineage(parent_id, generations, current_gen + 1))
+        
+        return parents
+    
+    male_lineage = get_lineage(male_bird_id)
+    female_lineage = get_lineage(female_bird_id)
+    
+    # Check for common ancestors
+    common_ancestors = set(male_lineage) & set(female_lineage)
+    
+    is_related = len(common_ancestors) > 0
+    relationship_level = "none"
+    
+    if is_related:
+        # Simplified relationship determination
+        if male_bird_id in female_lineage or female_bird_id in male_lineage:
+            relationship_level = "parent-offspring"
+        elif len(common_ancestors) > 0:
+            relationship_level = "siblings/cousins"
+    
+    return {
+        "is_related": is_related,
+        "relationship_level": relationship_level,
+        "common_ancestors": len(common_ancestors),
+        "recommendation": "Not recommended for breeding" if is_related else "Safe to breed"
     }
 
 @app.get("/api/reports/financial")
