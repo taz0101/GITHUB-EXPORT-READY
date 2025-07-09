@@ -682,7 +682,7 @@ async def get_dashboard():
                 alert_level = "expired" if days_until_expiry < 0 else "critical"
                 license_alerts.append({
                     "type": "bird",
-                    "name": bird["name"],
+                    "name": f"{bird['species']} - {bird.get('ring_number', 'No Ring')}",
                     "license_number": bird.get("license_number"),
                     "expiry_date": bird["license_expiry"],
                     "days_until_expiry": days_until_expiry,
