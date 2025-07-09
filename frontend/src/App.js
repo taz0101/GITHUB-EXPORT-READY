@@ -866,7 +866,11 @@ function App() {
                 <input
                   type="date"
                   value={clutchForm.egg_laying_date}
-                  onChange={(e) => setClutchForm({...clutchForm, egg_laying_date: e.target.value})}
+                  onChange={(e) => {
+                    const selectedPair = breedingPairs.find(p => p.id === clutchForm.breeding_pair_id);
+                    const species = selectedPair?.male_bird?.species || 'default';
+                    handleLayingDateChange(e.target.value, species);
+                  }}
                   className="form-input"
                   required
                 />
