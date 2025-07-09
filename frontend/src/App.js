@@ -11,12 +11,16 @@ function App() {
   const [chicks, setChicks] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [dashboardData, setDashboardData] = useState(null);
+  const [notifications, setNotifications] = useState([]);
+  const [searchResults, setSearchResults] = useState(null);
+  const [breedingReport, setBreedingReport] = useState(null);
   const [showAddBirdForm, setShowAddBirdForm] = useState(false);
   const [showAddPairForm, setShowAddPairForm] = useState(false);
   const [showAddClutchForm, setShowAddClutchForm] = useState(false);
   const [showAddChickForm, setShowAddChickForm] = useState(false);
   const [showAddTransactionForm, setShowAddTransactionForm] = useState(false);
   const [showLicenseForm, setShowLicenseForm] = useState(false);
+  const [showSearchModal, setShowSearchModal] = useState(false);
   const [mainLicense, setMainLicense] = useState(null);
 
   // Form states
