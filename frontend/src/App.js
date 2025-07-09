@@ -493,12 +493,12 @@ function App() {
         {birds.map((bird) => (
           <div key={bird.id} className={`bird-card ${getAlertClass(bird.license_alert)}`}>
             <div className="flex justify-between items-start mb-2">
-              <h3 className="font-bold text-lg">{bird.name}</h3>
+              <h3 className="font-bold text-lg">{bird.species}</h3>
               <span className={`gender-badge ${bird.gender}`}>
                 {bird.gender === 'male' ? '♂' : '♀'}
               </span>
             </div>
-            <p className="text-gray-600 mb-2">{bird.species}</p>
+            <p className="text-gray-600 mb-2">Ring: {bird.ring_number || 'No Ring'}</p>
             {bird.ring_number && (
               <p className="text-sm text-gray-500">Ring: {bird.ring_number}</p>
             )}
