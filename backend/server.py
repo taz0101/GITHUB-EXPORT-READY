@@ -41,6 +41,8 @@ class Bird(BaseModel):
     birth_date: Optional[str] = None
     ring_number: Optional[str] = None
     color_mutation: Optional[str] = None
+    license_number: Optional[str] = None
+    license_expiry: Optional[str] = None
     status: str = "active"  # "active", "inactive", "deceased", "sold"
     notes: Optional[str] = None
     created_at: Optional[str] = None
