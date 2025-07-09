@@ -35,7 +35,6 @@ license_collection = db.license
 # Pydantic models
 class Bird(BaseModel):
     id: Optional[str] = None
-    name: str
     species: str
     gender: str  # "male" or "female"
     birth_date: Optional[str] = None
