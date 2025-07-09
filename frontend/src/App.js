@@ -21,7 +21,6 @@ function App() {
 
   // Form states
   const [birdForm, setBirdForm] = useState({
-    name: '',
     species: '',
     gender: 'male',
     birth_date: '',
