@@ -204,6 +204,7 @@ function App() {
     fetchTransactions();
     fetchDashboard();
     fetchMainLicense();
+    fetchNotifications();
   }, []);
 
   // Handle form submissions
