@@ -7,11 +7,17 @@ function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [birds, setBirds] = useState([]);
   const [breedingPairs, setBreedingPairs] = useState([]);
-  const [breedingRecords, setBreedingRecords] = useState([]);
+  const [clutches, setClutches] = useState([]);
+  const [chicks, setChicks] = useState([]);
+  const [transactions, setTransactions] = useState([]);
   const [dashboardData, setDashboardData] = useState(null);
   const [showAddBirdForm, setShowAddBirdForm] = useState(false);
   const [showAddPairForm, setShowAddPairForm] = useState(false);
-  const [showAddRecordForm, setShowAddRecordForm] = useState(false);
+  const [showAddClutchForm, setShowAddClutchForm] = useState(false);
+  const [showAddChickForm, setShowAddChickForm] = useState(false);
+  const [showAddTransactionForm, setShowAddTransactionForm] = useState(false);
+  const [showLicenseForm, setShowLicenseForm] = useState(false);
+  const [mainLicense, setMainLicense] = useState(null);
 
   // Form states
   const [birdForm, setBirdForm] = useState({
@@ -21,6 +27,8 @@ function App() {
     birth_date: '',
     ring_number: '',
     color_mutation: '',
+    license_number: '',
+    license_expiry: '',
     notes: ''
   });
 
@@ -29,16 +37,48 @@ function App() {
     female_bird_id: '',
     pair_name: '',
     pair_date: '',
+    license_number: '',
+    license_expiry: '',
     notes: ''
   });
 
-  const [recordForm, setRecordForm] = useState({
+  const [clutchForm, setClutchForm] = useState({
     breeding_pair_id: '',
-    breeding_cycle_number: 1,
+    clutch_number: 1,
     egg_laying_date: '',
     eggs_laid: 0,
     expected_hatch_date: '',
     hatched_count: 0,
+    fertile_eggs: 0,
+    notes: ''
+  });
+
+  const [chickForm, setChickForm] = useState({
+    clutch_id: '',
+    chick_number: 1,
+    hatch_date: '',
+    ring_number: '',
+    gender: '',
+    color_mutation: '',
+    weight: 0,
+    notes: ''
+  });
+
+  const [transactionForm, setTransactionForm] = useState({
+    transaction_type: 'expense',
+    amount: 0,
+    date: '',
+    category: 'food',
+    description: '',
+    notes: ''
+  });
+
+  const [licenseForm, setLicenseForm] = useState({
+    license_number: '',
+    license_type: 'breeding',
+    issue_date: '',
+    expiry_date: '',
+    issuing_authority: '',
     notes: ''
   });
 
@@ -63,13 +103,33 @@ function App() {
     }
   };
 
-  const fetchBreedingRecords = async () => {
+  const fetchClutches = async () => {
     try {
-      const response = await fetch(`${BACKEND_URL}/api/breeding-records`);
+      const response = await fetch(`${BACKEND_URL}/api/clutches`);
       const data = await response.json();
-      setBreedingRecords(data.breeding_records);
+      setClutches(data.clutches);
     } catch (error) {
-      console.error('Error fetching breeding records:', error);
+      console.error('Error fetching clutches:', error);
+    }
+  };
+
+  const fetchChicks = async () => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/chicks`);
+      const data = await response.json();
+      setChicks(data.chicks);
+    } catch (error) {
+      console.error('Error fetching chicks:', error);
+    }
+  };
+
+  const fetchTransactions = async () => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/transactions`);
+      const data = await response.json();
+      setTransactions(data.transactions);
+    } catch (error) {
+      console.error('Error fetching transactions:', error);
     }
   };
 
@@ -83,12 +143,25 @@ function App() {
     }
   };
 
+  const fetchMainLicense = async () => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/license`);
+      const data = await response.json();
+      setMainLicense(data);
+    } catch (error) {
+      console.error('Error fetching main license:', error);
+    }
+  };
+
   // Load data on component mount
   useEffect(() => {
     fetchBirds();
     fetchBreedingPairs();
-    fetchBreedingRecords();
+    fetchClutches();
+    fetchChicks();
+    fetchTransactions();
     fetchDashboard();
+    fetchMainLicense();
   }, []);
 
   // Handle form submissions
@@ -111,6 +184,8 @@ function App() {
           birth_date: '',
           ring_number: '',
           color_mutation: '',
+          license_number: '',
+          license_expiry: '',
           notes: ''
         });
         setShowAddBirdForm(false);
@@ -139,6 +214,8 @@ function App() {
           female_bird_id: '',
           pair_name: '',
           pair_date: '',
+          license_number: '',
+          license_expiry: '',
           notes: ''
         });
         setShowAddPairForm(false);
@@ -150,33 +227,135 @@ function App() {
     }
   };
 
-  const handleAddRecord = async (e) => {
+  const handleAddClutch = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`${BACKEND_URL}/api/breeding-records`, {
+      const response = await fetch(`${BACKEND_URL}/api/clutches`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(recordForm),
+        body: JSON.stringify(clutchForm),
       });
       
       if (response.ok) {
-        setRecordForm({
+        setClutchForm({
           breeding_pair_id: '',
-          breeding_cycle_number: 1,
+          clutch_number: 1,
           egg_laying_date: '',
           eggs_laid: 0,
           expected_hatch_date: '',
           hatched_count: 0,
+          fertile_eggs: 0,
           notes: ''
         });
-        setShowAddRecordForm(false);
-        fetchBreedingRecords();
+        setShowAddClutchForm(false);
+        fetchClutches();
         fetchDashboard();
       }
     } catch (error) {
-      console.error('Error adding breeding record:', error);
+      console.error('Error adding clutch:', error);
+    }
+  };
+
+  const handleAddChick = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/chicks`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(chickForm),
+      });
+      
+      if (response.ok) {
+        setChickForm({
+          clutch_id: '',
+          chick_number: 1,
+          hatch_date: '',
+          ring_number: '',
+          gender: '',
+          color_mutation: '',
+          weight: 0,
+          notes: ''
+        });
+        setShowAddChickForm(false);
+        fetchChicks();
+        fetchDashboard();
+      }
+    } catch (error) {
+      console.error('Error adding chick:', error);
+    }
+  };
+
+  const handleAddTransaction = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/transactions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(transactionForm),
+      });
+      
+      if (response.ok) {
+        setTransactionForm({
+          transaction_type: 'expense',
+          amount: 0,
+          date: '',
+          category: 'food',
+          description: '',
+          notes: ''
+        });
+        setShowAddTransactionForm(false);
+        fetchTransactions();
+        fetchDashboard();
+      }
+    } catch (error) {
+      console.error('Error adding transaction:', error);
+    }
+  };
+
+  const handleAddLicense = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/license`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(licenseForm),
+      });
+      
+      if (response.ok) {
+        setLicenseForm({
+          license_number: '',
+          license_type: 'breeding',
+          issue_date: '',
+          expiry_date: '',
+          issuing_authority: '',
+          notes: ''
+        });
+        setShowLicenseForm(false);
+        fetchMainLicense();
+        fetchDashboard();
+      }
+    } catch (error) {
+      console.error('Error adding license:', error);
+    }
+  };
+
+  // Helper function to get alert class
+  const getAlertClass = (alertLevel) => {
+    switch (alertLevel) {
+      case 'expired':
+        return 'alert-expired';
+      case 'critical':
+        return 'alert-critical';
+      default:
+        return '';
     }
   };
 
@@ -185,44 +364,79 @@ function App() {
     <div className="dashboard">
       <h2 className="text-2xl font-bold mb-6">🦜 Breeding Dashboard</h2>
       
+      {/* License Alerts */}
+      {dashboardData?.license_alerts?.length > 0 && (
+        <div className="license-alerts mb-6">
+          <h3 className="text-lg font-semibold mb-3 text-red-600">⚠️ License Alerts</h3>
+          {dashboardData.license_alerts.map((alert, index) => (
+            <div key={index} className={`alert-card ${getAlertClass(alert.alert_level)}`}>
+              <div className="flex justify-between items-start">
+                <div>
+                  <h4 className="font-semibold">{alert.name}</h4>
+                  <p className="text-sm">License: {alert.license_number}</p>
+                  <p className="text-sm">
+                    {alert.alert_level === 'expired' ? 'EXPIRED' : `Expires in ${alert.days_until_expiry} days`}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm">{new Date(alert.expiry_date).toLocaleDateString()}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+      
       {dashboardData && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
           <div className="stat-card">
-            <h3 className="text-lg font-semibold text-blue-600">Total Birds</h3>
-            <p className="text-3xl font-bold">{dashboardData.stats.total_birds}</p>
+            <h3 className="text-sm font-semibold text-blue-600">Total Birds</h3>
+            <p className="text-2xl font-bold">{dashboardData.stats.total_birds}</p>
           </div>
           <div className="stat-card">
-            <h3 className="text-lg font-semibold text-green-600">Active Pairs</h3>
-            <p className="text-3xl font-bold">{dashboardData.stats.total_pairs}</p>
+            <h3 className="text-sm font-semibold text-green-600">Active Pairs</h3>
+            <p className="text-2xl font-bold">{dashboardData.stats.total_pairs}</p>
           </div>
           <div className="stat-card">
-            <h3 className="text-lg font-semibold text-orange-600">Active Breeding</h3>
-            <p className="text-3xl font-bold">{dashboardData.stats.active_breeding_records}</p>
+            <h3 className="text-sm font-semibold text-orange-600">Active Clutches</h3>
+            <p className="text-2xl font-bold">{dashboardData.stats.active_clutches}</p>
+          </div>
+          <div className="stat-card">
+            <h3 className="text-sm font-semibold text-purple-600">Total Chicks</h3>
+            <p className="text-2xl font-bold">{dashboardData.stats.total_chicks}</p>
+          </div>
+          <div className="stat-card">
+            <h3 className="text-sm font-semibold text-green-600">Revenue</h3>
+            <p className="text-2xl font-bold">${dashboardData.stats.total_revenue}</p>
+          </div>
+          <div className="stat-card">
+            <h3 className="text-sm font-semibold text-red-600">Expenses</h3>
+            <p className="text-2xl font-bold">${dashboardData.stats.total_expenses}</p>
           </div>
         </div>
       )}
 
       <div className="recent-activity">
-        <h3 className="text-xl font-bold mb-4">Recent Breeding Activity</h3>
+        <h3 className="text-xl font-bold mb-4">Recent Clutches</h3>
         <div className="space-y-4">
-          {dashboardData?.recent_breeding_records?.map((record, index) => (
+          {dashboardData?.recent_clutches?.map((clutch, index) => (
             <div key={index} className="activity-card">
               <div className="flex justify-between items-start">
                 <div>
                   <h4 className="font-semibold">
-                    {record.breeding_pair?.pair_name || 'Unknown Pair'}
+                    {clutch.breeding_pair?.pair_name || 'Unknown Pair'} - Clutch #{clutch.clutch_number}
                   </h4>
                   <p className="text-sm text-gray-600">
-                    {record.breeding_pair?.male_bird?.name} × {record.breeding_pair?.female_bird?.name}
+                    {clutch.breeding_pair?.male_bird?.name} × {clutch.breeding_pair?.female_bird?.name}
                   </p>
                   <p className="text-sm">
-                    Eggs: {record.eggs_laid} | Hatched: {record.hatched_count || 0} | 
-                    Status: <span className={`status-${record.status}`}>{record.status}</span>
+                    Eggs: {clutch.eggs_laid} | Hatched: {clutch.hatched_count || 0} | 
+                    Status: <span className={`status-${clutch.status}`}>{clutch.status}</span>
                   </p>
                 </div>
                 <div className="text-right">
                   <p className="text-sm text-gray-500">
-                    Laid: {new Date(record.egg_laying_date).toLocaleDateString()}
+                    Laid: {new Date(clutch.egg_laying_date).toLocaleDateString()}
                   </p>
                 </div>
               </div>
@@ -248,7 +462,7 @@ function App() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {birds.map((bird) => (
-          <div key={bird.id} className="bird-card">
+          <div key={bird.id} className={`bird-card ${getAlertClass(bird.license_alert)}`}>
             <div className="flex justify-between items-start mb-2">
               <h3 className="font-bold text-lg">{bird.name}</h3>
               <span className={`gender-badge ${bird.gender}`}>
@@ -262,10 +476,19 @@ function App() {
             {bird.color_mutation && (
               <p className="text-sm text-gray-500">Color: {bird.color_mutation}</p>
             )}
-            {bird.birth_date && (
+            {bird.license_number && (
+              <p className="text-sm text-gray-500">License: {bird.license_number}</p>
+            )}
+            {bird.license_expiry && (
               <p className="text-sm text-gray-500">
-                Born: {new Date(bird.birth_date).toLocaleDateString()}
+                License Expires: {new Date(bird.license_expiry).toLocaleDateString()}
               </p>
+            )}
+            {bird.license_alert === 'expired' && (
+              <p className="text-sm text-red-600 font-bold">LICENSE EXPIRED!</p>
+            )}
+            {bird.license_alert === 'critical' && (
+              <p className="text-sm text-orange-600 font-bold">License expires in {bird.days_until_expiry} days</p>
             )}
             <span className={`status-badge ${bird.status}`}>{bird.status}</span>
           </div>
@@ -337,6 +560,24 @@ function App() {
                 />
               </div>
               <div>
+                <label className="block text-sm font-medium mb-1">License Number</label>
+                <input
+                  type="text"
+                  value={birdForm.license_number}
+                  onChange={(e) => setBirdForm({...birdForm, license_number: e.target.value})}
+                  className="form-input"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">License Expiry Date</label>
+                <input
+                  type="date"
+                  value={birdForm.license_expiry}
+                  onChange={(e) => setBirdForm({...birdForm, license_expiry: e.target.value})}
+                  className="form-input"
+                />
+              </div>
+              <div>
                 <label className="block text-sm font-medium mb-1">Notes</label>
                 <textarea
                   value={birdForm.notes}
@@ -377,7 +618,7 @@ function App() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {breedingPairs.map((pair) => (
-          <div key={pair.id} className="pair-card">
+          <div key={pair.id} className={`pair-card ${getAlertClass(pair.license_alert)}`}>
             <h3 className="font-bold text-lg mb-2">{pair.pair_name}</h3>
             <div className="flex justify-between items-center mb-4">
               <div className="bird-info">
@@ -392,6 +633,20 @@ function App() {
                 <p className="text-sm text-gray-600">{pair.female_bird?.species}</p>
               </div>
             </div>
+            {pair.license_number && (
+              <p className="text-sm text-gray-500 mb-1">License: {pair.license_number}</p>
+            )}
+            {pair.license_expiry && (
+              <p className="text-sm text-gray-500 mb-1">
+                License Expires: {new Date(pair.license_expiry).toLocaleDateString()}
+              </p>
+            )}
+            {pair.license_alert === 'expired' && (
+              <p className="text-sm text-red-600 font-bold mb-2">LICENSE EXPIRED!</p>
+            )}
+            {pair.license_alert === 'critical' && (
+              <p className="text-sm text-orange-600 font-bold mb-2">License expires in {pair.days_until_expiry} days</p>
+            )}
             <div className="flex justify-between items-center">
               <p className="text-sm text-gray-500">
                 Paired: {new Date(pair.pair_date).toLocaleDateString()}
@@ -457,6 +712,24 @@ function App() {
                 />
               </div>
               <div>
+                <label className="block text-sm font-medium mb-1">License Number</label>
+                <input
+                  type="text"
+                  value={pairForm.license_number}
+                  onChange={(e) => setPairForm({...pairForm, license_number: e.target.value})}
+                  className="form-input"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">License Expiry Date</label>
+                <input
+                  type="date"
+                  value={pairForm.license_expiry}
+                  onChange={(e) => setPairForm({...pairForm, license_expiry: e.target.value})}
+                  className="form-input"
+                />
+              </div>
+              <div>
                 <label className="block text-sm font-medium mb-1">Notes</label>
                 <textarea
                   value={pairForm.notes}
@@ -482,62 +755,59 @@ function App() {
     </div>
   );
 
-  // Render Breeding Records
-  const renderBreedingRecords = () => (
-    <div className="breeding-records-section">
+  // Render Clutches
+  const renderClutches = () => (
+    <div className="clutches-section">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">🥚 Breeding Records</h2>
+        <h2 className="text-2xl font-bold">🥚 Clutches</h2>
         <button 
-          onClick={() => setShowAddRecordForm(true)}
+          onClick={() => setShowAddClutchForm(true)}
           className="btn-primary"
         >
-          Add New Record
+          Add New Clutch
         </button>
       </div>
 
       <div className="space-y-4">
-        {breedingRecords.map((record) => (
-          <div key={record.id} className="record-card">
+        {clutches.map((clutch) => (
+          <div key={clutch.id} className="clutch-card">
             <div className="flex justify-between items-start">
               <div>
                 <h3 className="font-bold text-lg">
-                  {record.breeding_pair?.pair_name || 'Unknown Pair'}
+                  {clutch.breeding_pair?.pair_name || 'Unknown Pair'} - Clutch #{clutch.clutch_number}
                 </h3>
                 <p className="text-sm text-gray-600 mb-2">
-                  {record.breeding_pair?.male_bird?.name} × {record.breeding_pair?.female_bird?.name}
+                  {clutch.breeding_pair?.male_bird?.name} × {clutch.breeding_pair?.female_bird?.name}
                 </p>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-sm"><strong>Cycle:</strong> #{record.breeding_cycle_number}</p>
-                    <p className="text-sm"><strong>Eggs Laid:</strong> {record.eggs_laid}</p>
-                    <p className="text-sm"><strong>Hatched:</strong> {record.hatched_count || 0}</p>
+                    <p className="text-sm"><strong>Eggs Laid:</strong> {clutch.eggs_laid}</p>
+                    <p className="text-sm"><strong>Fertile:</strong> {clutch.fertile_eggs || 'N/A'}</p>
+                    <p className="text-sm"><strong>Hatched:</strong> {clutch.hatched_count || 0}</p>
                   </div>
                   <div>
-                    <p className="text-sm"><strong>Laid Date:</strong> {new Date(record.egg_laying_date).toLocaleDateString()}</p>
-                    <p className="text-sm"><strong>Expected Hatch:</strong> {new Date(record.expected_hatch_date).toLocaleDateString()}</p>
-                    {record.hatch_success_rate && (
-                      <p className="text-sm"><strong>Success Rate:</strong> {record.hatch_success_rate.toFixed(1)}%</p>
-                    )}
+                    <p className="text-sm"><strong>Laid:</strong> {new Date(clutch.egg_laying_date).toLocaleDateString()}</p>
+                    <p className="text-sm"><strong>Expected Hatch:</strong> {new Date(clutch.expected_hatch_date).toLocaleDateString()}</p>
                   </div>
                 </div>
               </div>
-              <span className={`status-badge ${record.status}`}>{record.status}</span>
+              <span className={`status-badge ${clutch.status}`}>{clutch.status}</span>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Add Record Form Modal */}
-      {showAddRecordForm && (
+      {/* Add Clutch Form Modal */}
+      {showAddClutchForm && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <h3 className="text-xl font-bold mb-4">Add New Breeding Record</h3>
-            <form onSubmit={handleAddRecord} className="space-y-4">
+            <h3 className="text-xl font-bold mb-4">Add New Clutch</h3>
+            <form onSubmit={handleAddClutch} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-1">Breeding Pair *</label>
                 <select
-                  value={recordForm.breeding_pair_id}
-                  onChange={(e) => setRecordForm({...recordForm, breeding_pair_id: e.target.value})}
+                  value={clutchForm.breeding_pair_id}
+                  onChange={(e) => setClutchForm({...clutchForm, breeding_pair_id: e.target.value})}
                   className="form-input"
                   required
                 >
@@ -548,11 +818,11 @@ function App() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Breeding Cycle Number *</label>
+                <label className="block text-sm font-medium mb-1">Clutch Number *</label>
                 <input
                   type="number"
-                  value={recordForm.breeding_cycle_number}
-                  onChange={(e) => setRecordForm({...recordForm, breeding_cycle_number: parseInt(e.target.value)})}
+                  value={clutchForm.clutch_number}
+                  onChange={(e) => setClutchForm({...clutchForm, clutch_number: parseInt(e.target.value)})}
                   className="form-input"
                   min="1"
                   required
@@ -562,8 +832,8 @@ function App() {
                 <label className="block text-sm font-medium mb-1">Egg Laying Date *</label>
                 <input
                   type="date"
-                  value={recordForm.egg_laying_date}
-                  onChange={(e) => setRecordForm({...recordForm, egg_laying_date: e.target.value})}
+                  value={clutchForm.egg_laying_date}
+                  onChange={(e) => setClutchForm({...clutchForm, egg_laying_date: e.target.value})}
                   className="form-input"
                   required
                 />
@@ -572,8 +842,8 @@ function App() {
                 <label className="block text-sm font-medium mb-1">Eggs Laid *</label>
                 <input
                   type="number"
-                  value={recordForm.eggs_laid}
-                  onChange={(e) => setRecordForm({...recordForm, eggs_laid: parseInt(e.target.value)})}
+                  value={clutchForm.eggs_laid}
+                  onChange={(e) => setClutchForm({...clutchForm, eggs_laid: parseInt(e.target.value)})}
                   className="form-input"
                   min="0"
                   required
@@ -583,18 +853,28 @@ function App() {
                 <label className="block text-sm font-medium mb-1">Expected Hatch Date *</label>
                 <input
                   type="date"
-                  value={recordForm.expected_hatch_date}
-                  onChange={(e) => setRecordForm({...recordForm, expected_hatch_date: e.target.value})}
+                  value={clutchForm.expected_hatch_date}
+                  onChange={(e) => setClutchForm({...clutchForm, expected_hatch_date: e.target.value})}
                   className="form-input"
                   required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Fertile Eggs</label>
+                <input
+                  type="number"
+                  value={clutchForm.fertile_eggs}
+                  onChange={(e) => setClutchForm({...clutchForm, fertile_eggs: parseInt(e.target.value)})}
+                  className="form-input"
+                  min="0"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Hatched Count</label>
                 <input
                   type="number"
-                  value={recordForm.hatched_count}
-                  onChange={(e) => setRecordForm({...recordForm, hatched_count: parseInt(e.target.value)})}
+                  value={clutchForm.hatched_count}
+                  onChange={(e) => setClutchForm({...clutchForm, hatched_count: parseInt(e.target.value)})}
                   className="form-input"
                   min="0"
                 />
@@ -602,17 +882,306 @@ function App() {
               <div>
                 <label className="block text-sm font-medium mb-1">Notes</label>
                 <textarea
-                  value={recordForm.notes}
-                  onChange={(e) => setRecordForm({...recordForm, notes: e.target.value})}
+                  value={clutchForm.notes}
+                  onChange={(e) => setClutchForm({...clutchForm, notes: e.target.value})}
                   className="form-input"
                   rows="3"
                 />
               </div>
               <div className="flex gap-2">
-                <button type="submit" className="btn-primary">Add Record</button>
+                <button type="submit" className="btn-primary">Add Clutch</button>
                 <button 
                   type="button" 
-                  onClick={() => setShowAddRecordForm(false)}
+                  onClick={() => setShowAddClutchForm(false)}
+                  className="btn-secondary"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
+  // Render Chicks
+  const renderChicks = () => (
+    <div className="chicks-section">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold">🐣 Chicks</h2>
+        <button 
+          onClick={() => setShowAddChickForm(true)}
+          className="btn-primary"
+        >
+          Add New Chick
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {chicks.map((chick) => (
+          <div key={chick.id} className="chick-card">
+            <div className="flex justify-between items-start mb-2">
+              <h3 className="font-bold text-lg">
+                Chick #{chick.chick_number}
+              </h3>
+              {chick.gender && (
+                <span className={`gender-badge ${chick.gender}`}>
+                  {chick.gender === 'male' ? '♂' : '♀'}
+                </span>
+              )}
+            </div>
+            <p className="text-sm text-gray-600 mb-2">
+              From: {chick.clutch?.breeding_pair?.pair_name || 'Unknown Pair'}
+            </p>
+            <p className="text-sm text-gray-600 mb-2">
+              Parents: {chick.clutch?.breeding_pair?.male_bird?.name} × {chick.clutch?.breeding_pair?.female_bird?.name}
+            </p>
+            <div className="text-sm space-y-1">
+              <p><strong>Hatched:</strong> {new Date(chick.hatch_date).toLocaleDateString()}</p>
+              <p><strong>Age:</strong> {chick.age_days} days</p>
+              {chick.ring_number && <p><strong>Ring:</strong> {chick.ring_number}</p>}
+              {chick.weight > 0 && <p><strong>Weight:</strong> {chick.weight}g</p>}
+              {chick.color_mutation && <p><strong>Color:</strong> {chick.color_mutation}</p>}
+              {chick.weaning_date && (
+                <p><strong>Weaned:</strong> {new Date(chick.weaning_date).toLocaleDateString()}</p>
+              )}
+            </div>
+            <span className={`status-badge ${chick.status}`}>{chick.status}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Add Chick Form Modal */}
+      {showAddChickForm && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3 className="text-xl font-bold mb-4">Add New Chick</h3>
+            <form onSubmit={handleAddChick} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Clutch *</label>
+                <select
+                  value={chickForm.clutch_id}
+                  onChange={(e) => setChickForm({...chickForm, clutch_id: e.target.value})}
+                  className="form-input"
+                  required
+                >
+                  <option value="">Select Clutch</option>
+                  {clutches.map(clutch => (
+                    <option key={clutch.id} value={clutch.id}>
+                      {clutch.breeding_pair?.pair_name || 'Unknown'} - Clutch #{clutch.clutch_number}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Chick Number *</label>
+                <input
+                  type="number"
+                  value={chickForm.chick_number}
+                  onChange={(e) => setChickForm({...chickForm, chick_number: parseInt(e.target.value)})}
+                  className="form-input"
+                  min="1"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Hatch Date *</label>
+                <input
+                  type="date"
+                  value={chickForm.hatch_date}
+                  onChange={(e) => setChickForm({...chickForm, hatch_date: e.target.value})}
+                  className="form-input"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Ring Number</label>
+                <input
+                  type="text"
+                  value={chickForm.ring_number}
+                  onChange={(e) => setChickForm({...chickForm, ring_number: e.target.value})}
+                  className="form-input"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Gender</label>
+                <select
+                  value={chickForm.gender}
+                  onChange={(e) => setChickForm({...chickForm, gender: e.target.value})}
+                  className="form-input"
+                >
+                  <option value="">Unknown</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Color Mutation</label>
+                <input
+                  type="text"
+                  value={chickForm.color_mutation}
+                  onChange={(e) => setChickForm({...chickForm, color_mutation: e.target.value})}
+                  className="form-input"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Weight (grams)</label>
+                <input
+                  type="number"
+                  value={chickForm.weight}
+                  onChange={(e) => setChickForm({...chickForm, weight: parseFloat(e.target.value)})}
+                  className="form-input"
+                  min="0"
+                  step="0.1"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Notes</label>
+                <textarea
+                  value={chickForm.notes}
+                  onChange={(e) => setChickForm({...chickForm, notes: e.target.value})}
+                  className="form-input"
+                  rows="3"
+                />
+              </div>
+              <div className="flex gap-2">
+                <button type="submit" className="btn-primary">Add Chick</button>
+                <button 
+                  type="button" 
+                  onClick={() => setShowAddChickForm(false)}
+                  className="btn-secondary"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
+  // Render Transactions
+  const renderTransactions = () => (
+    <div className="transactions-section">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold">💰 Financial Transactions</h2>
+        <button 
+          onClick={() => setShowAddTransactionForm(true)}
+          className="btn-primary"
+        >
+          Add Transaction
+        </button>
+      </div>
+
+      <div className="space-y-4">
+        {transactions.map((transaction) => (
+          <div key={transaction.id} className={`transaction-card ${transaction.transaction_type}`}>
+            <div className="flex justify-between items-start">
+              <div>
+                <h3 className="font-bold text-lg capitalize">{transaction.transaction_type}</h3>
+                <p className="text-sm text-gray-600 mb-1">{transaction.description}</p>
+                <p className="text-sm text-gray-500">Category: {transaction.category}</p>
+                {transaction.notes && (
+                  <p className="text-sm text-gray-500">Notes: {transaction.notes}</p>
+                )}
+              </div>
+              <div className="text-right">
+                <p className={`text-lg font-bold ${transaction.transaction_type === 'sale' ? 'text-green-600' : 'text-red-600'}`}>
+                  {transaction.transaction_type === 'sale' ? '+' : '-'}${transaction.amount}
+                </p>
+                <p className="text-sm text-gray-500">
+                  {new Date(transaction.date).toLocaleDateString()}
+                </p>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Add Transaction Form Modal */}
+      {showAddTransactionForm && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3 className="text-xl font-bold mb-4">Add New Transaction</h3>
+            <form onSubmit={handleAddTransaction} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Transaction Type *</label>
+                <select
+                  value={transactionForm.transaction_type}
+                  onChange={(e) => setTransactionForm({...transactionForm, transaction_type: e.target.value})}
+                  className="form-input"
+                  required
+                >
+                  <option value="expense">Expense</option>
+                  <option value="purchase">Purchase</option>
+                  <option value="sale">Sale</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Amount *</label>
+                <input
+                  type="number"
+                  value={transactionForm.amount}
+                  onChange={(e) => setTransactionForm({...transactionForm, amount: parseFloat(e.target.value)})}
+                  className="form-input"
+                  min="0"
+                  step="0.01"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Date *</label>
+                <input
+                  type="date"
+                  value={transactionForm.date}
+                  onChange={(e) => setTransactionForm({...transactionForm, date: e.target.value})}
+                  className="form-input"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Category *</label>
+                <select
+                  value={transactionForm.category}
+                  onChange={(e) => setTransactionForm({...transactionForm, category: e.target.value})}
+                  className="form-input"
+                  required
+                >
+                  <option value="food">Food</option>
+                  <option value="vet">Veterinary</option>
+                  <option value="equipment">Equipment</option>
+                  <option value="setup">Setup</option>
+                  <option value="bird_purchase">Bird Purchase</option>
+                  <option value="bird_sale">Bird Sale</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Description *</label>
+                <input
+                  type="text"
+                  value={transactionForm.description}
+                  onChange={(e) => setTransactionForm({...transactionForm, description: e.target.value})}
+                  className="form-input"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Notes</label>
+                <textarea
+                  value={transactionForm.notes}
+                  onChange={(e) => setTransactionForm({...transactionForm, notes: e.target.value})}
+                  className="form-input"
+                  rows="3"
+                />
+              </div>
+              <div className="flex gap-2">
+                <button type="submit" className="btn-primary">Add Transaction</button>
+                <button 
+                  type="button" 
+                  onClick={() => setShowAddTransactionForm(false)}
                   className="btn-secondary"
                 >
                   Cancel
@@ -628,7 +1197,15 @@ function App() {
   return (
     <div className="app">
       <header className="header">
-        <h1 className="text-3xl font-bold">🦜 Parrot Breeding Management</h1>
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold">🦜 Parrot Breeding Management</h1>
+          <button 
+            onClick={() => setShowLicenseForm(true)}
+            className="btn-secondary"
+          >
+            {mainLicense ? 'Update License' : 'Add License'}
+          </button>
+        </div>
         <nav className="nav">
           <button 
             onClick={() => setActiveTab('dashboard')}
@@ -649,10 +1226,22 @@ function App() {
             Breeding Pairs
           </button>
           <button 
-            onClick={() => setActiveTab('records')}
-            className={`nav-btn ${activeTab === 'records' ? 'active' : ''}`}
+            onClick={() => setActiveTab('clutches')}
+            className={`nav-btn ${activeTab === 'clutches' ? 'active' : ''}`}
           >
-            Breeding Records
+            Clutches
+          </button>
+          <button 
+            onClick={() => setActiveTab('chicks')}
+            className={`nav-btn ${activeTab === 'chicks' ? 'active' : ''}`}
+          >
+            Chicks
+          </button>
+          <button 
+            onClick={() => setActiveTab('transactions')}
+            className={`nav-btn ${activeTab === 'transactions' ? 'active' : ''}`}
+          >
+            Transactions
           </button>
         </nav>
       </header>
@@ -661,8 +1250,98 @@ function App() {
         {activeTab === 'dashboard' && renderDashboard()}
         {activeTab === 'birds' && renderBirds()}
         {activeTab === 'pairs' && renderBreedingPairs()}
-        {activeTab === 'records' && renderBreedingRecords()}
+        {activeTab === 'clutches' && renderClutches()}
+        {activeTab === 'chicks' && renderChicks()}
+        {activeTab === 'transactions' && renderTransactions()}
       </main>
+
+      {/* License Form Modal */}
+      {showLicenseForm && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3 className="text-xl font-bold mb-4">
+              {mainLicense ? 'Update Main License' : 'Add Main Breeding License'}
+            </h3>
+            <form onSubmit={handleAddLicense} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">License Number *</label>
+                <input
+                  type="text"
+                  value={licenseForm.license_number}
+                  onChange={(e) => setLicenseForm({...licenseForm, license_number: e.target.value})}
+                  className="form-input"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">License Type *</label>
+                <select
+                  value={licenseForm.license_type}
+                  onChange={(e) => setLicenseForm({...licenseForm, license_type: e.target.value})}
+                  className="form-input"
+                  required
+                >
+                  <option value="breeding">Breeding</option>
+                  <option value="commercial">Commercial</option>
+                  <option value="import">Import</option>
+                  <option value="export">Export</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Issue Date *</label>
+                <input
+                  type="date"
+                  value={licenseForm.issue_date}
+                  onChange={(e) => setLicenseForm({...licenseForm, issue_date: e.target.value})}
+                  className="form-input"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Expiry Date *</label>
+                <input
+                  type="date"
+                  value={licenseForm.expiry_date}
+                  onChange={(e) => setLicenseForm({...licenseForm, expiry_date: e.target.value})}
+                  className="form-input"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Issuing Authority *</label>
+                <input
+                  type="text"
+                  value={licenseForm.issuing_authority}
+                  onChange={(e) => setLicenseForm({...licenseForm, issuing_authority: e.target.value})}
+                  className="form-input"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Notes</label>
+                <textarea
+                  value={licenseForm.notes}
+                  onChange={(e) => setLicenseForm({...licenseForm, notes: e.target.value})}
+                  className="form-input"
+                  rows="3"
+                />
+              </div>
+              <div className="flex gap-2">
+                <button type="submit" className="btn-primary">
+                  {mainLicense ? 'Update License' : 'Add License'}
+                </button>
+                <button 
+                  type="button" 
+                  onClick={() => setShowLicenseForm(false)}
+                  className="btn-secondary"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
