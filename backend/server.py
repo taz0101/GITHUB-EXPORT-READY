@@ -53,6 +53,8 @@ class BreedingPair(BaseModel):
     female_bird_id: str
     pair_name: str
     pair_date: str
+    license_number: Optional[str] = None
+    license_expiry: Optional[str] = None
     status: str = "active"  # "active", "inactive", "separated"
     notes: Optional[str] = None
     created_at: Optional[str] = None
