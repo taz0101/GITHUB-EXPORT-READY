@@ -656,8 +656,58 @@ async def get_dashboard():
             pair["female_bird"] = female_bird
         clutch["breeding_pair"] = pair
     
-    # Get license info
-    license_info = await get_license()
+    # Get license alerts
+    license_alerts = []
+    
+    # Check main license
+    main_license = await get_license()
+    if main_license and main_license.get("alert_level") != "none":
+        license_alerts.append({
+            "type": "main",
+            "name": "Main Breeding License",
+            "license_number": main_license.get("license_number"),
+            "expiry_date": main_license.get("expiry_date"),
+            "days_until_expiry": main_license.get("days_until_expiry"),
+            "alert_level": main_license.get("alert_level")
+        })
+    
+    # Check bird licenses
+    birds = list(birds_collection.find({"license_expiry": {"$exists": True, "$ne": None}}, {"_id": 0}))
+    for bird in birds:
+        if bird.get("license_expiry"):
+            expiry_date = datetime.strptime(bird["license_expiry"], "%Y-%m-%d")
+            today = datetime.now()
+            days_until_expiry = (expiry_date - today).days
+            
+            if days_until_expiry <= 30:
+                alert_level = "expired" if days_until_expiry < 0 else "critical"
+                license_alerts.append({
+                    "type": "bird",
+                    "name": bird["name"],
+                    "license_number": bird.get("license_number"),
+                    "expiry_date": bird["license_expiry"],
+                    "days_until_expiry": days_until_expiry,
+                    "alert_level": alert_level
+                })
+    
+    # Check pair licenses
+    pairs = list(breeding_pairs_collection.find({"license_expiry": {"$exists": True, "$ne": None}}, {"_id": 0}))
+    for pair in pairs:
+        if pair.get("license_expiry"):
+            expiry_date = datetime.strptime(pair["license_expiry"], "%Y-%m-%d")
+            today = datetime.now()
+            days_until_expiry = (expiry_date - today).days
+            
+            if days_until_expiry <= 30:
+                alert_level = "expired" if days_until_expiry < 0 else "critical"
+                license_alerts.append({
+                    "type": "pair",
+                    "name": pair["pair_name"],
+                    "license_number": pair.get("license_number"),
+                    "expiry_date": pair["license_expiry"],
+                    "days_until_expiry": days_until_expiry,
+                    "alert_level": alert_level
+                })
     
     # Get financial summary
     transactions = list(transactions_collection.find({}, {"_id": 0}))
@@ -674,7 +724,7 @@ async def get_dashboard():
             "total_expenses": total_expenses
         },
         "recent_clutches": recent_clutches,
-        "license_info": license_info
+        "license_alerts": license_alerts
     }
 
 if __name__ == "__main__":
