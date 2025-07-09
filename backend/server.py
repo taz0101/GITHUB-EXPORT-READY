@@ -255,12 +255,26 @@ async def create_breeding_pair(pair: BreedingPair):
 async def get_breeding_pairs():
     pairs = list(breeding_pairs_collection.find({}, {"_id": 0}))
     
-    # Enrich with bird details
+    # Enrich with bird details and check license expiry
     for pair in pairs:
         male_bird = birds_collection.find_one({"id": pair["male_bird_id"]}, {"_id": 0})
         female_bird = birds_collection.find_one({"id": pair["female_bird_id"]}, {"_id": 0})
         pair["male_bird"] = male_bird
         pair["female_bird"] = female_bird
+        
+        # Check pair license expiry
+        if pair.get("license_expiry"):
+            expiry_date = datetime.strptime(pair["license_expiry"], "%Y-%m-%d")
+            today = datetime.now()
+            days_until_expiry = (expiry_date - today).days
+            
+            pair["days_until_expiry"] = days_until_expiry
+            pair["license_alert"] = "none"
+            
+            if days_until_expiry < 0:
+                pair["license_alert"] = "expired"
+            elif days_until_expiry <= 30:
+                pair["license_alert"] = "critical"
     
     return {"breeding_pairs": pairs}
 
