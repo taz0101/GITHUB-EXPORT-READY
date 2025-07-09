@@ -347,16 +347,35 @@ function App() {
     }
   };
 
-  // Helper function to get alert class
-  const getAlertClass = (alertLevel) => {
-    switch (alertLevel) {
-      case 'expired':
-        return 'alert-expired';
-      case 'critical':
-        return 'alert-critical';
-      default:
-        return '';
-    }
+  // Helper function to calculate expected hatch date
+  const calculateHatchDate = (layingDate, species = 'default') => {
+    const incubationPeriods = {
+      'African Grey': 28,
+      'Cockatiel': 18,
+      'Lovebird': 23,
+      'Macaw': 28,
+      'Conure': 24,
+      'Budgie': 18,
+      'Cockatoo': 28,
+      'default': 24
+    };
+    
+    const days = incubationPeriods[species] || incubationPeriods['default'];
+    const layDate = new Date(layingDate);
+    const hatchDate = new Date(layDate);
+    hatchDate.setDate(hatchDate.getDate() + days);
+    
+    return hatchDate.toISOString().split('T')[0];
+  };
+
+  // Auto-calculate hatch date when laying date changes
+  const handleLayingDateChange = (layingDate, species) => {
+    const expectedHatch = calculateHatchDate(layingDate, species);
+    setClutchForm({
+      ...clutchForm, 
+      egg_laying_date: layingDate,
+      expected_hatch_date: expectedHatch
+    });
   };
 
   // Render Dashboard
