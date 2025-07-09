@@ -686,51 +686,150 @@ async def get_bird_genealogy(bird_id: str):
         "offspring": offspring
     }
 
-@app.get("/api/consanguinity-check/{male_bird_id}/{female_bird_id}")
-async def check_consanguinity(male_bird_id: str, female_bird_id: str):
-    """Check if two birds are related (consanguinity check)"""
-    # This is a simplified version - in reality, you'd need to build a complete family tree
-    # and check for common ancestors within a certain number of generations
+# Search endpoints
+@app.get("/api/search")
+async def search_birds_and_pairs(
+    query: str = "",
+    species: str = "",
+    status: str = "",
+    search_type: str = "all"  # "birds", "pairs", "all"
+):
+    """Advanced search for birds and breeding pairs"""
+    results = {"birds": [], "pairs": [], "clutches": []}
     
-    def get_lineage(bird_id, generations=3, current_gen=0):
-        if current_gen >= generations:
-            return []
+    if search_type in ["birds", "all"]:
+        # Build bird search filter
+        bird_filter = {}
+        if query:
+            bird_filter["$or"] = [
+                {"species": {"$regex": query, "$options": "i"}},
+                {"ring_number": {"$regex": query, "$options": "i"}},
+                {"color_mutation": {"$regex": query, "$options": "i"}},
+                {"notes": {"$regex": query, "$options": "i"}}
+            ]
+        if species:
+            bird_filter["species"] = species
+        if status:
+            bird_filter["status"] = status
+            
+        results["birds"] = list(birds_collection.find(bird_filter, {"_id": 0}))
+    
+    if search_type in ["pairs", "all"]:
+        # Search breeding pairs
+        pair_filter = {}
+        if query:
+            pair_filter["$or"] = [
+                {"pair_name": {"$regex": query, "$options": "i"}},
+                {"notes": {"$regex": query, "$options": "i"}}
+            ]
+        if status:
+            pair_filter["status"] = status
+            
+        pairs = list(breeding_pairs_collection.find(pair_filter, {"_id": 0}))
         
-        parents = []
-        chick = chicks_collection.find_one({"id": bird_id}, {"_id": 0})
-        if chick:
-            clutch = clutches_collection.find_one({"id": chick["clutch_id"]}, {"_id": 0})
-            if clutch:
-                pair = breeding_pairs_collection.find_one({"id": clutch["breeding_pair_id"]}, {"_id": 0})
-                if pair:
-                    parents = [pair["male_bird_id"], pair["female_bird_id"]]
-                    # Recursively get lineage of parents
-                    for parent_id in parents:
-                        parents.extend(get_lineage(parent_id, generations, current_gen + 1))
+        # Enrich with bird details
+        for pair in pairs:
+            male_bird = birds_collection.find_one({"id": pair["male_bird_id"]}, {"_id": 0})
+            female_bird = birds_collection.find_one({"id": pair["female_bird_id"]}, {"_id": 0})
+            pair["male_bird"] = male_bird
+            pair["female_bird"] = female_bird
+            
+        results["pairs"] = pairs
+    
+    # Search clutches if query provided
+    if query and search_type in ["clutches", "all"]:
+        clutches = list(clutches_collection.find({
+            "$or": [
+                {"notes": {"$regex": query, "$options": "i"}},
+                {"status": {"$regex": query, "$options": "i"}}
+            ]
+        }, {"_id": 0}))
         
-        return parents
+        # Enrich with pair details
+        for clutch in clutches:
+            pair = breeding_pairs_collection.find_one({"id": clutch["breeding_pair_id"]}, {"_id": 0})
+            if pair:
+                male_bird = birds_collection.find_one({"id": pair["male_bird_id"]}, {"_id": 0})
+                female_bird = birds_collection.find_one({"id": pair["female_bird_id"]}, {"_id": 0})
+                pair["male_bird"] = male_bird
+                pair["female_bird"] = female_bird
+            clutch["breeding_pair"] = pair
+            
+        results["clutches"] = clutches
     
-    male_lineage = get_lineage(male_bird_id)
-    female_lineage = get_lineage(female_bird_id)
+    return results
+
+@app.get("/api/notifications")
+async def get_notifications():
+    """Get upcoming hatching notifications and license alerts"""
+    notifications = []
+    today = datetime.now().date()
     
-    # Check for common ancestors
-    common_ancestors = set(male_lineage) & set(female_lineage)
+    # Hatching notifications (eggs due to hatch in next 7 days)
+    clutches = list(clutches_collection.find({"status": "incubating"}, {"_id": 0}))
     
-    is_related = len(common_ancestors) > 0
-    relationship_level = "none"
+    for clutch in clutches:
+        expected_hatch = datetime.strptime(clutch["expected_hatch_date"], "%Y-%m-%d").date()
+        days_until_hatch = (expected_hatch - today).days
+        
+        if -1 <= days_until_hatch <= 7:  # Include 1 day overdue
+            pair = breeding_pairs_collection.find_one({"id": clutch["breeding_pair_id"]}, {"_id": 0})
+            
+            notification_type = "overdue" if days_until_hatch < 0 else "due_soon" if days_until_hatch <= 2 else "upcoming"
+            
+            notifications.append({
+                "type": "hatching",
+                "priority": "high" if days_until_hatch <= 1 else "medium",
+                "title": f"Eggs Due to Hatch",
+                "message": f"{pair['pair_name'] if pair else 'Unknown Pair'} - Clutch #{clutch['clutch_number']}",
+                "details": f"Expected: {expected_hatch.strftime('%b %d')} ({days_until_hatch} days)",
+                "status": notification_type,
+                "data": {
+                    "clutch_id": clutch["id"],
+                    "expected_date": clutch["expected_hatch_date"],
+                    "days_until": days_until_hatch
+                }
+            })
     
-    if is_related:
-        # Simplified relationship determination
-        if male_bird_id in female_lineage or female_bird_id in male_lineage:
-            relationship_level = "parent-offspring"
-        elif len(common_ancestors) > 0:
-            relationship_level = "siblings/cousins"
+    # License expiry notifications
+    license_alerts = []
+    
+    # Check main license
+    main_license = license_collection.find_one({}, {"_id": 0})
+    if main_license and main_license.get("expiry_date"):
+        expiry_date = datetime.strptime(main_license["expiry_date"], "%Y-%m-%d").date()
+        days_until_expiry = (expiry_date - today).days
+        
+        if days_until_expiry <= 30:
+            priority = "critical" if days_until_expiry <= 7 else "high" if days_until_expiry <= 30 else "medium"
+            notifications.append({
+                "type": "license",
+                "priority": priority,
+                "title": "License Expiring",
+                "message": f"Main Breeding License",
+                "details": f"Expires: {expiry_date.strftime('%b %d, %Y')} ({days_until_expiry} days)",
+                "status": "expired" if days_until_expiry < 0 else "critical",
+                "data": {
+                    "license_type": "main",
+                    "license_number": main_license.get("license_number"),
+                    "expiry_date": main_license["expiry_date"],
+                    "days_until": days_until_expiry
+                }
+            })
+    
+    # Sort notifications by priority and date
+    priority_order = {"critical": 0, "high": 1, "medium": 2, "low": 3}
+    notifications.sort(key=lambda x: (priority_order.get(x["priority"], 3), x["data"].get("days_until", 999)))
     
     return {
-        "is_related": is_related,
-        "relationship_level": relationship_level,
-        "common_ancestors": len(common_ancestors),
-        "recommendation": "Not recommended for breeding" if is_related else "Safe to breed"
+        "notifications": notifications,
+        "counts": {
+            "total": len(notifications),
+            "critical": len([n for n in notifications if n["priority"] == "critical"]),
+            "high": len([n for n in notifications if n["priority"] == "high"]),
+            "hatching": len([n for n in notifications if n["type"] == "hatching"]),
+            "license": len([n for n in notifications if n["type"] == "license"])
+        }
     }
 
 @app.get("/api/reports/financial")
