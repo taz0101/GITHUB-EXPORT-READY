@@ -177,7 +177,6 @@ function App() {
       
       if (response.ok) {
         setBirdForm({
-          name: '',
           species: '',
           gender: 'male',
           birth_date: '',
