@@ -819,14 +819,14 @@ function App() {
             <div className="flex justify-between items-center mb-4">
               <div className="bird-info">
                 <p className="font-semibold text-blue-600">♂ {pair.male_bird?.species}</p>
-                <p className="text-sm text-gray-600">Ring: {pair.male_bird?.ring_number || 'No Ring'}</p>
+                <p className="text-sm text-gray-600">Cage: {pair.male_bird?.cage_number || 'No Cage'}</p>
               </div>
               <div className="text-center">
                 <span className="text-2xl">💕</span>
               </div>
               <div className="bird-info text-right">
                 <p className="font-semibold text-pink-600">♀ {pair.female_bird?.species}</p>
-                <p className="text-sm text-gray-600">Ring: {pair.female_bird?.ring_number || 'No Ring'}</p>
+                <p className="text-sm text-gray-600">Cage: {pair.female_bird?.cage_number || 'No Cage'}</p>
               </div>
             </div>
             {pair.license_number && (
