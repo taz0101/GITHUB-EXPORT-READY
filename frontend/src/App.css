@@ -14,6 +14,77 @@
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
+/* Company Logo Styles */
+.company-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #1e40af 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border: 3px solid rgba(255, 255, 255, 0.2);
+}
+
+.parrot-head {
+  width: 50px;
+  height: 50px;
+  background: white;
+  border-radius: 50%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.parrot-beak {
+  width: 0;
+  height: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-top: 15px solid #4b5563;
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  transform: rotate(-30deg);
+}
+
+.parrot-eye {
+  width: 8px;
+  height: 8px;
+  background: #1f2937;
+  border-radius: 50%;
+  position: absolute;
+  top: 15px;
+  right: 18px;
+}
+
+.parrot-feather {
+  width: 20px;
+  height: 35px;
+  background: linear-gradient(45deg, #f97316 0%, #ea580c 100%);
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  transform: rotate(-20deg);
+}
+
+.company-name {
+  color: rgba(255, 255, 255, 0.95);
+  font-family: 'Arial', sans-serif;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
 .nav {
   display: flex;
   gap: 1rem;
