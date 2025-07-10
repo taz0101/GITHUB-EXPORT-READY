@@ -1055,6 +1055,7 @@ async def get_notifications():
             "critical": len([n for n in notifications if n["priority"] == "critical"]),
             "high": len([n for n in notifications if n["priority"] == "high"]),
             "hatching": len([n for n in notifications if n["type"] == "hatching"]),
+            "artificial_hatching": len([n for n in notifications if n["type"] == "artificial_hatching"]),
             "license": len([n for n in notifications if n["type"] == "license"])
         }
     }
