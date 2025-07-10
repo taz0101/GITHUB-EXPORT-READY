@@ -1547,6 +1547,233 @@ function App() {
         </div>
       </div>
 
+      {/* Add Incubator Form Modal */}
+      {showAddIncubatorForm && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3 className="text-xl font-bold mb-4">Add New Incubator</h3>
+            <form onSubmit={handleAddIncubator} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Incubator Name *</label>
+                <input
+                  type="text"
+                  value={incubatorForm.name}
+                  onChange={(e) => setIncubatorForm({...incubatorForm, name: e.target.value})}
+                  className="form-input"
+                  required
+                  placeholder="e.g., Main Incubator 1"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Model</label>
+                <input
+                  type="text"
+                  value={incubatorForm.model}
+                  onChange={(e) => setIncubatorForm({...incubatorForm, model: e.target.value})}
+                  className="form-input"
+                  placeholder="e.g., Brinsea Ovation 28"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Capacity (eggs) *</label>
+                <input
+                  type="number"
+                  value={incubatorForm.capacity}
+                  onChange={(e) => setIncubatorForm({...incubatorForm, capacity: parseInt(e.target.value)})}
+                  className="form-input"
+                  min="1"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Temperature Range</label>
+                <input
+                  type="text"
+                  value={incubatorForm.temperature_range}
+                  onChange={(e) => setIncubatorForm({...incubatorForm, temperature_range: e.target.value})}
+                  className="form-input"
+                  placeholder="e.g., 37.5-37.8°C"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Humidity Range</label>
+                <input
+                  type="text"
+                  value={incubatorForm.humidity_range}
+                  onChange={(e) => setIncubatorForm({...incubatorForm, humidity_range: e.target.value})}
+                  className="form-input"
+                  placeholder="e.g., 55-60%"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Turning Interval (hours)</label>
+                <input
+                  type="number"
+                  value={incubatorForm.turning_interval}
+                  onChange={(e) => setIncubatorForm({...incubatorForm, turning_interval: parseInt(e.target.value)})}
+                  className="form-input"
+                  min="1"
+                  step="0.5"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Notes</label>
+                <textarea
+                  value={incubatorForm.notes}
+                  onChange={(e) => setIncubatorForm({...incubatorForm, notes: e.target.value})}
+                  className="form-input"
+                  rows="3"
+                />
+              </div>
+              <div className="flex gap-2">
+                <button type="submit" className="btn-primary">Add Incubator</button>
+                <button 
+                  type="button" 
+                  onClick={() => setShowAddIncubatorForm(false)}
+                  className="btn-secondary"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Add Artificial Incubation Form Modal */}
+      {showAddArtificialIncubationForm && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3 className="text-xl font-bold mb-4">Transfer Eggs to Incubator</h3>
+            <form onSubmit={handleAddArtificialIncubation} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Source Clutch *</label>
+                <select
+                  value={artificialIncubationForm.clutch_id}
+                  onChange={(e) => setArtificialIncubationForm({...artificialIncubationForm, clutch_id: e.target.value})}
+                  className="form-input"
+                  required
+                >
+                  <option value="">Select Clutch</option>
+                  {clutches.filter(clutch => clutch.status === 'incubating').map(clutch => (
+                    <option key={clutch.id} value={clutch.id}>
+                      {clutch.breeding_pair?.pair_name || 'Unknown'} - Clutch #{clutch.clutch_number} ({clutch.eggs_laid} eggs)
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Target Incubator *</label>
+                <select
+                  value={artificialIncubationForm.incubator_id}
+                  onChange={(e) => setArtificialIncubationForm({...artificialIncubationForm, incubator_id: e.target.value})}
+                  className="form-input"
+                  required
+                >
+                  <option value="">Select Incubator</option>
+                  {incubators.filter(incubator => incubator.status === 'active').map(incubator => (
+                    <option key={incubator.id} value={incubator.id}>
+                      {incubator.name} (Capacity: {incubator.capacity} eggs)
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Eggs to Transfer *</label>
+                <input
+                  type="number"
+                  value={artificialIncubationForm.eggs_transferred}
+                  onChange={(e) => setArtificialIncubationForm({...artificialIncubationForm, eggs_transferred: parseInt(e.target.value)})}
+                  className="form-input"
+                  min="1"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Transfer Date *</label>
+                <input
+                  type="date"
+                  value={artificialIncubationForm.transfer_date}
+                  onChange={(e) => setArtificialIncubationForm({...artificialIncubationForm, transfer_date: e.target.value})}
+                  className="form-input"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Transfer Reason *</label>
+                <select
+                  value={artificialIncubationForm.transfer_reason}
+                  onChange={(e) => setArtificialIncubationForm({...artificialIncubationForm, transfer_reason: e.target.value})}
+                  className="form-input"
+                  required
+                >
+                  <option value="control">Better Control</option>
+                  <option value="abandoned">Clutch Abandoned</option>
+                  <option value="too_many">Too Many Eggs</option>
+                  <option value="health">Health Issues</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Incubation Temperature (°C) *</label>
+                <input
+                  type="number"
+                  value={artificialIncubationForm.incubation_temperature}
+                  onChange={(e) => setArtificialIncubationForm({...artificialIncubationForm, incubation_temperature: parseFloat(e.target.value)})}
+                  className="form-input"
+                  min="35"
+                  max="40"
+                  step="0.1"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Incubation Humidity (%) *</label>
+                <input
+                  type="number"
+                  value={artificialIncubationForm.incubation_humidity}
+                  onChange={(e) => setArtificialIncubationForm({...artificialIncubationForm, incubation_humidity: parseFloat(e.target.value)})}
+                  className="form-input"
+                  min="30"
+                  max="80"
+                  step="0.1"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Expected Hatch Date *</label>
+                <input
+                  type="date"
+                  value={artificialIncubationForm.expected_hatch_date}
+                  onChange={(e) => setArtificialIncubationForm({...artificialIncubationForm, expected_hatch_date: e.target.value})}
+                  className="form-input"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Notes</label>
+                <textarea
+                  value={artificialIncubationForm.notes}
+                  onChange={(e) => setArtificialIncubationForm({...artificialIncubationForm, notes: e.target.value})}
+                  className="form-input"
+                  rows="3"
+                />
+              </div>
+              <div className="flex gap-2">
+                <button type="submit" className="btn-primary">Transfer Eggs</button>
+                <button 
+                  type="button" 
+                  onClick={() => setShowAddArtificialIncubationForm(false)}
+                  className="btn-secondary"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* Artificial Incubations */}
       <div>
         <div className="flex justify-between items-center mb-4">
