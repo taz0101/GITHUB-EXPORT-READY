@@ -885,16 +885,6 @@ function App() {
             <h3 className="text-xl font-bold mb-4">Create New Breeding Pair</h3>
             <form onSubmit={handleAddPair} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Pair Name *</label>
-                <input
-                  type="text"
-                  value={pairForm.pair_name}
-                  onChange={(e) => setPairForm({...pairForm, pair_name: e.target.value})}
-                  className="form-input"
-                  required
-                />
-              </div>
-              <div>
                 <label className="block text-sm font-medium mb-1">Male Bird *</label>
                 <select
                   value={pairForm.male_bird_id}
