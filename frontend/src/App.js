@@ -695,13 +695,16 @@ function App() {
             <form onSubmit={handleAddBird} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-1">Species *</label>
-                <select
+                <input
+                  type="text"
                   value={birdForm.species}
                   onChange={(e) => setBirdForm({...birdForm, species: e.target.value})}
                   className="form-input"
                   required
-                >
-                  <option value="">Select Species</option>
+                  placeholder="Type species name or select from common ones"
+                  list="species-options"
+                />
+                <datalist id="species-options">
                   <option value="African Grey">African Grey</option>
                   <option value="Cockatiel">Cockatiel</option>
                   <option value="Lovebird">Lovebird</option>
@@ -712,8 +715,10 @@ function App() {
                   <option value="Caique">Caique</option>
                   <option value="Eclectus">Eclectus</option>
                   <option value="Amazon">Amazon</option>
-                  <option value="Other">Other</option>
-                </select>
+                  <option value="Alexandrine">Alexandrine</option>
+                  <option value="Ringneck">Ringneck</option>
+                  <option value="Senegal">Senegal</option>
+                </datalist>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Gender *</label>
