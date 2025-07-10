@@ -985,7 +985,7 @@ function App() {
             <div className="flex justify-between items-start">
               <div>
                 <h3 className="font-bold text-lg">
-                  {clutch.breeding_pair?.pair_name || 'Unknown Pair'} - Clutch #{clutch.clutch_number}
+                  {clutch.breeding_pair?.pair_name || `Cage ${clutch.breeding_pair?.male_bird?.cage_number} × Cage ${clutch.breeding_pair?.female_bird?.cage_number}`} - Clutch #{clutch.clutch_number}
                 </h3>
                 <p className="text-sm text-gray-600 mb-2">
                   {clutch.breeding_pair?.male_bird?.species} × {clutch.breeding_pair?.female_bird?.species}
