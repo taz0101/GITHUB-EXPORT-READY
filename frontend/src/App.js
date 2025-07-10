@@ -508,7 +508,7 @@ function App() {
       )}
       
       {dashboardData && (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 mb-8">
           <div className="stat-card">
             <h3 className="text-sm font-semibold text-blue-600">Total Birds</h3>
             <p className="text-2xl font-bold">{dashboardData.stats.total_birds}</p>
@@ -518,12 +518,20 @@ function App() {
             <p className="text-2xl font-bold">{dashboardData.stats.total_pairs}</p>
           </div>
           <div className="stat-card">
-            <h3 className="text-sm font-semibold text-orange-600">Active Clutches</h3>
+            <h3 className="text-sm font-semibold text-orange-600">Natural Clutches</h3>
             <p className="text-2xl font-bold">{dashboardData.stats.active_clutches}</p>
           </div>
           <div className="stat-card">
             <h3 className="text-sm font-semibold text-purple-600">Total Chicks</h3>
             <p className="text-2xl font-bold">{dashboardData.stats.total_chicks}</p>
+          </div>
+          <div className="stat-card">
+            <h3 className="text-sm font-semibold text-red-600">Artificial Incubations</h3>
+            <p className="text-2xl font-bold">{dashboardData.stats.active_artificial_incubations}</p>
+          </div>
+          <div className="stat-card">
+            <h3 className="text-sm font-semibold text-indigo-600">Incubators</h3>
+            <p className="text-2xl font-bold">{dashboardData.stats.total_incubators}</p>
           </div>
           <div className="stat-card">
             <h3 className="text-sm font-semibold text-green-600">Revenue</h3>
