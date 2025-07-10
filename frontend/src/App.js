@@ -830,7 +830,9 @@ function App() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {breedingPairs.map((pair) => (
           <div key={pair.id} className={`pair-card ${getAlertClass(pair.license_alert)}`}>
-            <h3 className="font-bold text-lg mb-2">{pair.pair_name}</h3>
+            <h3 className="font-bold text-lg mb-2">
+              Cage {pair.male_bird?.cage_number || 'Unknown'} × Cage {pair.female_bird?.cage_number || 'Unknown'}
+            </h3>
             <div className="flex justify-between items-center mb-4">
               <div className="bird-info">
                 <p className="font-semibold text-blue-600">♂ {pair.male_bird?.species}</p>
