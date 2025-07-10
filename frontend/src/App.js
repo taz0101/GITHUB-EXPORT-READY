@@ -159,13 +159,23 @@ function App() {
     }
   };
 
-  const fetchTransactions = async () => {
+  const fetchIncubators = async () => {
     try {
-      const response = await fetch(`${BACKEND_URL}/api/transactions`);
+      const response = await fetch(`${BACKEND_URL}/api/incubators`);
       const data = await response.json();
-      setTransactions(data.transactions);
+      setIncubators(data.incubators);
     } catch (error) {
-      console.error('Error fetching transactions:', error);
+      console.error('Error fetching incubators:', error);
+    }
+  };
+
+  const fetchArtificialIncubations = async () => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/artificial-incubation`);
+      const data = await response.json();
+      setArtificialIncubations(data.artificial_incubations);
+    } catch (error) {
+      console.error('Error fetching artificial incubations:', error);
     }
   };
 
