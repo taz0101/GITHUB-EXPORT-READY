@@ -206,6 +206,28 @@
   background: #fef3c7;
 }
 
+/* Edit Button Styles */
+.edit-btn {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.edit-btn:hover {
+  background: #2563eb;
+  transform: scale(1.1);
+}
+
 /* Bird Styles */
 .bird-card {
   background: white;
@@ -309,6 +331,13 @@
   border-radius: 0.75rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   border-left: 4px solid #ec4899;
+  position: relative;
+}
+
+.pair-card .edit-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
 }
 
 .bird-info {
@@ -352,6 +381,122 @@
 
 .transaction-card.expense {
   border-left-color: #ef4444;
+}
+
+/* Incubator Styles */
+.incubator-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid #ef4444;
+}
+
+.incubation-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid #f97316;
+}
+
+/* Notification Styles */
+.notifications-bar {
+  background: #fef3c7;
+  border: 1px solid #f59e0b;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.notification-badge {
+  background: #ef4444;
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+.notification-card {
+  background: white;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  min-width: 200px;
+  border-left: 4px solid #6b7280;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.notification-card.critical {
+  border-left-color: #ef4444;
+  background: #fef2f2;
+}
+
+.notification-card.high {
+  border-left-color: #f59e0b;
+  background: #fef3c7;
+}
+
+.notification-card.medium {
+  border-left-color: #3b82f6;
+  background: #dbeafe;
+}
+
+.badge {
+  background: #3b82f6;
+  color: white;
+  border-radius: 0.375rem;
+  padding: 0.125rem 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Search Styles */
+.search-results {
+  border-top: 1px solid #e5e7eb;
+  padding-top: 1rem;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.search-result-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+}
+
+.gender-badge.small {
+  padding: 0.125rem 0.25rem;
+  font-size: 0.75rem;
+}
+
+.status-badge.small {
+  padding: 0.125rem 0.25rem;
+  font-size: 0.625rem;
+}
+
+/* Report Styles */
+.report-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid #3b82f6;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #6b7280;
+  font-style: italic;
 }
 
 /* Breeding Record Styles */
@@ -445,121 +590,7 @@
   }
 }
 
-/* Notification Styles */
-.notifications-bar {
-  background: #fef3c7;
-  border: 1px solid #f59e0b;
-  border-radius: 0.5rem;
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-.notification-badge {
-  background: #ef4444;
-  color: white;
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.75rem;
-  font-weight: bold;
-}
-
-.notification-card {
-  background: white;
-  border-radius: 0.5rem;
-  padding: 0.75rem;
-  min-width: 200px;
-  border-left: 4px solid #6b7280;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.notification-card.critical {
-  border-left-color: #ef4444;
-  background: #fef2f2;
-}
-
-.notification-card.high {
-  border-left-color: #f59e0b;
-  background: #fef3c7;
-}
-
-.notification-card.medium {
-  border-left-color: #3b82f6;
-  background: #dbeafe;
-}
-
-.badge {
-  background: #3b82f6;
-  color: white;
-  border-radius: 0.375rem;
-  padding: 0.125rem 0.375rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-/* Search Styles */
-.search-results {
-  border-top: 1px solid #e5e7eb;
-  padding-top: 1rem;
-  max-height: 400px;
-  overflow-y: auto;
-}
-
-.search-result-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem;
-  border-radius: 0.375rem;
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
-}
-
-.gender-badge.small {
-  padding: 0.125rem 0.25rem;
-  font-size: 0.75rem;
-}
-
-.status-badge.small {
-  padding: 0.125rem 0.25rem;
-  font-size: 0.625rem;
-}
-
-/* Incubator Styles */
-.incubator-card {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 0.75rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  border-left: 4px solid #ef4444;
-}
-
-.incubation-card {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 0.75rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  border-left: 4px solid #f97316;
-}
-
-/* Report Styles */
-.report-card {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 0.75rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  border-left: 4px solid #3b82f6;
-}
-
-.loading {
-  text-align: center;
-  padding: 2rem;
-  color: #6b7280;
-  font-style: italic;
-}
+/* Responsive Design */
 @media (max-width: 768px) {
   .header {
     padding: 1rem;
