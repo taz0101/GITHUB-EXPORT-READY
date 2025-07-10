@@ -682,37 +682,9 @@ function App() {
         fetchBreedingPairs();
         fetchDashboard();
       }
-    } catch (error) {
-      console.error('Error updating breeding pair:', error);
-    }
-    try {
-      const response = await fetch(`${BACKEND_URL}/api/license`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(licenseForm),
-      });
-      
-      if (response.ok) {
-        setLicenseForm({
-          license_number: '',
-          license_type: 'breeding',
-          issue_date: '',
-          expiry_date: '',
-          issuing_authority: '',
-          notes: ''
-        });
-        setShowLicenseForm(false);
-        fetchMainLicense();
-        fetchDashboard();
-      }
-    } catch (error) {
-      console.error('Error adding license:', error);
-    }
   };
 
-  // Helper function to calculate expected hatch date
+  const handleAddLicense = async (e) => {
   const calculateHatchDate = (layingDate, species = 'default') => {
     const incubationPeriods = {
       'African Grey': 28,
