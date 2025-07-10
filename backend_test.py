@@ -11,7 +11,6 @@ class ParrotBreedingAPITest(unittest.TestCase):
         # Generate unique test data
         timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
         self.test_male_bird = {
-            "name": f"TestMale_{timestamp}",
             "species": "African Grey",
             "gender": "male",
             "birth_date": "2023-01-01",
@@ -21,7 +20,6 @@ class ParrotBreedingAPITest(unittest.TestCase):
         }
         
         self.test_female_bird = {
-            "name": f"TestFemale_{timestamp}",
             "species": "African Grey",
             "gender": "female",
             "birth_date": "2023-02-01",
@@ -30,11 +28,30 @@ class ParrotBreedingAPITest(unittest.TestCase):
             "notes": "Test female bird"
         }
         
+        self.test_license = {
+            "license_number": f"LIC-{timestamp}",
+            "license_type": "breeding",
+            "issue_date": datetime.now().strftime("%Y-%m-%d"),
+            "expiry_date": (datetime.now() + timedelta(days=15)).strftime("%Y-%m-%d"),
+            "issuing_authority": "Test Authority",
+            "notes": "Test license with 15-day expiry for notification testing"
+        }
+        
+        self.test_clutch = {
+            "clutch_number": 1,
+            "egg_laying_date": datetime.now().strftime("%Y-%m-%d"),
+            "eggs_laid": 4,
+            "fertile_eggs": 3,
+            "notes": "Test clutch for auto-calculation testing"
+        }
+        
         # IDs to be set during tests
         self.male_bird_id = None
         self.female_bird_id = None
         self.breeding_pair_id = None
         self.breeding_record_id = None
+        self.clutch_id = None
+        self.license_id = None
 
     def test_01_birds_crud(self):
         """Test bird CRUD operations"""
