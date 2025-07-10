@@ -255,9 +255,189 @@ class ParrotBreedingAPITest(unittest.TestCase):
         print(f"   - Active breeding records: {dashboard['stats']['active_breeding_records']}")
         print(f"   - Recent records: {len(dashboard['recent_breeding_records'])}")
 
-    def test_05_cleanup(self):
+    def test_05_license_management(self):
+        """Test license management and notifications"""
+        print("\n--- Testing License Management ---")
+        
+        # Create main license with short expiry for notification testing
+        response = requests.post(f"{BASE_URL}/api/license", json=self.test_license)
+        self.assertEqual(response.status_code, 200)
+        result = response.json()
+        self.assertIn("license_id", result)
+        self.license_id = result["license_id"]
+        print(f"✅ Created license with ID: {self.license_id}")
+        
+        # Get license
+        response = requests.get(f"{BASE_URL}/api/license")
+        self.assertEqual(response.status_code, 200)
+        license_data = response.json()
+        self.assertEqual(license_data["license_number"], self.test_license["license_number"])
+        self.assertIn("days_until_expiry", license_data)
+        self.assertIn("alert_level", license_data)
+        
+        # Verify alert level (should be critical since expiry is 15 days)
+        self.assertEqual(license_data["alert_level"], "critical")
+        print(f"✅ License alert level correctly set to: {license_data['alert_level']}")
+        print(f"✅ Days until expiry: {license_data['days_until_expiry']}")
+        
+    def test_06_notifications(self):
+        """Test notification system"""
+        print("\n--- Testing Notification System ---")
+        
+        response = requests.get(f"{BASE_URL}/api/notifications")
+        self.assertEqual(response.status_code, 200)
+        notifications = response.json()
+        
+        self.assertIn("notifications", notifications)
+        self.assertIn("counts", notifications)
+        self.assertIn("total", notifications["counts"])
+        
+        # Check if license notification is present
+        license_notifications = [n for n in notifications["notifications"] if n["type"] == "license"]
+        self.assertTrue(len(license_notifications) > 0, "License notification should be present")
+        
+        # Print notification details
+        print(f"✅ Retrieved {notifications['counts']['total']} notifications")
+        print(f"   - Critical: {notifications['counts'].get('critical', 0)}")
+        print(f"   - High: {notifications['counts'].get('high', 0)}")
+        print(f"   - License alerts: {notifications['counts'].get('license', 0)}")
+        print(f"   - Hatching alerts: {notifications['counts'].get('hatching', 0)}")
+        
+    def test_07_advanced_search(self):
+        """Test advanced search functionality"""
+        print("\n--- Testing Advanced Search ---")
+        
+        # Search by species
+        params = {"species": "African Grey"}
+        response = requests.get(f"{BASE_URL}/api/search", params=params)
+        self.assertEqual(response.status_code, 200)
+        results = response.json()
+        
+        self.assertIn("birds", results)
+        african_grey_birds = [b for b in results["birds"] if b["species"] == "African Grey"]
+        self.assertTrue(len(african_grey_birds) > 0, "Should find African Grey birds")
+        print(f"✅ Found {len(african_grey_birds)} African Grey birds")
+        
+        # Search by status
+        params = {"status": "active"}
+        response = requests.get(f"{BASE_URL}/api/search", params=params)
+        self.assertEqual(response.status_code, 200)
+        results = response.json()
+        
+        active_birds = [b for b in results["birds"] if b["status"] == "active"]
+        self.assertTrue(len(active_birds) > 0, "Should find active birds")
+        print(f"✅ Found {len(active_birds)} active birds")
+        
+        # Search by type
+        params = {"search_type": "birds"}
+        response = requests.get(f"{BASE_URL}/api/search", params=params)
+        self.assertEqual(response.status_code, 200)
+        results = response.json()
+        
+        self.assertIn("birds", results)
+        self.assertNotIn("clutches", results)
+        print(f"✅ Search type filter working correctly")
+        
+    def test_08_reports(self):
+        """Test reports functionality"""
+        print("\n--- Testing Reports ---")
+        
+        # Get breeding report
+        response = requests.get(f"{BASE_URL}/api/reports/breeding")
+        self.assertEqual(response.status_code, 200)
+        report = response.json()
+        
+        self.assertIn("summary", report)
+        self.assertIn("pair_performance", report)
+        self.assertIn("species_performance", report)
+        
+        print(f"✅ Retrieved breeding report")
+        print(f"   - Total clutches: {report['summary']['total_clutches']}")
+        print(f"   - Overall success rate: {report['summary']['overall_success_rate']}%")
+        print(f"   - Pairs analyzed: {len(report['pair_performance'])}")
+        
+        # Get financial report
+        response = requests.get(f"{BASE_URL}/api/reports/financial")
+        self.assertEqual(response.status_code, 200)
+        financial = response.json()
+        
+        self.assertIn("summary", financial)
+        self.assertIn("expense_breakdown", financial)
+        
+        print(f"✅ Retrieved financial report")
+        print(f"   - Total sales: ${financial['summary']['total_sales']}")
+        print(f"   - Total expenses: ${financial['summary']['total_expenses']}")
+        print(f"   - Net profit: ${financial['summary']['net_profit']}")
+        
+    def test_09_auto_hatch_calculation(self):
+        """Test auto hatch date calculation"""
+        print("\n--- Testing Auto Hatch Date Calculation ---")
+        
+        # Skip if breeding pair ID is not set
+        if not self.breeding_pair_id:
+            self.skipTest("Breeding pair ID not set, skipping clutch tests")
+        
+        # Create clutch with laying date
+        clutch_data = self.test_clutch.copy()
+        clutch_data["breeding_pair_id"] = self.breeding_pair_id
+        
+        response = requests.post(f"{BASE_URL}/api/clutches", json=clutch_data)
+        self.assertEqual(response.status_code, 200)
+        result = response.json()
+        self.assertIn("clutch_id", result)
+        self.clutch_id = result["clutch_id"]
+        print(f"✅ Created clutch with ID: {self.clutch_id}")
+        
+        # Get clutch to verify expected hatch date was calculated
+        response = requests.get(f"{BASE_URL}/api/clutches/{self.clutch_id}")
+        self.assertEqual(response.status_code, 200)
+        clutch = response.json()
+        
+        self.assertIn("expected_hatch_date", clutch)
+        self.assertIsNotNone(clutch["expected_hatch_date"])
+        
+        # Calculate expected hatch date based on species (African Grey = 28 days)
+        laying_date = datetime.strptime(clutch_data["egg_laying_date"], "%Y-%m-%d")
+        expected_hatch = laying_date + timedelta(days=28)
+        expected_date_str = expected_hatch.strftime("%Y-%m-%d")
+        
+        print(f"✅ Laying date: {clutch_data['egg_laying_date']}")
+        print(f"✅ Expected hatch date: {clutch['expected_hatch_date']}")
+        print(f"✅ Calculated hatch date: {expected_date_str}")
+        
+    def test_10_genealogy(self):
+        """Test genealogy and consanguinity features"""
+        print("\n--- Testing Genealogy Features ---")
+        
+        # Skip if bird IDs are not set
+        if not self.male_bird_id:
+            self.skipTest("Bird ID not set, skipping genealogy tests")
+        
+        # Get genealogy for a bird
+        response = requests.get(f"{BASE_URL}/api/genealogy/{self.male_bird_id}")
+        self.assertEqual(response.status_code, 200)
+        genealogy = response.json()
+        
+        self.assertIn("bird", genealogy)
+        self.assertIn("parents", genealogy)
+        self.assertIn("offspring", genealogy)
+        
+        print(f"✅ Retrieved genealogy for bird")
+        print(f"   - Bird: {genealogy['bird']['species']}")
+        print(f"   - Parents: {'Found' if genealogy['parents'] else 'None'}")
+        print(f"   - Offspring: {len(genealogy['offspring'])}")
+        
+    def test_11_cleanup(self):
         """Clean up test data"""
         print("\n--- Cleaning Up Test Data ---")
+        
+        # Delete clutch if created
+        if self.clutch_id:
+            response = requests.delete(f"{BASE_URL}/api/clutches/{self.clutch_id}")
+            if hasattr(response, 'status_code') and response.status_code == 200:
+                print(f"✅ Deleted clutch: {self.clutch_id}")
+            else:
+                print(f"⚠️ Could not delete clutch: {self.clutch_id}")
         
         # Delete breeding record if created
         if self.breeding_record_id:
@@ -289,6 +469,14 @@ class ParrotBreedingAPITest(unittest.TestCase):
                 print(f"✅ Deleted female bird: {self.female_bird_id}")
             else:
                 print(f"⚠️ Could not delete female bird: {self.female_bird_id}")
+        
+        # Delete license if created
+        if self.license_id:
+            response = requests.delete(f"{BASE_URL}/api/license/{self.license_id}")
+            if hasattr(response, 'status_code') and response.status_code == 200:
+                print(f"✅ Deleted license: {self.license_id}")
+            else:
+                print(f"⚠️ Could not delete license: {self.license_id}")
 
 if __name__ == "__main__":
     # Run tests in order
