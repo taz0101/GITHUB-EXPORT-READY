@@ -461,9 +461,228 @@ class ParrotBreedingAPITest(unittest.TestCase):
         print(f"   - Parents: {'Found' if genealogy['parents'] else 'None'}")
         print(f"   - Offspring: {len(genealogy['offspring'])}")
         
-    def test_11_cleanup(self):
+    def test_11_incubator_crud(self):
+        """Test incubator CRUD operations"""
+        print("\n--- Testing Incubator CRUD Operations ---")
+        
+        # Create incubator
+        response = requests.post(f"{BASE_URL}/api/incubators", json=self.test_incubator)
+        self.assertEqual(response.status_code, 200)
+        result = response.json()
+        self.assertIn("incubator_id", result)
+        self.incubator_id = result["incubator_id"]
+        print(f"✅ Created incubator with ID: {self.incubator_id}")
+        
+        # Get all incubators
+        response = requests.get(f"{BASE_URL}/api/incubators")
+        self.assertEqual(response.status_code, 200)
+        result = response.json()
+        self.assertIn("incubators", result)
+        self.assertIsInstance(result["incubators"], list)
+        print(f"✅ Retrieved all incubators: {len(result['incubators'])} incubators found")
+        
+        # Get specific incubator
+        response = requests.get(f"{BASE_URL}/api/incubators/{self.incubator_id}")
+        self.assertEqual(response.status_code, 200)
+        incubator = response.json()
+        self.assertEqual(incubator["id"], self.incubator_id)
+        self.assertEqual(incubator["name"], self.test_incubator["name"])
+        print(f"✅ Retrieved specific incubator: {incubator['name']}")
+        
+        # Update incubator
+        update_data = {
+            "name": self.test_incubator["name"],
+            "model": self.test_incubator["model"],
+            "capacity": 15,  # Updated capacity
+            "temperature_range": "37.4-37.9°C",  # Updated temperature range
+            "humidity_range": self.test_incubator["humidity_range"],
+            "turning_interval": self.test_incubator["turning_interval"],
+            "status": "maintenance",  # Updated status
+            "notes": "Updated incubator notes"
+        }
+        
+        response = requests.put(f"{BASE_URL}/api/incubators/{self.incubator_id}", json=update_data)
+        self.assertEqual(response.status_code, 200)
+        print(f"✅ Updated incubator successfully")
+        
+        # Verify update
+        response = requests.get(f"{BASE_URL}/api/incubators/{self.incubator_id}")
+        self.assertEqual(response.status_code, 200)
+        incubator = response.json()
+        self.assertEqual(incubator["capacity"], 15)
+        self.assertEqual(incubator["status"], "maintenance")
+        print(f"✅ Verified incubator update: capacity={incubator['capacity']}, status={incubator['status']}")
+    
+    def test_12_artificial_incubation(self):
+        """Test artificial incubation operations"""
+        print("\n--- Testing Artificial Incubation Operations ---")
+        
+        # Skip if clutch ID or incubator ID are not set
+        if not self.clutch_id or not self.incubator_id:
+            self.skipTest("Clutch ID or Incubator ID not set, skipping artificial incubation tests")
+        
+        # Create artificial incubation record
+        incubation_data = self.test_artificial_incubation.copy()
+        incubation_data["clutch_id"] = self.clutch_id
+        incubation_data["incubator_id"] = self.incubator_id
+        
+        response = requests.post(f"{BASE_URL}/api/artificial-incubation", json=incubation_data)
+        self.assertEqual(response.status_code, 200)
+        result = response.json()
+        self.assertIn("incubation_id", result)
+        self.artificial_incubation_id = result["incubation_id"]
+        print(f"✅ Created artificial incubation record with ID: {self.artificial_incubation_id}")
+        
+        # Get all artificial incubation records
+        response = requests.get(f"{BASE_URL}/api/artificial-incubation")
+        self.assertEqual(response.status_code, 200)
+        result = response.json()
+        self.assertIn("artificial_incubations", result)
+        self.assertIsInstance(result["artificial_incubations"], list)
+        print(f"✅ Retrieved all artificial incubation records: {len(result['artificial_incubations'])} records found")
+        
+        # Get specific artificial incubation record
+        response = requests.get(f"{BASE_URL}/api/artificial-incubation/{self.artificial_incubation_id}")
+        self.assertEqual(response.status_code, 200)
+        incubation = response.json()
+        self.assertEqual(incubation["id"], self.artificial_incubation_id)
+        self.assertEqual(incubation["eggs_transferred"], incubation_data["eggs_transferred"])
+        self.assertIn("clutch", incubation)
+        self.assertIn("incubator", incubation)
+        print(f"✅ Retrieved specific artificial incubation record")
+        
+        # Update artificial incubation record with hatched count
+        update_data = {
+            "clutch_id": self.clutch_id,
+            "incubator_id": self.incubator_id,
+            "eggs_transferred": 2,
+            "transfer_date": incubation_data["transfer_date"],
+            "transfer_reason": incubation_data["transfer_reason"],
+            "incubation_temperature": incubation_data["incubation_temperature"],
+            "incubation_humidity": incubation_data["incubation_humidity"],
+            "expected_hatch_date": incubation_data["expected_hatch_date"],
+            "actual_hatch_date": datetime.now().strftime("%Y-%m-%d"),
+            "eggs_hatched": 2,
+            "status": "completed",
+            "notes": "Updated with hatched count"
+        }
+        
+        response = requests.put(f"{BASE_URL}/api/artificial-incubation/{self.artificial_incubation_id}", json=update_data)
+        self.assertEqual(response.status_code, 200)
+        print(f"✅ Updated artificial incubation record with hatched count")
+        
+        # Verify success rate calculation
+        response = requests.get(f"{BASE_URL}/api/artificial-incubation/{self.artificial_incubation_id}")
+        self.assertEqual(response.status_code, 200)
+        incubation = response.json()
+        self.assertIsNotNone(incubation.get("success_rate"))
+        expected_rate = (2 / 2) * 100  # 2 hatched out of 2 eggs
+        self.assertEqual(incubation["success_rate"], expected_rate)
+        print(f"✅ Verified success rate calculation: {incubation['success_rate']}%")
+    
+    def test_13_incubation_logs(self):
+        """Test incubation logs operations"""
+        print("\n--- Testing Incubation Logs Operations ---")
+        
+        # Skip if artificial incubation ID is not set
+        if not self.artificial_incubation_id:
+            self.skipTest("Artificial Incubation ID not set, skipping incubation logs tests")
+        
+        # Create incubation log
+        log_data = self.test_incubation_log.copy()
+        log_data["artificial_incubation_id"] = self.artificial_incubation_id
+        
+        response = requests.post(f"{BASE_URL}/api/incubation-logs", json=log_data)
+        self.assertEqual(response.status_code, 200)
+        result = response.json()
+        self.assertIn("log_id", result)
+        self.incubation_log_id = result["log_id"]
+        print(f"✅ Created incubation log with ID: {self.incubation_log_id}")
+        
+        # Get logs for an incubation
+        response = requests.get(f"{BASE_URL}/api/incubation-logs/{self.artificial_incubation_id}")
+        self.assertEqual(response.status_code, 200)
+        result = response.json()
+        self.assertIn("incubation_logs", result)
+        self.assertIsInstance(result["incubation_logs"], list)
+        self.assertTrue(len(result["incubation_logs"]) > 0)
+        print(f"✅ Retrieved incubation logs: {len(result['incubation_logs'])} logs found")
+        
+        # Update incubation log
+        update_data = {
+            "artificial_incubation_id": self.artificial_incubation_id,
+            "log_date": log_data["log_date"],
+            "temperature_recorded": 37.7,  # Updated temperature
+            "humidity_recorded": 57.0,  # Updated humidity
+            "eggs_turned": True,
+            "candling_done": True,
+            "candling_results": "some_clear",  # Updated candling results
+            "observations": "Updated observations"
+        }
+        
+        response = requests.put(f"{BASE_URL}/api/incubation-logs/{self.incubation_log_id}", json=update_data)
+        self.assertEqual(response.status_code, 200)
+        print(f"✅ Updated incubation log successfully")
+    
+    def test_14_dashboard_incubation_stats(self):
+        """Test dashboard incubation statistics"""
+        print("\n--- Testing Dashboard Incubation Statistics ---")
+        
+        response = requests.get(f"{BASE_URL}/api/dashboard")
+        self.assertEqual(response.status_code, 200)
+        dashboard = response.json()
+        
+        self.assertIn("stats", dashboard)
+        self.assertIn("active_artificial_incubations", dashboard["stats"])
+        self.assertIn("total_incubators", dashboard["stats"])
+        
+        print(f"✅ Dashboard incubation statistics retrieved successfully")
+        print(f"   - Active artificial incubations: {dashboard['stats']['active_artificial_incubations']}")
+        print(f"   - Total incubators: {dashboard['stats']['total_incubators']}")
+    
+    def test_15_artificial_incubation_notifications(self):
+        """Test artificial incubation notifications"""
+        print("\n--- Testing Artificial Incubation Notifications ---")
+        
+        response = requests.get(f"{BASE_URL}/api/notifications")
+        self.assertEqual(response.status_code, 200)
+        notifications = response.json()
+        
+        self.assertIn("notifications", notifications)
+        self.assertIn("counts", notifications)
+        
+        # Check if artificial incubation notifications are present
+        artificial_hatching_notifications = [n for n in notifications["notifications"] if n["type"] == "artificial_hatching"]
+        print(f"✅ Retrieved {len(artificial_hatching_notifications)} artificial hatching notifications")
+        print(f"   - Artificial hatching alerts: {notifications['counts'].get('artificial_hatching', 0)}")
+    
+    def test_16_cleanup(self):
         """Clean up test data"""
         print("\n--- Cleaning Up Test Data ---")
+        
+        # Delete incubation log if created
+        if self.incubation_log_id:
+            response = requests.delete(f"{BASE_URL}/api/incubation-logs/{self.incubation_log_id}")
+            if hasattr(response, 'status_code') and response.status_code == 200:
+                print(f"✅ Deleted incubation log: {self.incubation_log_id}")
+            else:
+                print(f"⚠️ Could not delete incubation log: {self.incubation_log_id}")
+        
+        # Delete artificial incubation if created
+        if self.artificial_incubation_id:
+            response = requests.delete(f"{BASE_URL}/api/artificial-incubation/{self.artificial_incubation_id}")
+            if hasattr(response, 'status_code') and response.status_code == 200:
+                print(f"✅ Deleted artificial incubation: {self.artificial_incubation_id}")
+            else:
+                print(f"⚠️ Could not delete artificial incubation: {self.artificial_incubation_id}")
+        
+        # Delete incubator if created
+        if self.incubator_id:
+            response = requests.delete(f"{BASE_URL}/api/incubators/{self.incubator_id}")
+            if hasattr(response, 'status_code') and response.status_code == 200:
+                print(f"✅ Deleted incubator: {self.incubator_id}")
+            else:
+                print(f"⚠️ Could not delete incubator: {self.incubator_id}")
         
         # Delete clutch if created
         if self.clutch_id:
