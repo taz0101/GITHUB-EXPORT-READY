@@ -1067,6 +1067,8 @@ async def get_dashboard():
     total_pairs = breeding_pairs_collection.count_documents({"status": "active"})
     active_clutches = clutches_collection.count_documents({"status": {"$in": ["incubating", "hatching"]}})
     total_chicks = chicks_collection.count_documents({"status": "alive"})
+    active_artificial_incubations = artificial_incubation_collection.count_documents({"status": {"$in": ["incubating", "hatching"]}})
+    total_incubators = incubators_collection.count_documents({"status": "active"})
     
     # Get recent clutches
     recent_clutches = list(clutches_collection.find(
