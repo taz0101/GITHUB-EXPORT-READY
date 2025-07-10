@@ -980,13 +980,40 @@ async def get_notifications():
             notifications.append({
                 "type": "hatching",
                 "priority": "high" if days_until_hatch <= 1 else "medium",
-                "title": f"Eggs Due to Hatch",
+                "title": f"Natural Eggs Due to Hatch",
                 "message": f"{pair['pair_name'] if pair else 'Unknown Pair'} - Clutch #{clutch['clutch_number']}",
                 "details": f"Expected: {expected_hatch.strftime('%b %d')} ({days_until_hatch} days)",
                 "status": notification_type,
                 "data": {
                     "clutch_id": clutch["id"],
                     "expected_date": clutch["expected_hatch_date"],
+                    "days_until": days_until_hatch
+                }
+            })
+    
+    # Artificial incubation notifications
+    artificial_incubations = list(artificial_incubation_collection.find({"status": "incubating"}, {"_id": 0}))
+    
+    for incubation in artificial_incubations:
+        expected_hatch = datetime.strptime(incubation["expected_hatch_date"], "%Y-%m-%d").date()
+        days_until_hatch = (expected_hatch - today).days
+        
+        if -1 <= days_until_hatch <= 7:  # Include 1 day overdue
+            clutch = clutches_collection.find_one({"id": incubation["clutch_id"]}, {"_id": 0})
+            incubator = incubators_collection.find_one({"id": incubation["incubator_id"]}, {"_id": 0})
+            
+            notification_type = "overdue" if days_until_hatch < 0 else "due_soon" if days_until_hatch <= 2 else "upcoming"
+            
+            notifications.append({
+                "type": "artificial_hatching",
+                "priority": "high" if days_until_hatch <= 1 else "medium",
+                "title": f"Artificial Incubation Due to Hatch",
+                "message": f"Incubator: {incubator['name'] if incubator else 'Unknown'} - {incubation['eggs_transferred']} eggs",
+                "details": f"Expected: {expected_hatch.strftime('%b %d')} ({days_until_hatch} days)",
+                "status": notification_type,
+                "data": {
+                    "incubation_id": incubation["id"],
+                    "expected_date": incubation["expected_hatch_date"],
                     "days_until": days_until_hatch
                 }
             })
