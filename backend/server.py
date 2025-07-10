@@ -42,6 +42,7 @@ class Bird(BaseModel):
     gender: str  # "male" or "female"
     birth_date: Optional[str] = None
     ring_number: Optional[str] = None
+    cage_number: Optional[str] = None
     color_mutation: Optional[str] = None
     license_number: Optional[str] = None
     license_expiry: Optional[str] = None
