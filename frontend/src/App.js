@@ -1467,7 +1467,177 @@ function App() {
         {activeTab === 'reports' && renderReports()}
       </main>
 
-      {/* License Form Modal */}
+      {/* Notifications */}
+      {notifications?.notifications?.length > 0 && (
+        <div className="notifications-bar">
+          <div className="flex items-center gap-2 mb-2">
+            <h3 className="font-semibold text-red-600">🔔 Active Notifications</h3>
+            <span className="badge">{notifications.counts.total}</span>
+          </div>
+          <div className="flex gap-2 overflow-x-auto pb-2">
+            {notifications.notifications.slice(0, 3).map((notification, index) => (
+              <div key={index} className={`notification-card ${notification.priority}`}>
+                <div className="flex items-start gap-2">
+                  <span className="text-lg">
+                    {notification.type === 'hatching' ? '🥚' : '📋'}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-sm">{notification.title}</p>
+                    <p className="text-xs text-gray-600 truncate">{notification.message}</p>
+                    <p className="text-xs text-gray-500">{notification.details}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+            {notifications.notifications.length > 3 && (
+              <div className="notification-card">
+                <p className="text-sm text-gray-600">
+                  +{notifications.notifications.length - 3} more...
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Search Modal */}
+      {showSearchModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3 className="text-xl font-bold mb-4">🔍 Advanced Search</h3>
+            <form onSubmit={handleSearch} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Search Query</label>
+                <input
+                  type="text"
+                  value={searchForm.query}
+                  onChange={(e) => setSearchForm({...searchForm, query: e.target.value})}
+                  className="form-input"
+                  placeholder="Ring number, species, notes..."
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Species</label>
+                <select
+                  value={searchForm.species}
+                  onChange={(e) => setSearchForm({...searchForm, species: e.target.value})}
+                  className="form-input"
+                >
+                  <option value="">All Species</option>
+                  <option value="African Grey">African Grey</option>
+                  <option value="Cockatiel">Cockatiel</option>
+                  <option value="Lovebird">Lovebird</option>
+                  <option value="Macaw">Macaw</option>
+                  <option value="Conure">Conure</option>
+                  <option value="Budgie">Budgie</option>
+                  <option value="Cockatoo">Cockatoo</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Status</label>
+                <select
+                  value={searchForm.status}
+                  onChange={(e) => setSearchForm({...searchForm, status: e.target.value})}
+                  className="form-input"
+                >
+                  <option value="">All Status</option>
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                  <option value="sold">Sold</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Search In</label>
+                <select
+                  value={searchForm.search_type}
+                  onChange={(e) => setSearchForm({...searchForm, search_type: e.target.value})}
+                  className="form-input"
+                >
+                  <option value="all">All</option>
+                  <option value="birds">Birds Only</option>
+                  <option value="pairs">Breeding Pairs Only</option>
+                  <option value="clutches">Clutches Only</option>
+                </select>
+              </div>
+              <div className="flex gap-2">
+                <button type="submit" className="btn-primary">Search</button>
+                <button 
+                  type="button" 
+                  onClick={() => setShowSearchModal(false)}
+                  className="btn-secondary"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+
+            {/* Search Results */}
+            {searchResults && (
+              <div className="search-results mt-6">
+                <h4 className="font-semibold mb-3">Search Results</h4>
+                
+                {searchResults.birds?.length > 0 && (
+                  <div className="mb-4">
+                    <h5 className="font-medium text-blue-600 mb-2">Birds ({searchResults.birds.length})</h5>
+                    <div className="space-y-2">
+                      {searchResults.birds.slice(0, 5).map((bird, index) => (
+                        <div key={index} className="search-result-item">
+                          <span className={`gender-badge ${bird.gender} small`}>
+                            {bird.gender === 'male' ? '♂' : '♀'}
+                          </span>
+                          <span className="font-medium">{bird.species}</span>
+                          <span className="text-gray-500">- {bird.ring_number || 'No Ring'}</span>
+                          <span className={`status-badge ${bird.status} small`}>{bird.status}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {searchResults.pairs?.length > 0 && (
+                  <div className="mb-4">
+                    <h5 className="font-medium text-pink-600 mb-2">Breeding Pairs ({searchResults.pairs.length})</h5>
+                    <div className="space-y-2">
+                      {searchResults.pairs.slice(0, 5).map((pair, index) => (
+                        <div key={index} className="search-result-item">
+                          <span className="font-medium">{pair.pair_name}</span>
+                          <span className="text-gray-500">
+                            - {pair.male_bird?.species} × {pair.female_bird?.species}
+                          </span>
+                          <span className={`status-badge ${pair.status} small`}>{pair.status}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {searchResults.clutches?.length > 0 && (
+                  <div className="mb-4">
+                    <h5 className="font-medium text-orange-600 mb-2">Clutches ({searchResults.clutches.length})</h5>
+                    <div className="space-y-2">
+                      {searchResults.clutches.slice(0, 5).map((clutch, index) => (
+                        <div key={index} className="search-result-item">
+                          <span className="font-medium">
+                            {clutch.breeding_pair?.pair_name} - Clutch #{clutch.clutch_number}
+                          </span>
+                          <span className="text-gray-500">
+                            - {clutch.eggs_laid} eggs, {clutch.hatched_count || 0} hatched
+                          </span>
+                          <span className={`status-badge ${clutch.status} small`}>{clutch.status}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {(!searchResults.birds?.length && !searchResults.pairs?.length && !searchResults.clutches?.length) && (
+                  <p className="text-gray-500 text-center py-4">No results found</p>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
       {showLicenseForm && (
         <div className="modal-overlay">
           <div className="modal-content">
