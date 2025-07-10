@@ -1809,7 +1809,7 @@ function App() {
               <div className="flex justify-between items-start">
                 <div>
                   <h4 className="font-bold text-lg">
-                    {incubation.clutch?.breeding_pair?.pair_name || 'Unknown Pair'}
+                    {incubation.clutch?.breeding_pair?.pair_name || `Cage ${incubation.clutch?.breeding_pair?.male_bird?.cage_number} × Cage ${incubation.clutch?.breeding_pair?.female_bird?.cage_number}`}
                   </h4>
                   <p className="text-sm text-gray-600 mb-2">
                     Incubator: {incubation.incubator?.name || 'Unknown'}
