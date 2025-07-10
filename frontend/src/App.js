@@ -661,7 +661,7 @@ function App() {
                 {bird.gender === 'male' ? '♂' : '♀'}
               </span>
             </div>
-            <p className="text-gray-600 mb-2">Ring: {bird.ring_number || 'No Ring'}</p>
+            <p className="text-gray-600 mb-2">Cage: {bird.cage_number || 'No Cage'}</p>
             {bird.ring_number && (
               <p className="text-sm text-gray-500">Ring: {bird.ring_number}</p>
             )}
