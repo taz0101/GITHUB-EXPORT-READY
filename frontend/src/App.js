@@ -273,6 +273,7 @@ function App() {
           gender: 'male',
           birth_date: '',
           ring_number: '',
+          cage_number: '',
           color_mutation: '',
           license_number: '',
           license_expiry: '',
