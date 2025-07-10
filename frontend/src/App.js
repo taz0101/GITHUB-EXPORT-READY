@@ -1441,8 +1441,100 @@ function App() {
     );
   };
 
-  return (
-    <div className="app">
+  // Render Incubators & Artificial Incubation
+  const renderIncubators = () => (
+    <div className="incubators-section">
+      <h2 className="text-2xl font-bold mb-6">🔥 Incubators & Artificial Incubation</h2>
+      
+      {/* Incubators */}
+      <div className="mb-8">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-xl font-bold">Incubators</h3>
+          <button 
+            onClick={() => setShowAddIncubatorForm(true)}
+            className="btn-primary"
+          >
+            Add Incubator
+          </button>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          {incubators.map((incubator) => (
+            <div key={incubator.id} className="incubator-card">
+              <div className="flex justify-between items-start mb-2">
+                <h4 className="font-bold text-lg">{incubator.name}</h4>
+                <span className={`status-badge ${incubator.status}`}>{incubator.status}</span>
+              </div>
+              {incubator.model && (
+                <p className="text-gray-600 mb-2">Model: {incubator.model}</p>
+              )}
+              <div className="text-sm space-y-1">
+                <p><strong>Capacity:</strong> {incubator.capacity} eggs</p>
+                {incubator.temperature_range && (
+                  <p><strong>Temperature:</strong> {incubator.temperature_range}</p>
+                )}
+                {incubator.humidity_range && (
+                  <p><strong>Humidity:</strong> {incubator.humidity_range}</p>
+                )}
+                {incubator.turning_interval && (
+                  <p><strong>Turning:</strong> Every {incubator.turning_interval} hours</p>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Artificial Incubations */}
+      <div>
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-xl font-bold">Active Artificial Incubations</h3>
+          <button 
+            onClick={() => setShowAddArtificialIncubationForm(true)}
+            className="btn-primary"
+          >
+            Transfer Eggs to Incubator
+          </button>
+        </div>
+        
+        <div className="space-y-4">
+          {artificialIncubations.map((incubation) => (
+            <div key={incubation.id} className="incubation-card">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h4 className="font-bold text-lg">
+                    {incubation.clutch?.breeding_pair?.pair_name || 'Unknown Pair'}
+                  </h4>
+                  <p className="text-sm text-gray-600 mb-2">
+                    Incubator: {incubation.incubator?.name || 'Unknown'}
+                  </p>
+                  <p className="text-sm text-gray-600 mb-2">
+                    Parents: {incubation.clutch?.breeding_pair?.male_bird?.species} × {incubation.clutch?.breeding_pair?.female_bird?.species}
+                  </p>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm"><strong>Eggs Transferred:</strong> {incubation.eggs_transferred}</p>
+                      <p className="text-sm"><strong>Transfer Date:</strong> {new Date(incubation.transfer_date).toLocaleDateString()}</p>
+                      <p className="text-sm"><strong>Transfer Reason:</strong> {incubation.transfer_reason}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm"><strong>Temperature:</strong> {incubation.incubation_temperature}°C</p>
+                      <p className="text-sm"><strong>Humidity:</strong> {incubation.incubation_humidity}%</p>
+                      <p className="text-sm"><strong>Expected Hatch:</strong> {new Date(incubation.expected_hatch_date).toLocaleDateString()}</p>
+                      {incubation.eggs_hatched !== null && (
+                        <p className="text-sm"><strong>Hatched:</strong> {incubation.eggs_hatched} ({incubation.success_rate?.toFixed(1)}%)</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <span className={`status-badge ${incubation.status}`}>{incubation.status}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
       <header className="header">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold">🦜 Parrot Breeding Management</h1>
