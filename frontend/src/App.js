@@ -1833,15 +1833,15 @@ function App() {
             <div className="company-logo">
               <div className="logo-circle">
                 <div className="parrot-head">
-                  <div className="parrot-beak"></div>
-                  <div className="parrot-eye"></div>
                   <div className="parrot-feather"></div>
+                  <div className="parrot-eye"></div>
+                  <div className="parrot-beak"></div>
                 </div>
               </div>
             </div>
             <div>
-              <h1 className="text-3xl font-bold">🦜 Parrot Breeding Management</h1>
-              <p className="company-name text-lg font-semibold opacity-90">NEXUS PERROQUET & AVIAN RESEARCH</p>
+              <p className="company-name text-2xl font-bold">NEXUS PERROQUET & AVIAN RESEARCH</p>
+              <p className="company-subtitle text-sm opacity-90">Breeding Management System</p>
             </div>
           </div>
           <div className="flex gap-2">
