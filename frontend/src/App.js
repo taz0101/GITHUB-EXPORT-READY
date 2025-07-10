@@ -87,12 +87,25 @@ function App() {
     search_type: 'all'
   });
 
-  const [licenseForm, setLicenseForm] = useState({
-    license_number: '',
-    license_type: 'breeding',
-    issue_date: '',
-    expiry_date: '',
-    issuing_authority: '',
+  const [incubatorForm, setIncubatorForm] = useState({
+    name: '',
+    model: '',
+    capacity: 0,
+    temperature_range: '',
+    humidity_range: '',
+    turning_interval: 2,
+    notes: ''
+  });
+
+  const [artificialIncubationForm, setArtificialIncubationForm] = useState({
+    clutch_id: '',
+    incubator_id: '',
+    eggs_transferred: 0,
+    transfer_date: '',
+    transfer_reason: 'control',
+    incubation_temperature: 37.5,
+    incubation_humidity: 55.0,
+    expected_hatch_date: '',
     notes: ''
   });
 
