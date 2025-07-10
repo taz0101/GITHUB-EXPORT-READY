@@ -31,63 +31,70 @@
   justify-content: center;
   position: relative;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  border: 3px solid rgba(255, 255, 255, 0.2);
+  border: 4px solid #1e40af;
+}
+
+/* Create the curved blue design like in your logo */
+.logo-circle::before {
+  content: '';
+  position: absolute;
+  width: 40px;
+  height: 80px;
+  background: #1e40af;
+  border-radius: 40px 0 0 40px;
+  left: 0;
+  top: 0;
+  z-index: 1;
 }
 
 .parrot-head {
-  width: 48px;
-  height: 48px;
+  width: 52px;
+  height: 52px;
   background: white;
   border-radius: 50%;
   position: relative;
-  z-index: 10;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* Orange curved section - matching your logo */
+/* Orange curved section - left side of parrot head */
 .parrot-feather {
-  width: 22px;
-  height: 28px;
+  width: 18px;
+  height: 24px;
   background: #f97316;
   position: absolute;
-  left: 6px;
-  top: 10px;
-  border-radius: 0% 80% 60% 40%;
-  transform: rotate(10deg);
+  left: 4px;
+  top: 14px;
+  border-radius: 18px 0 18px 18px;
+  z-index: 3;
 }
 
-/* Gray eye with white center */
+/* Gray eye with white highlight */
 .parrot-eye {
-  width: 6px;
-  height: 6px;
-  background: #6b7280;
+  width: 5px;
+  height: 5px;
+  background: #4b5563;
   border-radius: 50%;
   position: absolute;
   top: 16px;
-  right: 16px;
-  border: 2px solid white;
+  right: 14px;
+  z-index: 3;
+  border: 1px solid white;
 }
 
-/* Dark gray curved beak */
+/* Dark gray beak - bottom right */
 .parrot-beak {
   width: 12px;
-  height: 8px;
+  height: 10px;
   background: #4b5563;
   position: absolute;
   bottom: 12px;
-  right: 8px;
-  border-radius: 0% 50% 50% 0%;
-  transform: rotate(-20deg);
-}
-
-.parrot-beak::after {
-  content: '';
-  width: 8px;
-  height: 6px;
-  background: #4b5563;
-  position: absolute;
-  bottom: -2px;
-  right: 2px;
-  border-radius: 50% 0% 50% 50%;
+  right: 6px;
+  clip-path: polygon(0% 0%, 100% 50%, 0% 100%);
+  z-index: 3;
+  transform: rotate(-10deg);
 }
 
 .company-name {
@@ -95,7 +102,13 @@
   font-family: 'Arial', sans-serif;
   letter-spacing: 1.5px;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  font-weight: 600;
+  font-weight: 700;
+}
+
+.company-subtitle {
+  color: rgba(255, 255, 255, 0.8);
+  font-family: 'Arial', sans-serif;
+  letter-spacing: 0.5px;
 }
 
 .nav {
