@@ -31,6 +31,9 @@ clutches_collection = db.clutches
 chicks_collection = db.chicks
 transactions_collection = db.transactions
 license_collection = db.license
+incubators_collection = db.incubators
+artificial_incubation_collection = db.artificial_incubation
+incubation_logs_collection = db.incubation_logs
 
 # Pydantic models
 class Bird(BaseModel):
