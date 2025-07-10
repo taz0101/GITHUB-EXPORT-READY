@@ -1464,6 +1464,7 @@ function App() {
         {activeTab === 'clutches' && renderClutches()}
         {activeTab === 'chicks' && renderChicks()}
         {activeTab === 'transactions' && renderTransactions()}
+        {activeTab === 'reports' && renderReports()}
       </main>
 
       {/* License Form Modal */}
