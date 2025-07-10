@@ -769,9 +769,18 @@ function App() {
           <div key={bird.id} className={`bird-card ${getAlertClass(bird.license_alert)}`}>
             <div className="flex justify-between items-start mb-2">
               <h3 className="font-bold text-lg">{bird.species}</h3>
-              <span className={`gender-badge ${bird.gender}`}>
-                {bird.gender === 'male' ? '♂' : '♀'}
-              </span>
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => handleEditBird(bird)}
+                  className="edit-btn"
+                  title="Edit Bird"
+                >
+                  ✏️
+                </button>
+                <span className={`gender-badge ${bird.gender}`}>
+                  {bird.gender === 'male' ? '♂' : '♀'}
+                </span>
+              </div>
             </div>
             <p className="text-gray-600 mb-2">Cage: {bird.cage_number || 'No Cage'}</p>
             {bird.ring_number && (
