@@ -1150,7 +1150,7 @@ function App() {
               )}
             </div>
             <p className="text-sm text-gray-600 mb-2">
-              From: {chick.clutch?.breeding_pair?.pair_name || 'Unknown Pair'}
+              From: {chick.clutch?.breeding_pair?.pair_name || `Cage ${chick.clutch?.breeding_pair?.male_bird?.cage_number} × Cage ${chick.clutch?.breeding_pair?.female_bird?.cage_number}`}
             </p>
             <p className="text-sm text-gray-600 mb-2">
               Parents: {chick.clutch?.breeding_pair?.male_bird?.species} × {chick.clutch?.breeding_pair?.female_bird?.species}
