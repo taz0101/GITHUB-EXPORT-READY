@@ -1829,7 +1829,21 @@ function App() {
     <div className="app">
       <header className="header">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold">🦜 Parrot Breeding Management</h1>
+          <div className="flex items-center gap-4">
+            <div className="company-logo">
+              <div className="logo-circle">
+                <div className="parrot-head">
+                  <div className="parrot-beak"></div>
+                  <div className="parrot-eye"></div>
+                  <div className="parrot-feather"></div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold">🦜 Parrot Breeding Management</h1>
+              <p className="company-name text-lg font-semibold opacity-90">NEXUS PERROQUET & AVIAN RESEARCH</p>
+            </div>
+          </div>
           <div className="flex gap-2">
             <button 
               onClick={() => setShowSearchModal(true)}
