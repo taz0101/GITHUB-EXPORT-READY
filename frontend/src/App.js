@@ -1490,6 +1490,12 @@ function App() {
             Chicks
           </button>
           <button 
+            onClick={() => setActiveTab('incubators')}
+            className={`nav-btn ${activeTab === 'incubators' ? 'active' : ''}`}
+          >
+            Incubators
+          </button>
+          <button 
             onClick={() => setActiveTab('transactions')}
             className={`nav-btn ${activeTab === 'transactions' ? 'active' : ''}`}
           >
