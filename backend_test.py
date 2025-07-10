@@ -45,6 +45,37 @@ class ParrotBreedingAPITest(unittest.TestCase):
             "notes": "Test clutch for auto-calculation testing"
         }
         
+        self.test_incubator = {
+            "name": f"Test Incubator {timestamp}",
+            "model": "Test Model X1",
+            "capacity": 12,
+            "temperature_range": "37.5-37.8°C",
+            "humidity_range": "55-60%",
+            "turning_interval": 2,
+            "status": "active",
+            "notes": "Test incubator for artificial incubation testing"
+        }
+        
+        self.test_artificial_incubation = {
+            "eggs_transferred": 2,
+            "transfer_date": datetime.now().strftime("%Y-%m-%d"),
+            "transfer_reason": "control",
+            "incubation_temperature": 37.5,
+            "incubation_humidity": 55.0,
+            "expected_hatch_date": (datetime.now() + timedelta(days=28)).strftime("%Y-%m-%d"),
+            "notes": "Test artificial incubation"
+        }
+        
+        self.test_incubation_log = {
+            "log_date": datetime.now().strftime("%Y-%m-%d"),
+            "temperature_recorded": 37.6,
+            "humidity_recorded": 56.0,
+            "eggs_turned": True,
+            "candling_done": True,
+            "candling_results": "all_developing",
+            "observations": "Test incubation log entry"
+        }
+        
         # IDs to be set during tests
         self.male_bird_id = None
         self.female_bird_id = None
@@ -52,6 +83,9 @@ class ParrotBreedingAPITest(unittest.TestCase):
         self.breeding_record_id = None
         self.clutch_id = None
         self.license_id = None
+        self.incubator_id = None
+        self.artificial_incubation_id = None
+        self.incubation_log_id = None
 
     def test_01_birds_crud(self):
         """Test bird CRUD operations"""
