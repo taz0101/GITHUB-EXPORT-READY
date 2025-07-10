@@ -1278,6 +1278,114 @@ function App() {
     </div>
   );
 
+  // Render Reports
+  const renderReports = () => {
+    if (!breedingReport) {
+      fetchBreedingReport();
+      return <div className="loading">Loading reports...</div>;
+    }
+
+    return (
+      <div className="reports-section">
+        <h2 className="text-2xl font-bold mb-6">📊 Breeding Reports</h2>
+        
+        {/* Summary Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <div className="stat-card">
+            <h3 className="text-sm font-semibold text-blue-600">Total Clutches</h3>
+            <p className="text-2xl font-bold">{breedingReport.summary.total_clutches}</p>
+          </div>
+          <div className="stat-card">
+            <h3 className="text-sm font-semibold text-orange-600">Total Eggs</h3>
+            <p className="text-2xl font-bold">{breedingReport.summary.total_eggs}</p>
+          </div>
+          <div className="stat-card">
+            <h3 className="text-sm font-semibold text-green-600">Total Hatched</h3>
+            <p className="text-2xl font-bold">{breedingReport.summary.total_hatched}</p>
+          </div>
+          <div className="stat-card">
+            <h3 className="text-sm font-semibold text-purple-600">Success Rate</h3>
+            <p className="text-2xl font-bold">{breedingReport.summary.overall_success_rate}%</p>
+          </div>
+        </div>
+
+        {/* Pair Performance */}
+        <div className="pair-performance mb-8">
+          <h3 className="text-xl font-bold mb-4">Breeding Pair Performance</h3>
+          <div className="space-y-4">
+            {breedingReport.pair_performance.map((pair, index) => (
+              <div key={index} className="report-card">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h4 className="font-semibold text-lg">{pair.pair_name}</h4>
+                    <p className="text-sm text-gray-600">
+                      {pair.male_bird} × {pair.female_bird}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-2xl font-bold text-green-600">{pair.success_rate}%</p>
+                    <p className="text-sm text-gray-500">Success Rate</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-4 mt-4">
+                  <div className="text-center">
+                    <p className="text-lg font-bold">{pair.clutches}</p>
+                    <p className="text-sm text-gray-500">Clutches</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-lg font-bold">{pair.eggs_laid}</p>
+                    <p className="text-sm text-gray-500">Eggs Laid</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-lg font-bold">{pair.hatched}</p>
+                    <p className="text-sm text-gray-500">Hatched</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Species Performance */}
+        {breedingReport.species_performance && (
+          <div className="species-performance">
+            <h3 className="text-xl font-bold mb-4">Species Performance</h3>
+            <div className="space-y-4">
+              {Object.entries(breedingReport.species_performance).map(([species, stats], index) => (
+                <div key={index} className="report-card">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h4 className="font-semibold text-lg">{species}</h4>
+                      <p className="text-sm text-gray-600">{stats.pairs} breeding pairs</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-2xl font-bold text-blue-600">{stats.success_rate}%</p>
+                      <p className="text-sm text-gray-500">Success Rate</p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4 mt-4">
+                    <div className="text-center">
+                      <p className="text-lg font-bold">{stats.clutches}</p>
+                      <p className="text-sm text-gray-500">Clutches</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-lg font-bold">{stats.eggs}</p>
+                      <p className="text-sm text-gray-500">Eggs</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-lg font-bold">{stats.hatched}</p>
+                      <p className="text-sm text-gray-500">Hatched</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="app">
       <header className="header">
