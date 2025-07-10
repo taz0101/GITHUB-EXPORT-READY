@@ -14,7 +14,7 @@
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-/* Company Logo Styles */
+/* Company Logo Styles - NEXUS PERROQUET & AVIAN RESEARCH */
 .company-logo {
   display: flex;
   align-items: center;
@@ -25,18 +25,19 @@
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #1e40af 100%);
+  background: #1e40af;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   border: 3px solid rgba(255, 255, 255, 0.2);
+  overflow: hidden;
 }
 
 .parrot-head {
-  width: 50px;
-  height: 50px;
+  width: 55px;
+  height: 55px;
   background: white;
   border-radius: 50%;
   position: relative;
@@ -45,44 +46,74 @@
   justify-content: center;
 }
 
-.parrot-beak {
-  width: 0;
-  height: 0;
-  border-left: 12px solid transparent;
-  border-right: 12px solid transparent;
-  border-top: 15px solid #4b5563;
+/* Orange curved feather section */
+.parrot-feather {
+  width: 25px;
+  height: 30px;
+  background: #f97316;
   position: absolute;
-  bottom: 8px;
-  right: 8px;
-  transform: rotate(-30deg);
+  left: 8px;
+  top: 12px;
+  border-radius: 50% 20% 50% 80%;
+  transform: rotate(-15deg);
 }
 
+/* Gray eye */
 .parrot-eye {
   width: 8px;
   height: 8px;
-  background: #1f2937;
+  background: #6b7280;
   border-radius: 50%;
   position: absolute;
-  top: 15px;
-  right: 18px;
+  top: 18px;
+  right: 20px;
+  box-shadow: inset 0 0 0 2px white;
 }
 
-.parrot-feather {
-  width: 20px;
-  height: 35px;
-  background: linear-gradient(45deg, #f97316 0%, #ea580c 100%);
-  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+/* Dark gray beak */
+.parrot-beak {
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 12px solid #4b5563;
   position: absolute;
-  left: 8px;
-  top: 8px;
-  transform: rotate(-20deg);
+  bottom: 15px;
+  right: 12px;
+  transform: rotate(-25deg);
+}
+
+/* Additional styling for the curved blue design */
+.logo-circle::before {
+  content: '';
+  position: absolute;
+  width: 70px;
+  height: 70px;
+  background: #1e40af;
+  border-radius: 50% 50% 20% 50%;
+  top: -10px;
+  left: -15px;
+  transform: rotate(30deg);
+}
+
+.logo-circle::after {
+  content: '';
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  background: #1e40af;
+  border-radius: 50% 20% 50% 50%;
+  bottom: -15px;
+  right: -20px;
+  transform: rotate(-45deg);
 }
 
 .company-name {
   color: rgba(255, 255, 255, 0.95);
   font-family: 'Arial', sans-serif;
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  font-weight: 600;
 }
 
 .nav {
