@@ -86,17 +86,18 @@ class ParrotBreedingAPITest(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         bird = response.json()
         self.assertEqual(bird["id"], self.male_bird_id)
-        self.assertEqual(bird["name"], self.test_male_bird["name"])
-        print(f"✅ Retrieved specific bird: {bird['name']}")
+        self.assertEqual(bird["species"], self.test_male_bird["species"])
+        print(f"✅ Retrieved specific bird: {bird['species']}")
         
         # Update bird
-        update_data = {"name": f"Updated_{self.test_male_bird['name']}", 
-                      "species": self.test_male_bird["species"],
-                      "gender": self.test_male_bird["gender"],
-                      "birth_date": self.test_male_bird["birth_date"],
-                      "ring_number": self.test_male_bird["ring_number"],
-                      "color_mutation": "Updated Mutation",
-                      "notes": "Updated notes"}
+        update_data = {
+            "species": self.test_male_bird["species"],
+            "gender": self.test_male_bird["gender"],
+            "birth_date": self.test_male_bird["birth_date"],
+            "ring_number": self.test_male_bird["ring_number"],
+            "color_mutation": "Updated Mutation",
+            "notes": "Updated notes"
+        }
         
         response = requests.put(f"{BASE_URL}/api/birds/{self.male_bird_id}", json=update_data)
         self.assertEqual(response.status_code, 200)
