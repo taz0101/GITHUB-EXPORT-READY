@@ -1674,7 +1674,7 @@ function App() {
                   <option value="">Select Clutch</option>
                   {clutches.filter(clutch => clutch.status === 'incubating').map(clutch => (
                     <option key={clutch.id} value={clutch.id}>
-                      {clutch.breeding_pair?.pair_name || 'Unknown'} - Clutch #{clutch.clutch_number} ({clutch.eggs_laid} eggs)
+                      {clutch.breeding_pair?.pair_name || `Cage ${clutch.breeding_pair?.male_bird?.cage_number} × Cage ${clutch.breeding_pair?.female_bird?.cage_number}`} - Clutch #{clutch.clutch_number} ({clutch.eggs_laid} eggs)
                     </option>
                   ))}
                 </select>
