@@ -159,6 +159,16 @@ function App() {
     }
   };
 
+  const fetchTransactions = async () => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/transactions`);
+      const data = await response.json();
+      setTransactions(data.transactions);
+    } catch (error) {
+      console.error('Error fetching transactions:', error);
+    }
+  };
+
   const fetchIncubators = async () => {
     try {
       const response = await fetch(`${BACKEND_URL}/api/incubators`);
