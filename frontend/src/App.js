@@ -1391,12 +1391,25 @@ function App() {
       <header className="header">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold">🦜 Parrot Breeding Management</h1>
-          <button 
-            onClick={() => setShowLicenseForm(true)}
-            className="btn-secondary"
-          >
-            {mainLicense ? 'Update License' : 'Add License'}
-          </button>
+          <div className="flex gap-2">
+            <button 
+              onClick={() => setShowSearchModal(true)}
+              className="btn-secondary"
+            >
+              🔍 Search
+            </button>
+            <button 
+              onClick={() => setShowLicenseForm(true)}
+              className="btn-secondary"
+            >
+              {mainLicense ? 'Update License' : 'Add License'}
+            </button>
+            {notifications?.counts?.total > 0 && (
+              <div className="notification-badge">
+                <span className="text-sm font-bold">{notifications.counts.total}</span>
+              </div>
+            )}
+          </div>
         </div>
         <nav className="nav">
           <button 
