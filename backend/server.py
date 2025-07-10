@@ -1149,6 +1149,8 @@ async def get_dashboard():
             "total_pairs": total_pairs,
             "active_clutches": active_clutches,
             "total_chicks": total_chicks,
+            "active_artificial_incubations": active_artificial_incubations,
+            "total_incubators": total_incubators,
             "total_revenue": total_revenue,
             "total_expenses": total_expenses
         },
