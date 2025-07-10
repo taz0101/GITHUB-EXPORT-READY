@@ -246,8 +246,9 @@ function App() {
     fetchBirds();
     fetchBreedingPairs();
     fetchClutches();
-    fetchChicks();
     fetchTransactions();
+    fetchIncubators();
+    fetchArtificialIncubations();
     fetchDashboard();
     fetchMainLicense();
     fetchNotifications();
