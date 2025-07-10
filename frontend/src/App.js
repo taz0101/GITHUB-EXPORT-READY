@@ -468,6 +468,8 @@ function App() {
       console.error('Error adding artificial incubation:', error);
     }
   };
+
+  const handleAddLicense = async (e) => {
     e.preventDefault();
     try {
       const response = await fetch(`${BACKEND_URL}/api/license`, {
