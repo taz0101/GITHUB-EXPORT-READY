@@ -744,7 +744,12 @@ if __name__ == "__main__":
     suite.addTest(ParrotBreedingAPITest("test_08_reports"))
     suite.addTest(ParrotBreedingAPITest("test_09_auto_hatch_calculation"))
     suite.addTest(ParrotBreedingAPITest("test_10_genealogy"))
-    suite.addTest(ParrotBreedingAPITest("test_11_cleanup"))
+    suite.addTest(ParrotBreedingAPITest("test_11_incubator_crud"))
+    suite.addTest(ParrotBreedingAPITest("test_12_artificial_incubation"))
+    suite.addTest(ParrotBreedingAPITest("test_13_incubation_logs"))
+    suite.addTest(ParrotBreedingAPITest("test_14_dashboard_incubation_stats"))
+    suite.addTest(ParrotBreedingAPITest("test_15_artificial_incubation_notifications"))
+    suite.addTest(ParrotBreedingAPITest("test_16_cleanup"))
     
     runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)
