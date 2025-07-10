@@ -124,6 +124,47 @@ class License(BaseModel):
     notes: Optional[str] = None
     created_at: Optional[str] = None
 
+class Incubator(BaseModel):
+    id: Optional[str] = None
+    name: str
+    model: Optional[str] = None
+    capacity: int  # number of eggs
+    temperature_range: Optional[str] = None  # e.g., "37.5-37.8°C"
+    humidity_range: Optional[str] = None  # e.g., "55-60%"
+    turning_interval: Optional[int] = None  # hours
+    status: str = "active"  # "active", "maintenance", "inactive"
+    notes: Optional[str] = None
+    created_at: Optional[str] = None
+
+class ArtificialIncubation(BaseModel):
+    id: Optional[str] = None
+    clutch_id: str
+    incubator_id: str
+    eggs_transferred: int
+    transfer_date: str
+    transfer_reason: str  # "abandoned", "too_many", "health", "control", "other"
+    incubation_temperature: float
+    incubation_humidity: float
+    expected_hatch_date: str
+    actual_hatch_date: Optional[str] = None
+    eggs_hatched: Optional[int] = None
+    success_rate: Optional[float] = None
+    status: str = "incubating"  # "incubating", "hatching", "completed", "failed"
+    notes: Optional[str] = None
+    created_at: Optional[str] = None
+
+class IncubationLog(BaseModel):
+    id: Optional[str] = None
+    artificial_incubation_id: str
+    log_date: str
+    temperature_recorded: float
+    humidity_recorded: float
+    eggs_turned: bool = True
+    candling_done: bool = False
+    candling_results: Optional[str] = None  # "all_developing", "some_clear", "all_clear"
+    observations: Optional[str] = None
+    created_at: Optional[str] = None
+
 # License endpoints
 @app.post("/api/license")
 async def create_license(license: License):
