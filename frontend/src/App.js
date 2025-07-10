@@ -10,6 +10,8 @@ function App() {
   const [clutches, setClutches] = useState([]);
   const [chicks, setChicks] = useState([]);
   const [transactions, setTransactions] = useState([]);
+  const [incubators, setIncubators] = useState([]);
+  const [artificialIncubations, setArtificialIncubations] = useState([]);
   const [dashboardData, setDashboardData] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [searchResults, setSearchResults] = useState(null);
@@ -19,6 +21,8 @@ function App() {
   const [showAddClutchForm, setShowAddClutchForm] = useState(false);
   const [showAddChickForm, setShowAddChickForm] = useState(false);
   const [showAddTransactionForm, setShowAddTransactionForm] = useState(false);
+  const [showAddIncubatorForm, setShowAddIncubatorForm] = useState(false);
+  const [showAddArtificialIncubationForm, setShowAddArtificialIncubationForm] = useState(false);
   const [showLicenseForm, setShowLicenseForm] = useState(false);
   const [showSearchModal, setShowSearchModal] = useState(false);
   const [mainLicense, setMainLicense] = useState(null);
