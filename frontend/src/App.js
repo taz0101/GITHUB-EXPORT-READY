@@ -407,7 +407,67 @@ function App() {
     }
   };
 
-  const handleAddLicense = async (e) => {
+  const handleAddIncubator = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/incubators`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(incubatorForm),
+      });
+      
+      if (response.ok) {
+        setIncubatorForm({
+          name: '',
+          model: '',
+          capacity: 0,
+          temperature_range: '',
+          humidity_range: '',
+          turning_interval: 2,
+          notes: ''
+        });
+        setShowAddIncubatorForm(false);
+        fetchIncubators();
+        fetchDashboard();
+      }
+    } catch (error) {
+      console.error('Error adding incubator:', error);
+    }
+  };
+
+  const handleAddArtificialIncubation = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/artificial-incubation`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(artificialIncubationForm),
+      });
+      
+      if (response.ok) {
+        setArtificialIncubationForm({
+          clutch_id: '',
+          incubator_id: '',
+          eggs_transferred: 0,
+          transfer_date: '',
+          transfer_reason: 'control',
+          incubation_temperature: 37.5,
+          incubation_humidity: 55.0,
+          expected_hatch_date: '',
+          notes: ''
+        });
+        setShowAddArtificialIncubationForm(false);
+        fetchArtificialIncubations();
+        fetchDashboard();
+      }
+    } catch (error) {
+      console.error('Error adding artificial incubation:', error);
+    }
+  };
     e.preventDefault();
     try {
       const response = await fetch(`${BACKEND_URL}/api/license`, {
