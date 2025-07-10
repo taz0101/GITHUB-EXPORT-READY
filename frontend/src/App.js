@@ -1535,6 +1535,9 @@ function App() {
       </div>
     </div>
   );
+
+  return (
+    <div className="app">
       <header className="header">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold">🦜 Parrot Breeding Management</h1>
