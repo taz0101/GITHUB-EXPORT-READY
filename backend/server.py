@@ -165,7 +165,163 @@ class IncubationLog(BaseModel):
     observations: Optional[str] = None
     created_at: Optional[str] = None
 
-# License endpoints
+# Incubator endpoints
+@app.post("/api/incubators")
+async def create_incubator(incubator: Incubator):
+    incubator_dict = incubator.dict()
+    incubator_dict["id"] = str(uuid.uuid4())
+    incubator_dict["created_at"] = datetime.now().isoformat()
+    
+    result = incubators_collection.insert_one(incubator_dict)
+    if result.inserted_id:
+        return {"message": "Incubator created successfully", "incubator_id": incubator_dict["id"]}
+    raise HTTPException(status_code=500, detail="Failed to create incubator")
+
+@app.get("/api/incubators")
+async def get_incubators():
+    incubators = list(incubators_collection.find({}, {"_id": 0}))
+    return {"incubators": incubators}
+
+@app.get("/api/incubators/{incubator_id}")
+async def get_incubator(incubator_id: str):
+    incubator = incubators_collection.find_one({"id": incubator_id}, {"_id": 0})
+    if not incubator:
+        raise HTTPException(status_code=404, detail="Incubator not found")
+    return incubator
+
+@app.put("/api/incubators/{incubator_id}")
+async def update_incubator(incubator_id: str, incubator: Incubator):
+    incubator_dict = incubator.dict()
+    incubator_dict["id"] = incubator_id
+    
+    result = incubators_collection.update_one(
+        {"id": incubator_id}, 
+        {"$set": incubator_dict}
+    )
+    if result.modified_count:
+        return {"message": "Incubator updated successfully"}
+    raise HTTPException(status_code=404, detail="Incubator not found")
+
+# Artificial Incubation endpoints
+@app.post("/api/artificial-incubation")
+async def create_artificial_incubation(incubation: ArtificialIncubation):
+    # Check if clutch and incubator exist
+    clutch = clutches_collection.find_one({"id": incubation.clutch_id})
+    incubator = incubators_collection.find_one({"id": incubation.incubator_id})
+    
+    if not clutch:
+        raise HTTPException(status_code=404, detail="Clutch not found")
+    if not incubator:
+        raise HTTPException(status_code=404, detail="Incubator not found")
+    
+    incubation_dict = incubation.dict()
+    incubation_dict["id"] = str(uuid.uuid4())
+    incubation_dict["created_at"] = datetime.now().isoformat()
+    
+    result = artificial_incubation_collection.insert_one(incubation_dict)
+    if result.inserted_id:
+        return {"message": "Artificial incubation record created successfully", "incubation_id": incubation_dict["id"]}
+    raise HTTPException(status_code=500, detail="Failed to create artificial incubation record")
+
+@app.get("/api/artificial-incubation")
+async def get_artificial_incubations():
+    incubations = list(artificial_incubation_collection.find({}, {"_id": 0}))
+    
+    # Enrich with clutch and incubator details
+    for incubation in incubations:
+        clutch = clutches_collection.find_one({"id": incubation["clutch_id"]}, {"_id": 0})
+        if clutch:
+            pair = breeding_pairs_collection.find_one({"id": clutch["breeding_pair_id"]}, {"_id": 0})
+            if pair:
+                male_bird = birds_collection.find_one({"id": pair["male_bird_id"]}, {"_id": 0})
+                female_bird = birds_collection.find_one({"id": pair["female_bird_id"]}, {"_id": 0})
+                pair["male_bird"] = male_bird
+                pair["female_bird"] = female_bird
+            clutch["breeding_pair"] = pair
+        incubation["clutch"] = clutch
+        
+        incubator = incubators_collection.find_one({"id": incubation["incubator_id"]}, {"_id": 0})
+        incubation["incubator"] = incubator
+    
+    return {"artificial_incubations": incubations}
+
+@app.get("/api/artificial-incubation/{incubation_id}")
+async def get_artificial_incubation(incubation_id: str):
+    incubation = artificial_incubation_collection.find_one({"id": incubation_id}, {"_id": 0})
+    if not incubation:
+        raise HTTPException(status_code=404, detail="Artificial incubation record not found")
+    
+    # Enrich with details
+    clutch = clutches_collection.find_one({"id": incubation["clutch_id"]}, {"_id": 0})
+    if clutch:
+        pair = breeding_pairs_collection.find_one({"id": clutch["breeding_pair_id"]}, {"_id": 0})
+        if pair:
+            male_bird = birds_collection.find_one({"id": pair["male_bird_id"]}, {"_id": 0})
+            female_bird = birds_collection.find_one({"id": pair["female_bird_id"]}, {"_id": 0})
+            pair["male_bird"] = male_bird
+            pair["female_bird"] = female_bird
+        clutch["breeding_pair"] = pair
+    incubation["clutch"] = clutch
+    
+    incubator = incubators_collection.find_one({"id": incubation["incubator_id"]}, {"_id": 0})
+    incubation["incubator"] = incubator
+    
+    return incubation
+
+@app.put("/api/artificial-incubation/{incubation_id}")
+async def update_artificial_incubation(incubation_id: str, incubation: ArtificialIncubation):
+    incubation_dict = incubation.dict()
+    incubation_dict["id"] = incubation_id
+    
+    # Calculate success rate if both eggs_transferred and eggs_hatched are provided
+    if incubation_dict.get("eggs_transferred") and incubation_dict.get("eggs_hatched") is not None:
+        incubation_dict["success_rate"] = (incubation_dict["eggs_hatched"] / incubation_dict["eggs_transferred"]) * 100
+    
+    result = artificial_incubation_collection.update_one(
+        {"id": incubation_id}, 
+        {"$set": incubation_dict}
+    )
+    if result.modified_count:
+        return {"message": "Artificial incubation record updated successfully"}
+    raise HTTPException(status_code=404, detail="Artificial incubation record not found")
+
+# Incubation Log endpoints
+@app.post("/api/incubation-logs")
+async def create_incubation_log(log: IncubationLog):
+    # Check if artificial incubation record exists
+    incubation = artificial_incubation_collection.find_one({"id": log.artificial_incubation_id})
+    if not incubation:
+        raise HTTPException(status_code=404, detail="Artificial incubation record not found")
+    
+    log_dict = log.dict()
+    log_dict["id"] = str(uuid.uuid4())
+    log_dict["created_at"] = datetime.now().isoformat()
+    
+    result = incubation_logs_collection.insert_one(log_dict)
+    if result.inserted_id:
+        return {"message": "Incubation log created successfully", "log_id": log_dict["id"]}
+    raise HTTPException(status_code=500, detail="Failed to create incubation log")
+
+@app.get("/api/incubation-logs/{incubation_id}")
+async def get_incubation_logs(incubation_id: str):
+    logs = list(incubation_logs_collection.find(
+        {"artificial_incubation_id": incubation_id}, 
+        {"_id": 0}
+    ).sort("log_date", 1))
+    return {"incubation_logs": logs}
+
+@app.put("/api/incubation-logs/{log_id}")
+async def update_incubation_log(log_id: str, log: IncubationLog):
+    log_dict = log.dict()
+    log_dict["id"] = log_id
+    
+    result = incubation_logs_collection.update_one(
+        {"id": log_id}, 
+        {"$set": log_dict}
+    )
+    if result.modified_count:
+        return {"message": "Incubation log updated successfully"}
+    raise HTTPException(status_code=404, detail="Incubation log not found")
 @app.post("/api/license")
 async def create_license(license: License):
     license_dict = license.dict()
