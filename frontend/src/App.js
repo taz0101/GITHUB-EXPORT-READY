@@ -17,7 +17,9 @@ function App() {
   const [searchResults, setSearchResults] = useState(null);
   const [breedingReport, setBreedingReport] = useState(null);
   const [showAddBirdForm, setShowAddBirdForm] = useState(false);
+  const [showEditBirdForm, setShowEditBirdForm] = useState(false);
   const [showAddPairForm, setShowAddPairForm] = useState(false);
+  const [showEditPairForm, setShowEditPairForm] = useState(false);
   const [showAddClutchForm, setShowAddClutchForm] = useState(false);
   const [showAddChickForm, setShowAddChickForm] = useState(false);
   const [showAddTransactionForm, setShowAddTransactionForm] = useState(false);
@@ -25,6 +27,8 @@ function App() {
   const [showAddArtificialIncubationForm, setShowAddArtificialIncubationForm] = useState(false);
   const [showLicenseForm, setShowLicenseForm] = useState(false);
   const [showSearchModal, setShowSearchModal] = useState(false);
+  const [editingBird, setEditingBird] = useState(null);
+  const [editingPair, setEditingPair] = useState(null);
   const [mainLicense, setMainLicense] = useState(null);
 
   // Form states
