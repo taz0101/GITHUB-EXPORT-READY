@@ -43,7 +43,6 @@ function App() {
   const [pairForm, setPairForm] = useState({
     male_bird_id: '',
     female_bird_id: '',
-    pair_name: '',
     pair_date: '',
     license_number: '',
     license_expiry: '',
