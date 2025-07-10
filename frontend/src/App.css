@@ -431,6 +431,23 @@
   font-size: 0.625rem;
 }
 
+/* Incubator Styles */
+.incubator-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid #ef4444;
+}
+
+.incubation-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid #f97316;
+}
+
 /* Report Styles */
 .report-card {
   background: white;
