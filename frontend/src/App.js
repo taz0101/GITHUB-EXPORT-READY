@@ -580,12 +580,9 @@ function App() {
         fetchBreedingPairs();
         fetchDashboard();
       }
-    } catch (error) {
-      console.error('Error updating breeding pair:', error);
-    }
   };
 
-  const handleEditBird = (bird) => {
+  const handleAddLicense = async (e) => {
     setEditingBird(bird);
     setBirdForm({
       species: bird.species,
