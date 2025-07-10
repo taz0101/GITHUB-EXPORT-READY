@@ -32,80 +32,62 @@
   position: relative;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   border: 3px solid rgba(255, 255, 255, 0.2);
-  overflow: hidden;
 }
 
 .parrot-head {
-  width: 55px;
-  height: 55px;
+  width: 48px;
+  height: 48px;
   background: white;
   border-radius: 50%;
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  z-index: 10;
 }
 
-/* Orange curved feather section */
+/* Orange curved section - matching your logo */
 .parrot-feather {
-  width: 25px;
-  height: 30px;
+  width: 22px;
+  height: 28px;
   background: #f97316;
   position: absolute;
-  left: 8px;
-  top: 12px;
-  border-radius: 50% 20% 50% 80%;
-  transform: rotate(-15deg);
+  left: 6px;
+  top: 10px;
+  border-radius: 0% 80% 60% 40%;
+  transform: rotate(10deg);
 }
 
-/* Gray eye */
+/* Gray eye with white center */
 .parrot-eye {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   background: #6b7280;
   border-radius: 50%;
   position: absolute;
-  top: 18px;
-  right: 20px;
-  box-shadow: inset 0 0 0 2px white;
+  top: 16px;
+  right: 16px;
+  border: 2px solid white;
 }
 
-/* Dark gray beak */
+/* Dark gray curved beak */
 .parrot-beak {
-  width: 0;
-  height: 0;
-  border-left: 8px solid transparent;
-  border-right: 8px solid transparent;
-  border-top: 12px solid #4b5563;
+  width: 12px;
+  height: 8px;
+  background: #4b5563;
   position: absolute;
-  bottom: 15px;
-  right: 12px;
-  transform: rotate(-25deg);
+  bottom: 12px;
+  right: 8px;
+  border-radius: 0% 50% 50% 0%;
+  transform: rotate(-20deg);
 }
 
-/* Additional styling for the curved blue design */
-.logo-circle::before {
+.parrot-beak::after {
   content: '';
+  width: 8px;
+  height: 6px;
+  background: #4b5563;
   position: absolute;
-  width: 70px;
-  height: 70px;
-  background: #1e40af;
-  border-radius: 50% 50% 20% 50%;
-  top: -10px;
-  left: -15px;
-  transform: rotate(30deg);
-}
-
-.logo-circle::after {
-  content: '';
-  position: absolute;
-  width: 60px;
-  height: 60px;
-  background: #1e40af;
-  border-radius: 50% 20% 50% 50%;
-  bottom: -15px;
-  right: -20px;
-  transform: rotate(-45deg);
+  bottom: -2px;
+  right: 2px;
+  border-radius: 50% 0% 50% 50%;
 }
 
 .company-name {
