@@ -945,6 +945,36 @@ function App() {
           >
             Breeding Pairs
           </button>
+          <button 
+            onClick={() => setActiveTab('clutches')}
+            className={`nav-btn ${activeTab === 'clutches' ? 'active' : ''}`}
+          >
+            Clutches
+          </button>
+          <button 
+            onClick={() => setActiveTab('chicks')}
+            className={`nav-btn ${activeTab === 'chicks' ? 'active' : ''}`}
+          >
+            Chicks
+          </button>
+          <button 
+            onClick={() => setActiveTab('incubators')}
+            className={`nav-btn ${activeTab === 'incubators' ? 'active' : ''}`}
+          >
+            Incubators
+          </button>
+          <button 
+            onClick={() => setActiveTab('transactions')}
+            className={`nav-btn ${activeTab === 'transactions' ? 'active' : ''}`}
+          >
+            Transactions
+          </button>
+          <button 
+            onClick={() => setActiveTab('reports')}
+            className={`nav-btn ${activeTab === 'reports' ? 'active' : ''}`}
+          >
+            Reports
+          </button>
         </nav>
       </header>
 
