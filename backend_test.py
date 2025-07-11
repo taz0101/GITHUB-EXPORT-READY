@@ -4,7 +4,7 @@ import json
 from datetime import datetime, timedelta
 
 # Use the public endpoint from the frontend .env file
-BASE_URL = "https://2c855648-e7c8-466f-9aba-f0a127ab5de4.preview.emergentagent.com"
+BASE_URL = "https://906cc6fd-c1f9-4848-980e-fa4369439bff.preview.emergentagent.com"
 
 class ParrotBreedingAPITest(unittest.TestCase):
     def setUp(self):
