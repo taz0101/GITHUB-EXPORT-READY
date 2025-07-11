@@ -982,6 +982,11 @@ function App() {
         {activeTab === 'dashboard' && renderDashboard()}
         {activeTab === 'birds' && renderBirds()}
         {activeTab === 'pairs' && renderBreedingPairs()}
+        {activeTab === 'clutches' && renderClutches()}
+        {activeTab === 'chicks' && renderChicks()}
+        {activeTab === 'incubators' && renderIncubators()}
+        {activeTab === 'transactions' && renderTransactions()}
+        {activeTab === 'reports' && renderReports()}
       </main>
 
       {/* Add Bird Form Modal */}
