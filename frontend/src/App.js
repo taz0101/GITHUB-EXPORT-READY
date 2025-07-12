@@ -962,6 +962,140 @@ function App() {
     </div>
   );
 
+  // Render Chicks
+  const renderChicks = () => (
+    <div className="chicks-section">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold">🐣 Chicks Management</h2>
+        <button 
+          onClick={() => setShowAddChickForm(true)}
+          className="btn-primary"
+        >
+          Add New Chick
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {chicks.map((chick) => (
+          <div key={chick.id} className="chick-card">
+            <h3 className="font-bold text-lg mb-2">
+              Chick #{chick.chick_number}
+            </h3>
+            <div className="space-y-1">
+              <p className="text-sm"><strong>Ring:</strong> {chick.ring_number || 'Not ringed'}</p>
+              <p className="text-sm"><strong>Gender:</strong> {chick.gender || 'Unknown'}</p>
+              <p className="text-sm"><strong>Hatched:</strong> {new Date(chick.hatch_date).toLocaleDateString()}</p>
+              <p className="text-sm"><strong>Weight:</strong> {chick.weight}g</p>
+              {chick.color_mutation && (
+                <p className="text-sm"><strong>Color:</strong> {chick.color_mutation}</p>
+              )}
+            </div>
+            {chick.notes && (
+              <p className="text-sm text-gray-500 mt-2 italic">{chick.notes}</p>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  // Render Incubators
+  const renderIncubators = () => (
+    <div className="incubators-section">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold">🔬 Incubators</h2>
+        <button 
+          onClick={() => setShowAddIncubatorForm(true)}
+          className="btn-primary"
+        >
+          Add New Incubator
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {incubators.map((incubator) => (
+          <div key={incubator.id} className="incubator-card">
+            <h3 className="font-bold text-lg mb-2">{incubator.name}</h3>
+            <div className="space-y-1">
+              <p className="text-sm"><strong>Model:</strong> {incubator.model}</p>
+              <p className="text-sm"><strong>Capacity:</strong> {incubator.capacity} eggs</p>
+              <p className="text-sm"><strong>Temperature:</strong> {incubator.temperature_range}</p>
+              <p className="text-sm"><strong>Humidity:</strong> {incubator.humidity_range}</p>
+              <p className="text-sm"><strong>Turning:</strong> Every {incubator.turning_interval}h</p>
+            </div>
+            {incubator.notes && (
+              <p className="text-sm text-gray-500 mt-2 italic">{incubator.notes}</p>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  // Render Transactions
+  const renderTransactions = () => (
+    <div className="transactions-section">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold">💰 Financial Transactions</h2>
+        <button 
+          onClick={() => setShowAddTransactionForm(true)}
+          className="btn-primary"
+        >
+          Add Transaction
+        </button>
+      </div>
+
+      <div className="space-y-4">
+        {transactions.map((transaction) => (
+          <div key={transaction.id} className="transaction-card">
+            <div className="flex justify-between items-center">
+              <div>
+                <h3 className="font-bold">{transaction.description}</h3>
+                <p className="text-sm text-gray-600">{transaction.category}</p>
+                <p className="text-sm text-gray-500">{new Date(transaction.date).toLocaleDateString()}</p>
+              </div>
+              <div className="text-right">
+                <p className={`font-bold ${transaction.transaction_type === 'sale' ? 'text-green-600' : transaction.transaction_type === 'purchase' ? 'text-blue-600' : 'text-red-600'}`}>
+                  {transaction.transaction_type === 'expense' ? '-' : '+'}${transaction.amount}
+                </p>
+                <p className="text-sm text-gray-500 capitalize">{transaction.transaction_type}</p>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  // Render Reports
+  const renderReports = () => (
+    <div className="reports-section">
+      <h2 className="text-2xl font-bold mb-6">📊 Reports & Analytics</h2>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="report-card">
+          <h3 className="font-bold text-lg mb-4">Breeding Report</h3>
+          <button 
+            onClick={() => {/* Generate breeding report */}}
+            className="btn-primary w-full"
+          >
+            Generate Breeding Report
+          </button>
+        </div>
+        
+        <div className="report-card">
+          <h3 className="font-bold text-lg mb-4">Financial Report</h3>
+          <button 
+            onClick={() => {/* Generate financial report */}}
+            className="btn-primary w-full"
+          >
+            Generate Financial Report
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="app">
       <header className="header">
