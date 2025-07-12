@@ -1124,7 +1124,12 @@ if __name__ == "__main__":
     suite.addTest(ParrotBreedingAPITest("test_13_incubation_logs"))
     suite.addTest(ParrotBreedingAPITest("test_14_dashboard_incubation_stats"))
     suite.addTest(ParrotBreedingAPITest("test_15_artificial_incubation_notifications"))
-    suite.addTest(ParrotBreedingAPITest("test_16_cleanup"))
+    suite.addTest(ParrotBreedingAPITest("test_16_species_management_crud"))
+    suite.addTest(ParrotBreedingAPITest("test_17_create_bird_with_species"))
+    suite.addTest(ParrotBreedingAPITest("test_18_enhanced_transactions"))
+    suite.addTest(ParrotBreedingAPITest("test_19_financial_report_enhanced"))
+    suite.addTest(ParrotBreedingAPITest("test_20_species_deletion_protection"))
+    suite.addTest(ParrotBreedingAPITest("test_21_cleanup"))
     
     runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)
