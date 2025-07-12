@@ -1250,31 +1250,175 @@ function App() {
   const renderIncubators = () => (
     <div className="incubators-section">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">🔬 Incubators</h2>
-        <button 
-          onClick={() => setShowAddIncubatorForm(true)}
-          className="btn-primary"
-        >
-          Add New Incubator
-        </button>
+        <h2 className="text-2xl font-bold">🔬 Incubators & Daily Monitoring</h2>
+        <div className="flex gap-2">
+          <button 
+            onClick={() => setShowDailyMonitoringForm(true)}
+            className="btn-secondary"
+          >
+            📊 Add Daily Reading
+          </button>
+          <button 
+            onClick={() => setShowAddIncubatorForm(true)}
+            className="btn-primary"
+          >
+            Add New Incubator
+          </button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {incubators.map((incubator) => (
-          <div key={incubator.id} className="incubator-card">
-            <h3 className="font-bold text-lg mb-2">{incubator.name}</h3>
-            <div className="space-y-1">
-              <p className="text-sm"><strong>Model:</strong> {incubator.model}</p>
-              <p className="text-sm"><strong>Capacity:</strong> {incubator.capacity} eggs</p>
-              <p className="text-sm"><strong>Temperature:</strong> {incubator.temperature_range}</p>
-              <p className="text-sm"><strong>Humidity:</strong> {incubator.humidity_range}</p>
-              <p className="text-sm"><strong>Turning:</strong> Every {incubator.turning_interval}h</p>
+      {/* Incubators Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        {incubators.map((incubator) => {
+          // Get latest monitoring data for this incubator
+          const latestMonitoring = monitoringData.find(m => m.incubator_id === incubator.id);
+          
+          return (
+            <div key={incubator.id} className="incubator-card bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+              <div className="flex justify-between items-start mb-3">
+                <h3 className="font-bold text-lg">{incubator.name}</h3>
+                <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                  {incubator.capacity} eggs
+                </span>
+              </div>
+              
+              <div className="space-y-2 mb-4">
+                <p className="text-sm"><strong>Model:</strong> {incubator.model}</p>
+                <p className="text-sm"><strong>Temperature:</strong> {incubator.temperature_range}</p>
+                <p className="text-sm"><strong>Humidity:</strong> {incubator.humidity_range}</p>
+                <p className="text-sm"><strong>Turning:</strong> Every {incubator.turning_interval}h</p>
+              </div>
+
+              {/* Latest Readings */}
+              {latestMonitoring && (
+                <div className="bg-gray-50 p-3 rounded-lg mb-3">
+                  <p className="text-xs font-semibold text-gray-600 mb-2">Latest Reading ({latestMonitoring.date})</p>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div>
+                      <span className="text-orange-600">🌡️</span> Avg: {latestMonitoring.daily_avg_temperature}°C
+                    </div>
+                    <div>
+                      <span className="text-blue-600">💧</span> Avg: {latestMonitoring.daily_avg_humidity}%
+                    </div>
+                  </div>
+                  {latestMonitoring.species_name && (
+                    <p className="text-xs text-gray-500 mt-1">Species: {latestMonitoring.species_name}</p>
+                  )}
+                </div>
+              )}
+
+              <div className="flex gap-2">
+                <button 
+                  className="btn-outline text-xs flex-1"
+                  onClick={() => {
+                    setSelectedIncubator(incubator);
+                    setDailyMonitoringForm({
+                      ...dailyMonitoringForm,
+                      incubator_id: incubator.id
+                    });
+                    setShowDailyMonitoringForm(true);
+                  }}
+                >
+                  📊 Add Reading
+                </button>
+                <button 
+                  className="btn-outline text-xs flex-1"
+                  onClick={() => {
+                    // View monitoring history
+                    console.log('View monitoring history for:', incubator.id);
+                  }}
+                >
+                  📈 History
+                </button>
+              </div>
+
+              {incubator.notes && (
+                <p className="text-sm text-gray-500 mt-2 italic">{incubator.notes}</p>
+              )}
             </div>
-            {incubator.notes && (
-              <p className="text-sm text-gray-500 mt-2 italic">{incubator.notes}</p>
-            )}
+          );
+        })}
+      </div>
+
+      {/* Daily Monitoring Table */}
+      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        <div className="bg-gray-50 px-6 py-4 border-b">
+          <h3 className="text-lg font-bold">📊 Daily Monitoring Records</h3>
+        </div>
+        
+        {monitoringData.length > 0 ? (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr className="text-left text-xs text-gray-600 uppercase tracking-wider">
+                  <th className="px-6 py-3">Date</th>
+                  <th className="px-6 py-3">Incubator</th>
+                  <th className="px-6 py-3">Species</th>
+                  <th className="px-6 py-3">Morning</th>
+                  <th className="px-6 py-3">Evening</th>
+                  <th className="px-6 py-3">Daily Average</th>
+                  <th className="px-6 py-3">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {monitoringData.slice(0, 10).map((monitoring) => (
+                  <tr key={monitoring.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      {new Date(monitoring.date).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      {monitoring.incubator?.name || 'Unknown'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      {monitoring.species_name || '-'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      <div>🌡️ {monitoring.morning_temperature}°C</div>
+                      <div>💧 {monitoring.morning_humidity}%</div>
+                      <div className="text-xs text-gray-500">{monitoring.morning_time}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      <div>🌡️ {monitoring.evening_temperature}°C</div>
+                      <div>💧 {monitoring.evening_humidity}%</div>
+                      <div className="text-xs text-gray-500">{monitoring.evening_time}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      <div className="font-semibold text-orange-600">🌡️ {monitoring.daily_avg_temperature}°C</div>
+                      <div className="font-semibold text-blue-600">💧 {monitoring.daily_avg_humidity}%</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      <div className="flex gap-1">
+                        <button 
+                          className="text-blue-600 hover:text-blue-800 text-xs"
+                          onClick={() => {
+                            // Edit monitoring entry
+                            console.log('Edit monitoring:', monitoring.id);
+                          }}
+                        >
+                          Edit
+                        </button>
+                        <button 
+                          className="text-red-600 hover:text-red-800 text-xs"
+                          onClick={() => {
+                            // Delete monitoring entry
+                            console.log('Delete monitoring:', monitoring.id);
+                          }}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        ))}
+        ) : (
+          <div className="text-center py-12 text-gray-500">
+            <p className="text-lg">No monitoring data found</p>
+            <p className="text-sm">Add daily temperature and humidity readings to track incubator performance</p>
+          </div>
+        )}
       </div>
     </div>
   );
