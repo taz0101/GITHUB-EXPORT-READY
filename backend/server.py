@@ -1484,6 +1484,122 @@ async def delete_daily_monitoring(monitoring_id: str):
         return {"message": "Daily monitoring entry deleted successfully"}
     raise HTTPException(status_code=404, detail="Daily monitoring entry not found")
 
+# Wildlife Permit endpoints
+def generate_permit_number():
+    """Generate auto-incrementing permit number"""
+    # Get the latest permit number
+    latest_permit = permits_collection.find_one(
+        {}, 
+        sort=[("permit_number", -1)]
+    )
+    
+    if latest_permit and latest_permit.get("permit_number"):
+        # Extract number from format "WP-2025-0001"
+        try:
+            last_number = int(latest_permit["permit_number"].split("-")[-1])
+            new_number = last_number + 1
+        except:
+            new_number = 1
+    else:
+        new_number = 1
+    
+    # Format: WP-YYYY-NNNN
+    current_year = datetime.now().year
+    return f"WP-{current_year}-{new_number:04d}"
+
+@app.post("/api/wildlife-permits")
+async def create_wildlife_permit(permit: WildlifePermit):
+    """Create a new wildlife permit"""
+    permit_dict = permit.dict()
+    permit_dict["id"] = str(uuid.uuid4())
+    permit_dict["permit_number"] = generate_permit_number()
+    permit_dict["created_at"] = datetime.now().isoformat()
+    
+    result = permits_collection.insert_one(permit_dict)
+    if result.inserted_id:
+        return {
+            "message": "Wildlife permit created successfully", 
+            "permit_id": permit_dict["id"],
+            "permit_number": permit_dict["permit_number"]
+        }
+    raise HTTPException(status_code=500, detail="Failed to create wildlife permit")
+
+@app.get("/api/wildlife-permits")
+async def get_wildlife_permits(
+    status: str = None,
+    customer_name: str = None,
+    date_from: str = None,
+    date_to: str = None
+):
+    """Get all wildlife permits with optional filters"""
+    query = {}
+    
+    if status:
+        query["status"] = status
+    
+    if customer_name:
+        query["customer_name"] = {"$regex": customer_name, "$options": "i"}
+    
+    if date_from or date_to:
+        date_query = {}
+        if date_from:
+            date_query["$gte"] = date_from
+        if date_to:
+            date_query["$lte"] = date_to
+        query["purchase_date"] = date_query
+    
+    permits = list(permits_collection.find(query, {"_id": 0}))
+    
+    # Sort by permit number (newest first)
+    permits.sort(key=lambda x: x.get("permit_number", ""), reverse=True)
+    
+    return {"permits": permits}
+
+@app.get("/api/wildlife-permits/{permit_id}")
+async def get_wildlife_permit(permit_id: str):
+    """Get specific wildlife permit"""
+    permit = permits_collection.find_one({"id": permit_id}, {"_id": 0})
+    if not permit:
+        raise HTTPException(status_code=404, detail="Wildlife permit not found")
+    return permit
+
+@app.put("/api/wildlife-permits/{permit_id}")
+async def update_wildlife_permit(permit_id: str, permit: WildlifePermit):
+    """Update wildlife permit"""
+    permit_dict = permit.dict()
+    permit_dict["id"] = permit_id
+    permit_dict["updated_at"] = datetime.now().isoformat()
+    
+    # Don't update permit_number if it already exists
+    existing_permit = permits_collection.find_one({"id": permit_id})
+    if existing_permit and existing_permit.get("permit_number"):
+        permit_dict["permit_number"] = existing_permit["permit_number"]
+    
+    result = permits_collection.update_one(
+        {"id": permit_id}, 
+        {"$set": permit_dict}
+    )
+    if result.modified_count:
+        return {"message": "Wildlife permit updated successfully"}
+    raise HTTPException(status_code=404, detail="Wildlife permit not found")
+
+@app.delete("/api/wildlife-permits/{permit_id}")
+async def delete_wildlife_permit(permit_id: str):
+    """Delete wildlife permit"""
+    permit = permits_collection.find_one({"id": permit_id})
+    if not permit:
+        raise HTTPException(status_code=404, detail="Wildlife permit not found")
+    
+    result = permits_collection.delete_one({"id": permit_id})
+    if result.deleted_count:
+        return {"message": f"Wildlife permit {permit.get('permit_number', permit_id)} deleted successfully"}
+    raise HTTPException(status_code=404, detail="Wildlife permit not found")
+
+@app.get("/api/wildlife-permits/next-number")
+async def get_next_permit_number():
+    """Get the next permit number that will be assigned"""
+    return {"next_permit_number": generate_permit_number()}
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)
