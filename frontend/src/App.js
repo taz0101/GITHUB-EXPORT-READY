@@ -1645,6 +1645,144 @@ function App() {
           </div>
         </div>
       )}
+
+      {/* Add Clutch Form Modal */}
+      {showAddClutchForm && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3 className="text-xl font-bold mb-4">Add New Clutch</h3>
+            <form onSubmit={handleAddClutch} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Breeding Pair *</label>
+                <select
+                  value={clutchForm.breeding_pair_id}
+                  onChange={(e) => setClutchForm({...clutchForm, breeding_pair_id: e.target.value})}
+                  className="form-input"
+                  required
+                >
+                  <option value="">Select Breeding Pair</option>
+                  {breedingPairs.map((pair) => (
+                    <option key={pair.id} value={pair.id}>
+                      Cage {pair.male_bird?.cage_number} × Cage {pair.female_bird?.cage_number} 
+                      ({pair.male_bird?.species} × {pair.female_bird?.species})
+                    </option>
+                  ))}
+                </select>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Clutch Number *</label>
+                  <input
+                    type="number"
+                    value={clutchForm.clutch_number}
+                    onChange={(e) => setClutchForm({...clutchForm, clutch_number: parseInt(e.target.value)})}
+                    className="form-input"
+                    min="1"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Eggs Laid *</label>
+                  <input
+                    type="number"
+                    value={clutchForm.eggs_laid}
+                    onChange={(e) => setClutchForm({...clutchForm, eggs_laid: parseInt(e.target.value)})}
+                    className="form-input"
+                    min="1"
+                    max="12"
+                    required
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-1">Egg Laying Date *</label>
+                <input
+                  type="date"
+                  value={clutchForm.egg_laying_date}
+                  onChange={(e) => setClutchForm({...clutchForm, egg_laying_date: e.target.value})}
+                  className="form-input"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-1">Expected Hatch Date *</label>
+                <input
+                  type="date"
+                  value={clutchForm.expected_hatch_date}
+                  onChange={(e) => setClutchForm({...clutchForm, expected_hatch_date: e.target.value})}
+                  className="form-input"
+                  required
+                />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Fertile Eggs</label>
+                  <input
+                    type="number"
+                    value={clutchForm.fertile_eggs}
+                    onChange={(e) => setClutchForm({...clutchForm, fertile_eggs: parseInt(e.target.value)})}
+                    className="form-input"
+                    min="0"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Hatched Count</label>
+                  <input
+                    type="number"
+                    value={clutchForm.hatched_count}
+                    onChange={(e) => setClutchForm({...clutchForm, hatched_count: parseInt(e.target.value)})}
+                    className="form-input"
+                    min="0"
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-1">Notes</label>
+                <textarea
+                  value={clutchForm.notes}
+                  onChange={(e) => setClutchForm({...clutchForm, notes: e.target.value})}
+                  className="form-input"
+                  rows="3"
+                  placeholder="Any additional notes about this clutch..."
+                />
+              </div>
+              
+              {/* Artificial Incubation Option */}
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <input
+                    type="checkbox"
+                    id="start_artificial_incubation"
+                    className="form-checkbox"
+                  />
+                  <label htmlFor="start_artificial_incubation" className="text-sm font-medium">
+                    🔬 Start Artificial Incubation Now
+                  </label>
+                </div>
+                <p className="text-xs text-gray-600">
+                  Check this option to immediately transfer eggs to an incubator for artificial incubation
+                </p>
+              </div>
+              
+              <div className="flex gap-2">
+                <button type="submit" className="btn-primary">Add Clutch</button>
+                <button 
+                  type="button" 
+                  onClick={() => setShowAddClutchForm(false)}
+                  className="btn-secondary"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
