@@ -1473,6 +1473,7 @@ function App() {
         {activeTab === 'chicks' && renderChicks()}
         {activeTab === 'incubators' && renderIncubators()}
         {activeTab === 'transactions' && renderTransactions()}
+        {activeTab === 'purchases' && renderPurchases()}
         {activeTab === 'reports' && renderReports()}
         {activeTab === 'species' && renderSpecies()}
       </main>
