@@ -264,6 +264,16 @@ function App() {
     }
   };
 
+  const fetchSpecies = async () => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/species`);
+      const data = await response.json();
+      setSpecies(data.species);
+    } catch (error) {
+      console.error('Error fetching species:', error);
+    }
+  };
+
   const fetchMainLicense = async () => {
     try {
       const response = await fetch(`${BACKEND_URL}/api/license`);
