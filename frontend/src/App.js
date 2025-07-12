@@ -3695,6 +3695,144 @@ function App() {
         </div>
       )}
 
+      {/* Incubator History Modal */}
+      {showHistoryModal && selectedIncubatorHistory && (
+        <div className="modal-overlay">
+          <div className="modal-content max-w-6xl">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold">
+                📈 Monitoring History: {selectedIncubatorHistory.name}
+              </h3>
+              <button 
+                onClick={() => {
+                  setShowHistoryModal(false);
+                  setSelectedIncubatorHistory(null);
+                  setHistoryData([]);
+                }}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                ✕
+              </button>
+            </div>
+            
+            <div className="mb-4 p-4 bg-gray-50 rounded-lg">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <div>
+                  <span className="font-medium">Model:</span> {selectedIncubatorHistory.model}
+                </div>
+                <div>
+                  <span className="font-medium">Capacity:</span> {selectedIncubatorHistory.capacity} eggs
+                </div>
+                <div>
+                  <span className="font-medium">Temperature:</span> {selectedIncubatorHistory.temperature_range}
+                </div>
+                <div>
+                  <span className="font-medium">Humidity:</span> {selectedIncubatorHistory.humidity_range}
+                </div>
+              </div>
+            </div>
+
+            {historyData.length > 0 ? (
+              <div>
+                <div className="flex justify-between items-center mb-4">
+                  <p className="text-sm text-gray-600">
+                    Total Records: {historyData.length}
+                  </p>
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={() => {
+                        // Export history for this incubator
+                        const csvHeaders = ['Date', 'Species', 'Morning Time', 'Morning Temp (°C)', 'Morning Humidity (%)', 'Evening Time', 'Evening Temp (°C)', 'Evening Humidity (%)', 'Daily Avg Temp (°C)', 'Daily Avg Humidity (%)', 'Notes'];
+                        const csvData = historyData.map(h => [
+                          h.date, h.species_name || '', h.morning_time, h.morning_temperature, h.morning_humidity,
+                          h.evening_time, h.evening_temperature, h.evening_humidity, 
+                          h.daily_avg_temperature, h.daily_avg_humidity, h.notes || ''
+                        ]);
+                        const csvContent = [csvHeaders, ...csvData].map(row => row.map(field => `"${field}"`).join(',')).join('\n');
+                        const blob = new Blob([csvContent], { type: 'text/csv' });
+                        const url = window.URL.createObjectURL(blob);
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.download = `${selectedIncubatorHistory.name}-history-${new Date().toISOString().split('T')[0]}.csv`;
+                        link.click();
+                        window.URL.revokeObjectURL(url);
+                      }}
+                      className="btn-outline text-sm"
+                    >
+                      📄 Export History
+                    </button>
+                  </div>
+                </div>
+
+                <div className="overflow-x-auto max-h-96">
+                  <table className="w-full">
+                    <thead className="bg-gray-50 sticky top-0">
+                      <tr className="text-left text-xs text-gray-600 uppercase tracking-wider">
+                        <th className="px-4 py-3">Date</th>
+                        <th className="px-4 py-3">Species</th>
+                        <th className="px-4 py-3">Morning</th>
+                        <th className="px-4 py-3">Evening</th>
+                        <th className="px-4 py-3">Daily Average</th>
+                        <th className="px-4 py-3">Notes</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200">
+                      {historyData.map((history) => (
+                        <tr key={history.id} className="hover:bg-gray-50">
+                          <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">
+                            {new Date(history.date).toLocaleDateString()}
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap text-sm">
+                            {history.species_name || '-'}
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap text-sm">
+                            <div className="text-xs text-gray-500">{history.morning_time}</div>
+                            <div>🌡️ {history.morning_temperature}°C</div>
+                            <div>💧 {history.morning_humidity}%</div>
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap text-sm">
+                            <div className="text-xs text-gray-500">{history.evening_time}</div>
+                            <div>🌡️ {history.evening_temperature}°C</div>
+                            <div>💧 {history.evening_humidity}%</div>
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap text-sm">
+                            <div className="font-semibold text-orange-600">🌡️ {history.daily_avg_temperature}°C</div>
+                            <div className="font-semibold text-blue-600">💧 {history.daily_avg_humidity}%</div>
+                          </td>
+                          <td className="px-4 py-3 text-sm max-w-xs">
+                            <div className="truncate" title={history.notes}>
+                              {history.notes || '-'}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-12 text-gray-500">
+                <p className="text-lg">📊 No monitoring history found</p>
+                <p className="text-sm">Start adding daily readings to build monitoring history for this incubator</p>
+              </div>
+            )}
+
+            <div className="mt-6 flex justify-end">
+              <button 
+                onClick={() => {
+                  setShowHistoryModal(false);
+                  setSelectedIncubatorHistory(null);
+                  setHistoryData([]);
+                }}
+                className="btn-secondary"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Edit Incubator Form Modal */}
       {showEditIncubatorForm && (
         <div className="modal-overlay">
