@@ -1747,6 +1747,194 @@ function App() {
     );
   };
 
+  // Render Balance
+  const renderBalance = () => {
+    // Filter data by date range if provided
+    const filterByDate = (item, dateField) => {
+      if (!balanceFilter.from_date && !balanceFilter.to_date) return true;
+      const itemDate = new Date(item[dateField]);
+      const fromDate = balanceFilter.from_date ? new Date(balanceFilter.from_date) : null;
+      const toDate = balanceFilter.to_date ? new Date(balanceFilter.to_date) : null;
+      
+      if (fromDate && itemDate < fromDate) return false;
+      if (toDate && itemDate > toDate) return false;
+      return true;
+    };
+
+    // Calculate expenses (negative)
+    const filteredExpenses = transactions
+      .filter(t => t.transaction_type === 'expense')
+      .filter(t => filterByDate(t, 'date'));
+    const totalExpenses = filteredExpenses.reduce((sum, expense) => sum + expense.amount, 0);
+
+    // Calculate bird purchases (negative)
+    const filteredPurchases = birds
+      .filter(bird => bird.is_purchased && bird.purchase_price && bird.purchase_date)
+      .filter(bird => filterByDate(bird, 'purchase_date'));
+    const totalPurchases = filteredPurchases.reduce((sum, bird) => sum + (bird.purchase_price || 0), 0);
+
+    // Calculate bird sales (positive) 
+    const filteredSales = transactions
+      .filter(t => t.transaction_type === 'sale')
+      .filter(t => filterByDate(t, 'date'));
+    const totalSales = filteredSales.reduce((sum, sale) => sum + sale.amount, 0);
+
+    // Calculate net balance
+    const netBalance = totalSales - totalExpenses - totalPurchases;
+    
+    // Get currency
+    const currency = balanceFilter.currency;
+
+    return (
+      <div className="balance-section">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold">⚖️ Balance</h2>
+          <div className="flex gap-2 items-center">
+            <span className="text-sm font-medium">From:</span>
+            <input
+              type="date"
+              value={balanceFilter.from_date}
+              onChange={(e) => setBalanceFilter({...balanceFilter, from_date: e.target.value})}
+              className="form-input text-sm"
+            />
+            <span className="text-sm font-medium">To:</span>
+            <input
+              type="date"
+              value={balanceFilter.to_date}
+              onChange={(e) => setBalanceFilter({...balanceFilter, to_date: e.target.value})}
+              className="form-input text-sm"
+            />
+            <button 
+              onClick={() => setBalanceFilter({from_date: '', to_date: '', currency: 'RM'})}
+              className="btn-outline text-sm"
+            >
+              Clear
+            </button>
+          </div>
+        </div>
+
+        {/* Net Balance Summary */}
+        <div className="bg-gradient-to-r from-blue-50 to-green-50 p-6 rounded-lg mb-6 border-l-4 border-blue-500">
+          <div className="text-center">
+            <p className="text-sm text-gray-600 mb-2">Net Balance</p>
+            <p className={`text-4xl font-bold ${netBalance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              {netBalance >= 0 ? '+' : ''}{currency} {netBalance.toFixed(2)}
+            </p>
+            <p className="text-sm text-gray-500 mt-2">
+              {netBalance >= 0 ? 'Profit' : 'Loss'} • {balanceFilter.from_date || 'All time'} to {balanceFilter.to_date || 'Now'}
+            </p>
+          </div>
+        </div>
+
+        {/* Financial Breakdown */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          {/* Sales (Positive) */}
+          <div className="balance-card bg-green-50 border border-green-200 rounded-lg p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
+                <span className="text-white text-xl">💰</span>
+              </div>
+              <div className="flex-1">
+                <h3 className="font-bold text-green-800">Bird Sales</h3>
+                <p className="text-sm text-green-600">({filteredSales.length})</p>
+              </div>
+              <div className="text-right">
+                <p className="text-xl font-bold text-green-600">
+                  +{currency} {totalSales.toFixed(2)}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Purchases (Negative) */}
+          <div className="balance-card bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
+                <span className="text-white text-xl">🛒</span>
+              </div>
+              <div className="flex-1">
+                <h3 className="font-bold text-blue-800">Bird Purchases</h3>
+                <p className="text-sm text-blue-600">({filteredPurchases.length})</p>
+              </div>
+              <div className="text-right">
+                <p className="text-xl font-bold text-blue-600">
+                  -{currency} {totalPurchases.toFixed(2)}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Expenses (Negative) */}
+          <div className="balance-card bg-red-50 border border-red-200 rounded-lg p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center">
+                <span className="text-white text-xl">💸</span>
+              </div>
+              <div className="flex-1">
+                <h3 className="font-bold text-red-800">Expenses</h3>
+                <p className="text-sm text-red-600">({filteredExpenses.length})</p>
+              </div>
+              <div className="text-right">
+                <p className="text-xl font-bold text-red-600">
+                  -{currency} {totalExpenses.toFixed(2)}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Detailed Financial Summary */}
+        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+          <div className="bg-gray-50 px-6 py-4 border-b">
+            <h3 className="text-lg font-bold">Financial Summary</h3>
+          </div>
+          <div className="p-6 space-y-4">
+            <div className="flex justify-between items-center py-2 border-b border-gray-100">
+              <span className="font-medium">Bird Sales Revenue</span>
+              <span className="text-green-600 font-bold">+{currency} {totalSales.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between items-center py-2 border-b border-gray-100">
+              <span className="font-medium">Bird Purchase Costs</span>
+              <span className="text-blue-600 font-bold">-{currency} {totalPurchases.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between items-center py-2 border-b border-gray-100">
+              <span className="font-medium">Operating Expenses</span>
+              <span className="text-red-600 font-bold">-{currency} {totalExpenses.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between items-center py-3 border-t-2 border-gray-300">
+              <span className="text-lg font-bold">Total Balance</span>
+              <span className={`text-xl font-bold ${netBalance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                {netBalance >= 0 ? '+' : ''}{currency} {netBalance.toFixed(2)}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Stats */}
+        <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="stat-card text-center">
+            <p className="text-2xl font-bold text-blue-600">{filteredPurchases.length}</p>
+            <p className="text-sm text-gray-600">Birds Purchased</p>
+          </div>
+          <div className="stat-card text-center">
+            <p className="text-2xl font-bold text-green-600">{filteredSales.length}</p>
+            <p className="text-sm text-gray-600">Birds Sold</p>
+          </div>
+          <div className="stat-card text-center">
+            <p className="text-2xl font-bold text-red-600">{filteredExpenses.length}</p>
+            <p className="text-sm text-gray-600">Expense Items</p>
+          </div>
+          <div className="stat-card text-center">
+            <p className="text-2xl font-bold text-purple-600">
+              {filteredSales.length > 0 ? `${currency} ${(totalSales / filteredSales.length).toFixed(2)}` : `${currency} 0.00`}
+            </p>
+            <p className="text-sm text-gray-600">Avg Sale Price</p>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="app">
       <header className="header">
