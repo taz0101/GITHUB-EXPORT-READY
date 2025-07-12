@@ -1205,6 +1205,107 @@ async def get_dashboard():
         "license_alerts": license_alerts
     }
 
+# Species Management endpoints
+@app.post("/api/species")
+async def create_species(species: Species):
+    """Create a new species"""
+    # Check if species already exists
+    existing = species_collection.find_one({"name": {"$regex": f"^{species.name}$", "$options": "i"}})
+    if existing:
+        raise HTTPException(status_code=400, detail="Species already exists")
+    
+    species_dict = species.dict()
+    species_dict["id"] = str(uuid.uuid4())
+    species_dict["created_at"] = datetime.now().isoformat()
+    
+    result = species_collection.insert_one(species_dict)
+    if result.inserted_id:
+        return {"message": "Species created successfully", "species_id": species_dict["id"]}
+    raise HTTPException(status_code=500, detail="Failed to create species")
+
+@app.get("/api/species")
+async def get_species():
+    """Get all species with bird counts"""
+    species_list = list(species_collection.find({}, {"_id": 0}))
+    
+    # Add bird count for each species
+    for species in species_list:
+        bird_count = birds_collection.count_documents({"species": species["name"]})
+        species["bird_count"] = bird_count
+    
+    # Sort by name
+    species_list.sort(key=lambda x: x["name"])
+    
+    return {"species": species_list}
+
+@app.get("/api/species/{species_id}")
+async def get_species_detail(species_id: str):
+    """Get detailed information about a species"""
+    species = species_collection.find_one({"id": species_id}, {"_id": 0})
+    if not species:
+        raise HTTPException(status_code=404, detail="Species not found")
+    
+    # Get birds of this species
+    birds = list(birds_collection.find({"species": species["name"]}, {"_id": 0}))
+    
+    # Get breeding pairs of this species
+    pairs = list(breeding_pairs_collection.find({}, {"_id": 0}))
+    species_pairs = []
+    
+    for pair in pairs:
+        male_bird = birds_collection.find_one({"id": pair["male_bird_id"]}, {"_id": 0})
+        female_bird = birds_collection.find_one({"id": pair["female_bird_id"]}, {"_id": 0})
+        
+        if (male_bird and male_bird["species"] == species["name"]) or \
+           (female_bird and female_bird["species"] == species["name"]):
+            pair["male_bird"] = male_bird
+            pair["female_bird"] = female_bird
+            species_pairs.append(pair)
+    
+    species["birds"] = birds
+    species["breeding_pairs"] = species_pairs
+    species["statistics"] = {
+        "total_birds": len(birds),
+        "male_birds": len([b for b in birds if b["gender"] == "male"]),
+        "female_birds": len([b for b in birds if b["gender"] == "female"]),
+        "breeding_pairs": len(species_pairs),
+        "active_birds": len([b for b in birds if b["status"] == "active"])
+    }
+    
+    return species
+
+@app.put("/api/species/{species_id}")
+async def update_species(species_id: str, species: Species):
+    """Update species information"""
+    species_dict = species.dict()
+    species_dict["id"] = species_id
+    species_dict["updated_at"] = datetime.now().isoformat()
+    
+    result = species_collection.update_one(
+        {"id": species_id}, 
+        {"$set": species_dict}
+    )
+    if result.modified_count:
+        return {"message": "Species updated successfully"}
+    raise HTTPException(status_code=404, detail="Species not found")
+
+@app.delete("/api/species/{species_id}")
+async def delete_species(species_id: str):
+    """Delete a species (only if no birds exist)"""
+    species = species_collection.find_one({"id": species_id})
+    if not species:
+        raise HTTPException(status_code=404, detail="Species not found")
+    
+    # Check if any birds exist with this species
+    bird_count = birds_collection.count_documents({"species": species["name"]})
+    if bird_count > 0:
+        raise HTTPException(status_code=400, detail=f"Cannot delete species. {bird_count} birds still exist with this species.")
+    
+    result = species_collection.delete_one({"id": species_id})
+    if result.deleted_count:
+        return {"message": "Species deleted successfully"}
+    raise HTTPException(status_code=404, detail="Species not found")
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)
