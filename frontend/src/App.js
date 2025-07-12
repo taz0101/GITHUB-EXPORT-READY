@@ -2001,6 +2001,127 @@ function App() {
     </div>
   );
 
+  // Render Permits
+  const renderPermits = () => (
+    <div className="permits-section">
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h2 className="text-2xl font-bold">📋 Wildlife Permits</h2>
+          <p className="text-sm text-gray-600 mt-1">Issue official permits for wildlife purchases</p>
+        </div>
+        <button 
+          onClick={() => setShowAddPermitForm(true)}
+          className="btn-primary"
+        >
+          📋 Issue New Permit
+        </button>
+      </div>
+
+      {/* Permits Summary */}
+      <div className="bg-gray-50 p-4 rounded-lg mb-6">
+        <div className="grid grid-cols-3 gap-4 text-center">
+          <div>
+            <p className="text-2xl font-bold text-green-600">{permits.filter(p => p.status === 'active').length}</p>
+            <p className="text-sm text-gray-600">Active Permits</p>
+          </div>
+          <div>
+            <p className="text-2xl font-bold text-orange-600">{permits.filter(p => p.status === 'expired').length}</p>
+            <p className="text-sm text-gray-600">Expired Permits</p>
+          </div>
+          <div>
+            <p className="text-2xl font-bold text-blue-600">{permits.length}</p>
+            <p className="text-sm text-gray-600">Total Issued</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Permits List */}
+      <div className="space-y-4">
+        {permits.map((permit) => (
+          <div key={permit.id} className="permit-card bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+            <div className="flex justify-between items-start">
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-2">
+                  <h3 className="font-bold text-lg text-blue-800">
+                    {permit.permit_number}
+                  </h3>
+                  <span className={`text-xs px-2 py-1 rounded ${
+                    permit.status === 'active' ? 'bg-green-100 text-green-800' : 
+                    permit.status === 'expired' ? 'bg-red-100 text-red-800' : 
+                    'bg-gray-100 text-gray-800'
+                  }`}>
+                    {permit.status.toUpperCase()}
+                  </span>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <p><strong>Customer:</strong> {permit.customer_name}</p>
+                    <p><strong>IC/Passport:</strong> {permit.customer_ic_passport}</p>
+                    <p><strong>Phone:</strong> {permit.customer_phone}</p>
+                  </div>
+                  <div>
+                    <p><strong>License No:</strong> {permit.license_number}</p>
+                    <p><strong>Purchase Date:</strong> {new Date(permit.purchase_date).toLocaleDateString()}</p>
+                    <p><strong>Expiry Date:</strong> {new Date(permit.expiry_date).toLocaleDateString()}</p>
+                  </div>
+                </div>
+                
+                <div className="mt-3">
+                  <p className="text-sm font-medium">Birds:</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-1">
+                    {permit.birds.map((bird, index) => (
+                      <div key={index} className="text-sm bg-gray-50 p-2 rounded">
+                        <span className="font-medium">{bird.type}</span> - 
+                        Qty: {bird.quantity} - 
+                        {permit.currency} {parseFloat(bird.price).toFixed(2)}
+                        {bird.marking_number && <span className="text-gray-600"> ({bird.marking_number})</span>}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              
+              <div className="text-right">
+                <p className="text-xl font-bold text-green-600">
+                  {permit.currency} {permit.total_amount.toFixed(2)}
+                </p>
+                <div className="mt-4 space-y-2">
+                  <button 
+                    className="btn-outline text-xs w-full"
+                    onClick={() => {
+                      setSelectedPermit(permit);
+                      setShowPermitPreview(true);
+                    }}
+                  >
+                    🖨️ Print Permit
+                  </button>
+                  <button 
+                    className="btn-outline text-xs w-full"
+                    onClick={() => {
+                      // Edit permit
+                      console.log('Edit permit:', permit.id);
+                    }}
+                  >
+                    ✏️ Edit
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Empty State */}
+      {permits.length === 0 && (
+        <div className="text-center py-12 text-gray-500">
+          <p className="text-lg">📋 No permits issued yet</p>
+          <p className="text-sm">Create your first wildlife permit for customers</p>
+        </div>
+      )}
+    </div>
+  );
+
   // Render Purchases
   const renderPurchases = () => {
     // Filter birds that were purchased (have purchase information)
