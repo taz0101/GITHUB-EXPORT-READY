@@ -699,6 +699,54 @@ function App() {
     }
   };
 
+  const handleEditIncubator = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/incubators/${editingIncubator.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(incubatorForm),
+      });
+      
+      if (response.ok) {
+        setIncubatorForm({
+          name: '',
+          model: '',
+          capacity: 0,
+          temperature_range: '',
+          humidity_range: '',
+          turning_interval: 2,
+          notes: ''
+        });
+        setShowEditIncubatorForm(false);
+        setEditingIncubator(null);
+        fetchIncubators();
+        fetchDashboard();
+      }
+    } catch (error) {
+      console.error('Error editing incubator:', error);
+    }
+  };
+
+  const handleDeleteIncubator = async (incubatorId) => {
+    if (window.confirm('Are you sure you want to delete this incubator? This action cannot be undone.')) {
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/incubators/${incubatorId}`, {
+          method: 'DELETE',
+        });
+        
+        if (response.ok) {
+          fetchIncubators();
+          fetchDashboard();
+        }
+      } catch (error) {
+        console.error('Error deleting incubator:', error);
+      }
+    }
+  };
+
   const handleAddArtificialIncubation = async (e) => {
     e.preventDefault();
     try {
