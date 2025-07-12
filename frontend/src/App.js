@@ -1617,6 +1617,12 @@ function App() {
             Purchases
           </button>
           <button 
+            onClick={() => setActiveTab('expenses')}
+            className={`nav-btn ${activeTab === 'expenses' ? 'active' : ''}`}
+          >
+            Expenses
+          </button>
+          <button 
             onClick={() => setActiveTab('reports')}
             className={`nav-btn ${activeTab === 'reports' ? 'active' : ''}`}
           >
