@@ -382,6 +382,7 @@ function App() {
     fetchIncubators();
     fetchArtificialIncubations();
     fetchSpecies();
+    fetchMonitoringData();
     fetchDashboard();
     fetchMainLicense();
     fetchNotifications();
