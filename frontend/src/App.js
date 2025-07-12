@@ -925,52 +925,6 @@ function App() {
   };
 
   // Helper function to check if readings are within acceptable range
-    e.preventDefault();
-    try {
-      const monitoringData = {
-        incubator_id: dailyMonitoringForm.incubator_id,
-        date: dailyMonitoringForm.date,
-        species_name: dailyMonitoringForm.species_name,
-        morning_temperature: parseFloat(dailyMonitoringForm.morning_temperature),
-        morning_humidity: parseFloat(dailyMonitoringForm.morning_humidity),
-        morning_time: dailyMonitoringForm.morning_time,
-        evening_temperature: parseFloat(dailyMonitoringForm.evening_temperature),
-        evening_humidity: parseFloat(dailyMonitoringForm.evening_humidity),
-        evening_time: dailyMonitoringForm.evening_time,
-        notes: dailyMonitoringForm.notes
-      };
-
-      const response = await fetch(`${BACKEND_URL}/api/daily-monitoring`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(monitoringData),
-      });
-      
-      if (response.ok) {
-        setDailyMonitoringForm({
-          incubator_id: '',
-          date: new Date().toISOString().split('T')[0],
-          species_name: '',
-          morning_temperature: '',
-          morning_humidity: '',
-          morning_time: '08:00',
-          evening_temperature: '',
-          evening_humidity: '',
-          evening_time: '19:00',
-          notes: ''
-        });
-        setShowDailyMonitoringForm(false);
-        fetchMonitoringData();
-        fetchDashboard();
-      }
-    } catch (error) {
-      console.error('Error adding daily monitoring:', error);
-    }
-  };
-
-  // Helper function to check if readings are within acceptable range
   const checkReadingAlerts = (temperature, humidity, incubator) => {
     const alerts = [];
     
