@@ -34,6 +34,7 @@ license_collection = db.license
 incubators_collection = db.incubators
 artificial_incubation_collection = db.artificial_incubation
 incubation_logs_collection = db.incubation_logs
+species_collection = db.species
 
 # Pydantic models
 class Bird(BaseModel):
