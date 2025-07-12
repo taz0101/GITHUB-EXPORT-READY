@@ -875,11 +875,46 @@ function App() {
             {pair.license_alert === 'critical' && (
               <p className="text-sm text-orange-600 font-bold mb-2">License expires in {pair.days_until_expiry} days</p>
             )}
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center mb-2">
               <p className="text-sm text-gray-500">
                 Paired: {new Date(pair.pair_date).toLocaleDateString()}
               </p>
               <span className={`status-badge ${pair.status}`}>{pair.status}</span>
+            </div>
+            
+            {/* Clutch Management Buttons */}
+            <div className="mt-4 space-y-2">
+              <button 
+                className="w-full btn-secondary text-sm"
+                onClick={() => {
+                  // Set the selected pair for clutch creation
+                  setClutchForm(prev => ({ ...prev, breeding_pair_id: pair.id }));
+                  setShowAddClutchForm(true);
+                }}
+              >
+                🥚 Add Clutch
+              </button>
+              
+              <div className="flex gap-2">
+                <button 
+                  className="flex-1 btn-outline text-sm"
+                  onClick={() => {
+                    // Navigate to clutches tab filtered by this pair
+                    setActiveTab('clutches');
+                  }}
+                >
+                  View Clutches
+                </button>
+                <button 
+                  className="flex-1 btn-outline text-sm"
+                  onClick={() => {
+                    // Navigate to pair details view
+                    console.log('View pair details:', pair.id);
+                  }}
+                >
+                  View Details
+                </button>
+              </div>
             </div>
           </div>
         ))}
