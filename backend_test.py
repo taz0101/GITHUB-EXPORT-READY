@@ -1014,6 +1014,27 @@ class ParrotBreedingAPITest(unittest.TestCase):
         """Clean up test data"""
         print("\n--- Cleaning Up Test Data ---")
         
+        # Delete transactions if created
+        for tx_id, tx_name in [
+            (self.transaction_purchase_id, "purchase transaction"),
+            (self.transaction_sale_id, "sale transaction"), 
+            (self.transaction_expense_id, "expense transaction")
+        ]:
+            if tx_id:
+                response = requests.delete(f"{BASE_URL}/api/transactions/{tx_id}")
+                if hasattr(response, 'status_code') and response.status_code == 200:
+                    print(f"✅ Deleted {tx_name}: {tx_id}")
+                else:
+                    print(f"⚠️ Could not delete {tx_name}: {tx_id}")
+        
+        # Delete species if created (only if no birds exist)
+        if self.species_id:
+            response = requests.delete(f"{BASE_URL}/api/species/{self.species_id}")
+            if hasattr(response, 'status_code') and response.status_code == 200:
+                print(f"✅ Deleted species: {self.species_id}")
+            else:
+                print(f"⚠️ Could not delete species: {self.species_id}")
+        
         # Delete incubation log if created
         if self.incubation_log_id:
             response = requests.delete(f"{BASE_URL}/api/incubation-logs/{self.incubation_log_id}")
