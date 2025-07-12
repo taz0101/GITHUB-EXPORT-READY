@@ -1545,29 +1545,58 @@ function App() {
                 </div>
               )}
 
-              <div className="flex gap-2">
-                <button 
-                  className="btn-outline text-xs flex-1"
-                  onClick={() => {
-                    setSelectedIncubator(incubator);
-                    setDailyMonitoringForm({
-                      ...dailyMonitoringForm,
-                      incubator_id: incubator.id
-                    });
-                    setShowDailyMonitoringForm(true);
-                  }}
-                >
-                  📊 Add Reading
-                </button>
-                <button 
-                  className="btn-outline text-xs flex-1"
-                  onClick={() => {
-                    // View monitoring history
-                    console.log('View monitoring history for:', incubator.id);
-                  }}
-                >
-                  📈 History
-                </button>
+              <div className="space-y-2">
+                <div className="flex gap-2">
+                  <button 
+                    className="btn-outline text-xs flex-1"
+                    onClick={() => {
+                      setSelectedIncubator(incubator);
+                      setDailyMonitoringForm({
+                        ...dailyMonitoringForm,
+                        incubator_id: incubator.id
+                      });
+                      setShowDailyMonitoringForm(true);
+                    }}
+                  >
+                    📊 Add Reading
+                  </button>
+                  <button 
+                    className="btn-outline text-xs flex-1"
+                    onClick={() => {
+                      // View monitoring history
+                      console.log('View monitoring history for:', incubator.id);
+                    }}
+                  >
+                    📈 History
+                  </button>
+                </div>
+                
+                <div className="flex gap-2">
+                  <button 
+                    className="btn-outline text-xs flex-1"
+                    onClick={() => {
+                      setEditingIncubator(incubator);
+                      setIncubatorForm({
+                        name: incubator.name,
+                        model: incubator.model,
+                        capacity: incubator.capacity,
+                        temperature_range: incubator.temperature_range,
+                        humidity_range: incubator.humidity_range,
+                        turning_interval: incubator.turning_interval,
+                        notes: incubator.notes || ''
+                      });
+                      setShowEditIncubatorForm(true);
+                    }}
+                  >
+                    ✏️ Edit
+                  </button>
+                  <button 
+                    className="btn-outline text-xs flex-1 text-red-600 hover:text-red-800"
+                    onClick={() => handleDeleteIncubator(incubator.id)}
+                  >
+                    🗑️ Delete
+                  </button>
+                </div>
               </div>
 
               {incubator.notes && (
