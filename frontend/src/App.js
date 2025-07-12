@@ -3265,6 +3265,180 @@ function App() {
           </div>
         </div>
       )}
+
+      {/* Daily Monitoring Form Modal */}
+      {showDailyMonitoringForm && (
+        <div className="modal-overlay">
+          <div className="modal-content max-w-2xl">
+            <h3 className="text-xl font-bold mb-4">📊 Daily Monitoring Entry</h3>
+            <form onSubmit={handleAddDailyMonitoring} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Incubator *</label>
+                  <select
+                    value={dailyMonitoringForm.incubator_id}
+                    onChange={(e) => setDailyMonitoringForm({...dailyMonitoringForm, incubator_id: e.target.value})}
+                    className="form-input"
+                    required
+                  >
+                    <option value="">Select Incubator</option>
+                    {incubators.map((incubator) => (
+                      <option key={incubator.id} value={incubator.id}>
+                        {incubator.name} ({incubator.model})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium mb-1">Date *</label>
+                  <input
+                    type="date"
+                    value={dailyMonitoringForm.date}
+                    onChange={(e) => setDailyMonitoringForm({...dailyMonitoringForm, date: e.target.value})}
+                    className="form-input"
+                    required
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-1">Species Name</label>
+                <select
+                  value={dailyMonitoringForm.species_name}
+                  onChange={(e) => setDailyMonitoringForm({...dailyMonitoringForm, species_name: e.target.value})}
+                  className="form-input"
+                >
+                  <option value="">Select Species (Optional)</option>
+                  {species.map((speciesItem) => (
+                    <option key={speciesItem.id} value={speciesItem.name}>
+                      {speciesItem.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              
+              {/* Morning Readings */}
+              <div className="bg-orange-50 p-4 rounded-lg">
+                <h4 className="font-medium text-orange-800 mb-3">🌅 Morning Reading</h4>
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Time</label>
+                    <input
+                      type="time"
+                      value={dailyMonitoringForm.morning_time}
+                      onChange={(e) => setDailyMonitoringForm({...dailyMonitoringForm, morning_time: e.target.value})}
+                      className="form-input"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Temperature (°C) *</label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      min="30"
+                      max="45"
+                      value={dailyMonitoringForm.morning_temperature}
+                      onChange={(e) => setDailyMonitoringForm({...dailyMonitoringForm, morning_temperature: e.target.value})}
+                      className="form-input"
+                      placeholder="37.5"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Humidity (%) *</label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      min="0"
+                      max="100"
+                      value={dailyMonitoringForm.morning_humidity}
+                      onChange={(e) => setDailyMonitoringForm({...dailyMonitoringForm, morning_humidity: e.target.value})}
+                      className="form-input"
+                      placeholder="55.0"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+              
+              {/* Evening Readings */}
+              <div className="bg-purple-50 p-4 rounded-lg">
+                <h4 className="font-medium text-purple-800 mb-3">🌆 Evening Reading</h4>
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Time</label>
+                    <input
+                      type="time"
+                      value={dailyMonitoringForm.evening_time}
+                      onChange={(e) => setDailyMonitoringForm({...dailyMonitoringForm, evening_time: e.target.value})}
+                      className="form-input"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Temperature (°C) *</label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      min="30"
+                      max="45"
+                      value={dailyMonitoringForm.evening_temperature}
+                      onChange={(e) => setDailyMonitoringForm({...dailyMonitoringForm, evening_temperature: e.target.value})}
+                      className="form-input"
+                      placeholder="37.3"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Humidity (%) *</label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      min="0"
+                      max="100"
+                      value={dailyMonitoringForm.evening_humidity}
+                      onChange={(e) => setDailyMonitoringForm({...dailyMonitoringForm, evening_humidity: e.target.value})}
+                      className="form-input"
+                      placeholder="60.0"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-1">Notes</label>
+                <textarea
+                  value={dailyMonitoringForm.notes}
+                  onChange={(e) => setDailyMonitoringForm({...dailyMonitoringForm, notes: e.target.value})}
+                  className="form-input"
+                  rows="2"
+                  placeholder="Any observations, concerns, or maintenance notes..."
+                />
+              </div>
+              
+              <div className="bg-blue-50 p-3 rounded-lg">
+                <p className="text-sm text-blue-800">
+                  <strong>📈 Daily averages will be calculated automatically:</strong><br/>
+                  • Temperature average from morning and evening readings<br/>
+                  • Humidity average from morning and evening readings
+                </p>
+              </div>
+              
+              <div className="flex gap-2">
+                <button type="submit" className="btn-primary">Add Daily Reading</button>
+                <button 
+                  type="button" 
+                  onClick={() => setShowDailyMonitoringForm(false)}
+                  className="btn-secondary"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
