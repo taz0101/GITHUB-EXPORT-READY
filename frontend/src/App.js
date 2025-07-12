@@ -1362,6 +1362,151 @@ function App() {
     </div>
   );
 
+  // Render Purchases
+  const renderPurchases = () => {
+    // Filter birds that were purchased (have purchase information)
+    const purchasedBirds = birds.filter(bird => bird.purchase_price && bird.purchase_date);
+    
+    // Calculate totals
+    const totalBirds = purchasedBirds.length;
+    const totalAmount = purchasedBirds.reduce((sum, bird) => sum + (bird.purchase_price || 0), 0);
+    const currency = purchasedBirds[0]?.purchase_currency || 'RM';
+    
+    // Group by year and month for filtering
+    const currentYear = new Date().getFullYear();
+    const currentMonth = new Date().getMonth();
+    
+    return (
+      <div className="purchases-section">
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h2 className="text-2xl font-bold">🛒 Purchases</h2>
+            <div className="text-sm text-gray-600 mt-1">
+              {totalBirds} birds • {currency} {totalAmount.toFixed(2)}
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <select className="form-input text-sm">
+              <option value="">All Years</option>
+              <option value="2025">2025</option>
+              <option value="2024">2024</option>
+              <option value="2023">2023</option>
+            </select>
+            <select className="form-input text-sm">
+              <option value="">All Months</option>
+              <option value="0">January</option>
+              <option value="1">February</option>
+              <option value="2">March</option>
+              <option value="3">April</option>
+              <option value="4">May</option>
+              <option value="5">June</option>
+              <option value="6">July</option>
+              <option value="7">August</option>
+              <option value="8">September</option>
+              <option value="9">October</option>
+              <option value="10">November</option>
+              <option value="11">December</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Purchase Summary Stats */}
+        <div className="bg-gray-50 p-4 rounded-lg mb-6">
+          <div className="grid grid-cols-3 gap-4 text-center">
+            <div>
+              <p className="text-2xl font-bold text-blue-600">{totalBirds}</p>
+              <p className="text-sm text-gray-600">Total Birds</p>
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-green-600">{currency} {totalAmount.toFixed(2)}</p>
+              <p className="text-sm text-gray-600">Total Spent</p>
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-purple-600">
+                {totalBirds > 0 ? `${currency} ${(totalAmount / totalBirds).toFixed(2)}` : `${currency} 0.00`}
+              </p>
+              <p className="text-sm text-gray-600">Average Cost</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Purchased Birds List */}
+        <div className="space-y-3">
+          {purchasedBirds.map((bird) => (
+            <div key={bird.id} className="purchase-bird-card bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+              <div className="flex items-center gap-4">
+                {/* Bird Image/Icon */}
+                <div className="w-16 h-16 bg-gradient-to-br from-orange-400 to-red-500 rounded-lg flex items-center justify-center">
+                  <div className="text-white text-2xl">🦜</div>
+                </div>
+                
+                {/* Bird Info */}
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-bold text-lg">{bird.ring_number || `Bird-${bird.id.slice(-4)}`}</h3>
+                    <span className={`text-lg ${bird.gender === 'male' ? 'text-blue-500' : 'text-pink-500'}`}>
+                      {bird.gender === 'male' ? '♂' : '♀'}
+                    </span>
+                  </div>
+                  <p className="text-sm font-medium text-gray-700">{bird.species}</p>
+                  <p className="text-xs text-gray-500">Cage {bird.cage_number || 'Not Set'}</p>
+                </div>
+                
+                {/* Purchase Date */}
+                <div className="text-center">
+                  <p className="text-sm text-gray-600">
+                    {new Date(bird.purchase_date).toLocaleDateString()}
+                  </p>
+                  <p className="text-xs text-gray-400">Purchase Date</p>
+                </div>
+                
+                {/* Purchase Price */}
+                <div className="text-right">
+                  <p className="text-lg font-bold text-green-600">
+                    {bird.purchase_currency || 'RM'} {bird.purchase_price.toFixed(2)}
+                  </p>
+                  {bird.purchase_source && (
+                    <p className="text-xs text-gray-500">From: {bird.purchase_source}</p>
+                  )}
+                </div>
+                
+                {/* Actions */}
+                <div className="flex flex-col gap-1">
+                  <button 
+                    className="btn-outline text-xs px-3 py-1"
+                    onClick={() => {
+                      // View bird details
+                      console.log('View bird details:', bird.id);
+                    }}
+                  >
+                    View
+                  </button>
+                  <button 
+                    className="btn-outline text-xs px-3 py-1"
+                    onClick={() => {
+                      // Edit purchase info
+                      console.log('Edit purchase:', bird.id);
+                    }}
+                  >
+                    Edit
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Empty State */}
+        {purchasedBirds.length === 0 && (
+          <div className="text-center py-12 text-gray-500">
+            <p className="text-lg">No purchased birds found</p>
+            <p className="text-sm">Add birds with purchase information to see them here</p>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="app">
       <header className="header">
