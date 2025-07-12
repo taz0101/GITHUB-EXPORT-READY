@@ -245,6 +245,37 @@ async def update_incubator(incubator_id: str, incubator: Incubator):
         return {"message": "Incubator updated successfully"}
     raise HTTPException(status_code=404, detail="Incubator not found")
 
+@app.delete("/api/incubators/{incubator_id}")
+async def delete_incubator(incubator_id: str):
+    """Delete an incubator (only if not in use for artificial incubation)"""
+    # Check if incubator exists
+    incubator = incubators_collection.find_one({"id": incubator_id})
+    if not incubator:
+        raise HTTPException(status_code=404, detail="Incubator not found")
+    
+    # Check if incubator is currently in use for artificial incubation
+    active_incubations = artificial_incubation_collection.count_documents({
+        "incubator_id": incubator_id,
+        "status": {"$in": ["incubating", "hatching"]}
+    })
+    
+    if active_incubations > 0:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Cannot delete incubator. It is currently being used for {active_incubations} active artificial incubation(s)."
+        )
+    
+    # Check if there are any daily monitoring records
+    monitoring_records = daily_monitoring_collection.count_documents({"incubator_id": incubator_id})
+    
+    result = incubators_collection.delete_one({"id": incubator_id})
+    if result.deleted_count:
+        message = f"Incubator '{incubator['name']}' deleted successfully"
+        if monitoring_records > 0:
+            message += f" (Note: {monitoring_records} monitoring records were preserved for historical data)"
+        return {"message": message}
+    raise HTTPException(status_code=404, detail="Incubator not found")
+
 # Artificial Incubation endpoints
 @app.post("/api/artificial-incubation")
 async def create_artificial_incubation(incubation: ArtificialIncubation):
