@@ -708,7 +708,309 @@ class ParrotBreedingAPITest(unittest.TestCase):
         print(f"✅ Retrieved {len(artificial_hatching_notifications)} artificial hatching notifications")
         print(f"   - Artificial hatching alerts: {notifications['counts'].get('artificial_hatching', 0)}")
     
-    def test_16_cleanup(self):
+    def test_16_species_management_crud(self):
+        """Test Species Management API endpoints"""
+        print("\n--- Testing Species Management CRUD Operations ---")
+        
+        # Create new species (African Grey Parrot)
+        response = requests.post(f"{BASE_URL}/api/species", json=self.test_species)
+        self.assertEqual(response.status_code, 200)
+        result = response.json()
+        self.assertIn("species_id", result)
+        self.species_id = result["species_id"]
+        print(f"✅ Created species with ID: {self.species_id}")
+        
+        # Get all species
+        response = requests.get(f"{BASE_URL}/api/species")
+        self.assertEqual(response.status_code, 200)
+        result = response.json()
+        self.assertIn("species", result)
+        self.assertIsInstance(result["species"], list)
+        
+        # Find our created species
+        created_species = None
+        for species in result["species"]:
+            if species["id"] == self.species_id:
+                created_species = species
+                break
+        
+        self.assertIsNotNone(created_species)
+        self.assertEqual(created_species["name"], self.test_species["name"])
+        self.assertEqual(created_species["scientific_name"], self.test_species["scientific_name"])
+        self.assertEqual(created_species["incubation_period"], self.test_species["incubation_period"])
+        self.assertIn("bird_count", created_species)
+        print(f"✅ Retrieved all species: {len(result['species'])} species found")
+        print(f"✅ Verified species data: {created_species['name']} with {created_species['bird_count']} birds")
+        
+        # Get specific species details
+        response = requests.get(f"{BASE_URL}/api/species/{self.species_id}")
+        self.assertEqual(response.status_code, 200)
+        species_detail = response.json()
+        self.assertEqual(species_detail["id"], self.species_id)
+        self.assertEqual(species_detail["name"], self.test_species["name"])
+        self.assertIn("birds", species_detail)
+        self.assertIn("breeding_pairs", species_detail)
+        self.assertIn("statistics", species_detail)
+        print(f"✅ Retrieved species details with statistics")
+        
+        # Update species
+        update_data = self.test_species.copy()
+        update_data["notes"] = "Updated species notes for testing"
+        update_data["average_lifespan"] = 55  # Updated lifespan
+        
+        response = requests.put(f"{BASE_URL}/api/species/{self.species_id}", json=update_data)
+        self.assertEqual(response.status_code, 200)
+        print(f"✅ Updated species successfully")
+        
+        # Verify update
+        response = requests.get(f"{BASE_URL}/api/species/{self.species_id}")
+        self.assertEqual(response.status_code, 200)
+        updated_species = response.json()
+        self.assertEqual(updated_species["notes"], "Updated species notes for testing")
+        self.assertEqual(updated_species["average_lifespan"], 55)
+        print(f"✅ Verified species update: lifespan={updated_species['average_lifespan']}")
+        
+        # Test duplicate species creation (should fail)
+        response = requests.post(f"{BASE_URL}/api/species", json=self.test_species)
+        self.assertEqual(response.status_code, 400)
+        print(f"✅ Correctly rejected duplicate species creation")
+    
+    def test_17_create_bird_with_species(self):
+        """Test creating a bird with the new species"""
+        print("\n--- Testing Bird Creation with New Species ---")
+        
+        # Skip if species ID is not set
+        if not self.species_id:
+            self.skipTest("Species ID not set, skipping bird creation test")
+        
+        # Update test bird data to use the new species
+        bird_with_species = self.test_male_bird.copy()
+        bird_with_species["species"] = self.test_species["name"]  # Use the species name
+        
+        # Create bird with new species
+        response = requests.post(f"{BASE_URL}/api/birds", json=bird_with_species)
+        self.assertEqual(response.status_code, 200)
+        result = response.json()
+        self.assertIn("bird_id", result)
+        new_bird_id = result["bird_id"]
+        print(f"✅ Created bird with new species: {new_bird_id}")
+        
+        # Verify bird was created with correct species
+        response = requests.get(f"{BASE_URL}/api/birds/{new_bird_id}")
+        self.assertEqual(response.status_code, 200)
+        bird = response.json()
+        self.assertEqual(bird["species"], self.test_species["name"])
+        print(f"✅ Verified bird species: {bird['species']}")
+        
+        # Check that species now shows bird count
+        response = requests.get(f"{BASE_URL}/api/species")
+        self.assertEqual(response.status_code, 200)
+        result = response.json()
+        
+        updated_species = None
+        for species in result["species"]:
+            if species["id"] == self.species_id:
+                updated_species = species
+                break
+        
+        self.assertIsNotNone(updated_species)
+        self.assertGreater(updated_species["bird_count"], 0)
+        print(f"✅ Species bird count updated: {updated_species['bird_count']} birds")
+        
+        # Clean up the test bird
+        requests.delete(f"{BASE_URL}/api/birds/{new_bird_id}")
+        print(f"✅ Cleaned up test bird: {new_bird_id}")
+    
+    def test_18_enhanced_transactions(self):
+        """Test Enhanced Transaction model with new fields"""
+        print("\n--- Testing Enhanced Transaction Model ---")
+        
+        # Create purchase transaction with enhanced fields
+        response = requests.post(f"{BASE_URL}/api/transactions", json=self.test_transaction_purchase)
+        self.assertEqual(response.status_code, 200)
+        result = response.json()
+        self.assertIn("transaction_id", result)
+        self.transaction_purchase_id = result["transaction_id"]
+        print(f"✅ Created purchase transaction with ID: {self.transaction_purchase_id}")
+        
+        # Create sale transaction with enhanced fields
+        response = requests.post(f"{BASE_URL}/api/transactions", json=self.test_transaction_sale)
+        self.assertEqual(response.status_code, 200)
+        result = response.json()
+        self.assertIn("transaction_id", result)
+        self.transaction_sale_id = result["transaction_id"]
+        print(f"✅ Created sale transaction with ID: {self.transaction_sale_id}")
+        
+        # Create expense transaction
+        response = requests.post(f"{BASE_URL}/api/transactions", json=self.test_transaction_expense)
+        self.assertEqual(response.status_code, 200)
+        result = response.json()
+        self.assertIn("transaction_id", result)
+        self.transaction_expense_id = result["transaction_id"]
+        print(f"✅ Created expense transaction with ID: {self.transaction_expense_id}")
+        
+        # Get all transactions and verify enhanced fields
+        response = requests.get(f"{BASE_URL}/api/transactions")
+        self.assertEqual(response.status_code, 200)
+        result = response.json()
+        self.assertIn("transactions", result)
+        
+        # Find our created transactions
+        purchase_tx = None
+        sale_tx = None
+        expense_tx = None
+        
+        for tx in result["transactions"]:
+            if tx["id"] == self.transaction_purchase_id:
+                purchase_tx = tx
+            elif tx["id"] == self.transaction_sale_id:
+                sale_tx = tx
+            elif tx["id"] == self.transaction_expense_id:
+                expense_tx = tx
+        
+        # Verify purchase transaction enhanced fields
+        self.assertIsNotNone(purchase_tx)
+        self.assertEqual(purchase_tx["currency"], "RM")
+        self.assertEqual(purchase_tx["seller_name"], self.test_transaction_purchase["seller_name"])
+        self.assertIsNone(purchase_tx.get("buyer_name"))  # Should be None for purchase
+        print(f"✅ Verified purchase transaction: {purchase_tx['currency']} {purchase_tx['amount']} from {purchase_tx['seller_name']}")
+        
+        # Verify sale transaction enhanced fields
+        self.assertIsNotNone(sale_tx)
+        self.assertEqual(sale_tx["currency"], "RM")
+        self.assertEqual(sale_tx["buyer_name"], self.test_transaction_sale["buyer_name"])
+        self.assertEqual(sale_tx["buyer_contact"], self.test_transaction_sale["buyer_contact"])
+        self.assertIsNone(sale_tx.get("seller_name"))  # Should be None for sale
+        print(f"✅ Verified sale transaction: {sale_tx['currency']} {sale_tx['amount']} to {sale_tx['buyer_name']}")
+        
+        # Verify expense transaction
+        self.assertIsNotNone(expense_tx)
+        self.assertEqual(expense_tx["currency"], "RM")
+        self.assertEqual(expense_tx["category"], "food")
+        print(f"✅ Verified expense transaction: {expense_tx['currency']} {expense_tx['amount']} for {expense_tx['category']}")
+        
+        # Test transaction with bird_id and chick_id linking
+        if self.male_bird_id:
+            # Create transaction linked to bird
+            bird_linked_tx = {
+                "transaction_type": "sale",
+                "bird_id": self.male_bird_id,
+                "amount": 1200.00,
+                "currency": "RM",
+                "date": datetime.now().strftime("%Y-%m-%d"),
+                "category": "bird_sale",
+                "description": "Sale of adult breeding bird",
+                "buyer_name": "Bird Enthusiast",
+                "buyer_contact": "+60987654321",
+                "notes": "Transaction linked to specific bird"
+            }
+            
+            response = requests.post(f"{BASE_URL}/api/transactions", json=bird_linked_tx)
+            self.assertEqual(response.status_code, 200)
+            result = response.json()
+            bird_tx_id = result["transaction_id"]
+            
+            # Verify bird linking
+            response = requests.get(f"{BASE_URL}/api/transactions/{bird_tx_id}")
+            self.assertEqual(response.status_code, 200)
+            tx = response.json()
+            self.assertEqual(tx["bird_id"], self.male_bird_id)
+            print(f"✅ Verified transaction linked to bird: {tx['bird_id']}")
+            
+            # Clean up
+            requests.delete(f"{BASE_URL}/api/transactions/{bird_tx_id}")
+        
+        # Update transaction to test enhanced fields
+        update_data = self.test_transaction_sale.copy()
+        update_data["buyer_contact"] = "+60111222333"  # Updated contact
+        update_data["notes"] = "Updated transaction notes"
+        
+        response = requests.put(f"{BASE_URL}/api/transactions/{self.transaction_sale_id}", json=update_data)
+        self.assertEqual(response.status_code, 200)
+        print(f"✅ Updated transaction successfully")
+        
+        # Verify update
+        response = requests.get(f"{BASE_URL}/api/transactions/{self.transaction_sale_id}")
+        self.assertEqual(response.status_code, 200)
+        updated_tx = response.json()
+        self.assertEqual(updated_tx["buyer_contact"], "+60111222333")
+        print(f"✅ Verified transaction update: contact={updated_tx['buyer_contact']}")
+    
+    def test_19_financial_report_enhanced(self):
+        """Test financial report with enhanced transaction data"""
+        print("\n--- Testing Enhanced Financial Report ---")
+        
+        # Get financial report
+        response = requests.get(f"{BASE_URL}/api/reports/financial")
+        self.assertEqual(response.status_code, 200)
+        report = response.json()
+        
+        self.assertIn("summary", report)
+        self.assertIn("expense_breakdown", report)
+        
+        # Verify our test transactions are included
+        summary = report["summary"]
+        self.assertGreater(summary["total_purchases"], 0)
+        self.assertGreater(summary["total_sales"], 0)
+        self.assertGreater(summary["total_expenses"], 0)
+        
+        # Check expense breakdown includes our food category
+        expense_breakdown = report["expense_breakdown"]
+        self.assertIn("food", expense_breakdown)
+        self.assertGreater(expense_breakdown["food"], 0)
+        
+        print(f"✅ Enhanced financial report verified")
+        print(f"   - Total purchases: RM {summary['total_purchases']}")
+        print(f"   - Total sales: RM {summary['total_sales']}")
+        print(f"   - Total expenses: RM {summary['total_expenses']}")
+        print(f"   - Net profit: RM {summary['net_profit']}")
+        print(f"   - Food expenses: RM {expense_breakdown.get('food', 0)}")
+    
+    def test_20_species_deletion_protection(self):
+        """Test species deletion protection when birds exist"""
+        print("\n--- Testing Species Deletion Protection ---")
+        
+        # Skip if species ID is not set
+        if not self.species_id:
+            self.skipTest("Species ID not set, skipping deletion protection test")
+        
+        # Create a bird with this species first
+        bird_with_species = self.test_female_bird.copy()
+        bird_with_species["species"] = self.test_species["name"]
+        
+        response = requests.post(f"{BASE_URL}/api/birds", json=bird_with_species)
+        self.assertEqual(response.status_code, 200)
+        result = response.json()
+        test_bird_id = result["bird_id"]
+        print(f"✅ Created test bird with species: {test_bird_id}")
+        
+        # Try to delete species (should fail because bird exists)
+        response = requests.delete(f"{BASE_URL}/api/species/{self.species_id}")
+        self.assertEqual(response.status_code, 400)
+        error_detail = response.json().get("detail", "")
+        self.assertIn("Cannot delete species", error_detail)
+        self.assertIn("birds still exist", error_detail)
+        print(f"✅ Correctly prevented species deletion: {error_detail}")
+        
+        # Clean up test bird
+        response = requests.delete(f"{BASE_URL}/api/birds/{test_bird_id}")
+        self.assertEqual(response.status_code, 200)
+        print(f"✅ Cleaned up test bird: {test_bird_id}")
+        
+        # Now species deletion should work
+        response = requests.delete(f"{BASE_URL}/api/species/{self.species_id}")
+        self.assertEqual(response.status_code, 200)
+        print(f"✅ Successfully deleted species after removing birds")
+        
+        # Verify species is deleted
+        response = requests.get(f"{BASE_URL}/api/species/{self.species_id}")
+        self.assertEqual(response.status_code, 404)
+        print(f"✅ Verified species deletion")
+        
+        # Reset species_id to None since it's deleted
+        self.species_id = None
+    
+    def test_21_cleanup(self):
         """Clean up test data"""
         print("\n--- Cleaning Up Test Data ---")
         
