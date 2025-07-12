@@ -127,6 +127,30 @@
     status_history:
         - working: true
           agent: "testing"
+          comment: "All CRUD operations working correctly (POST, GET, PUT, DELETE /api/species). Species creation, bird count tracking, statistics calculation all working."
+
+  - task: "Enhanced Transaction Model"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "All new fields working (currency, buyer_name, buyer_contact, seller_name, bird_id, chick_id). Transactions can be linked to specific birds/chicks."
+
+  - task: "Species Management API endpoints"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
           comment: "All Species API endpoints tested successfully: POST /api/species (create), GET /api/species (list with bird counts), GET /api/species/{id} (details with statistics), PUT /api/species/{id} (update), DELETE /api/species/{id} (with protection when birds exist). Species creation, retrieval, updating, and deletion protection all working correctly."
 
   - task: "Enhanced Transaction Model"
