@@ -2636,6 +2636,112 @@ function App() {
           </div>
         </div>
       )}
+
+      {/* Add Expense Form Modal */}
+      {showAddExpenseForm && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3 className="text-xl font-bold mb-4">Add Expense</h3>
+            <form onSubmit={handleAddExpense} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Amount (*)                  </label>
+                  <div className="flex">
+                    <select
+                      value={expenseForm.currency}
+                      onChange={(e) => setExpenseForm({...expenseForm, currency: e.target.value})}
+                      className="form-input rounded-r-none w-20"
+                    >
+                      <option value="RM">RM</option>
+                      <option value="$">$</option>
+                      <option value="€">€</option>
+                      <option value="£">£</option>
+                    </select>
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={expenseForm.amount}
+                      onChange={(e) => setExpenseForm({...expenseForm, amount: e.target.value})}
+                      className="form-input rounded-l-none flex-1"
+                      placeholder="0.00"
+                      required
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium mb-1">Date (*)</label>
+                  <input
+                    type="date"
+                    value={expenseForm.date}
+                    onChange={(e) => setExpenseForm({...expenseForm, date: e.target.value})}
+                    className="form-input"
+                    required
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-1">Category (*)</label>
+                <select
+                  value={expenseForm.category}
+                  onChange={(e) => setExpenseForm({...expenseForm, category: e.target.value})}
+                  className="form-input"
+                  required
+                >
+                  <option value="">Choose category</option>
+                  <option value="food">Birds Food</option>
+                  <option value="supplements">Supplements</option>
+                  <option value="vet">Veterinary</option>
+                  <option value="equipment">Equipment</option>
+                  <option value="setup">Setup/Housing</option>
+                  <option value="utilities">Utilities</option>
+                  <option value="maintenance">Maintenance</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-1">Description</label>
+                <input
+                  type="text"
+                  value={expenseForm.description}
+                  onChange={(e) => setExpenseForm({...expenseForm, description: e.target.value})}
+                  className="form-input"
+                  placeholder="e.g., Premium parrot pellets, Vet consultation"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-1">Comments</label>
+                <textarea
+                  value={expenseForm.notes}
+                  onChange={(e) => setExpenseForm({...expenseForm, notes: e.target.value})}
+                  className="form-input"
+                  rows="3"
+                  placeholder="Additional notes about this expense..."
+                  maxLength="500"
+                />
+                <div className="text-xs text-gray-500 text-right mt-1">
+                  {expenseForm.notes.length}/500
+                </div>
+              </div>
+              
+              <div className="flex gap-2">
+                <button type="submit" className="btn-primary">Add Expense</button>
+                <button 
+                  type="button" 
+                  onClick={() => setShowAddExpenseForm(false)}
+                  className="btn-secondary"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
