@@ -1866,6 +1866,7 @@ function App() {
         {activeTab === 'transactions' && renderTransactions()}
         {activeTab === 'purchases' && renderPurchases()}
         {activeTab === 'expenses' && renderExpenses()}
+        {activeTab === 'balance' && renderBalance()}
         {activeTab === 'reports' && renderReports()}
         {activeTab === 'species' && renderSpecies()}
       </main>
