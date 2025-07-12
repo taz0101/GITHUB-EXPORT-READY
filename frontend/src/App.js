@@ -922,6 +922,194 @@ function App() {
     } catch (error) {
       console.error('Error adding daily monitoring:', error);
     }
+  const handleAddDailyMonitoring = async (e) => {
+    e.preventDefault();
+    try {
+      const monitoringData = {
+        incubator_id: dailyMonitoringForm.incubator_id,
+        date: dailyMonitoringForm.date,
+        species_name: dailyMonitoringForm.species_name,
+        morning_temperature: parseFloat(dailyMonitoringForm.morning_temperature),
+        morning_humidity: parseFloat(dailyMonitoringForm.morning_humidity),
+        morning_time: dailyMonitoringForm.morning_time,
+        evening_temperature: parseFloat(dailyMonitoringForm.evening_temperature),
+        evening_humidity: parseFloat(dailyMonitoringForm.evening_humidity),
+        evening_time: dailyMonitoringForm.evening_time,
+        notes: dailyMonitoringForm.notes
+      };
+
+      const response = await fetch(`${BACKEND_URL}/api/daily-monitoring`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(monitoringData),
+      });
+      
+      if (response.ok) {
+        setDailyMonitoringForm({
+          incubator_id: '',
+          date: new Date().toISOString().split('T')[0],
+          species_name: '',
+          morning_temperature: '',
+          morning_humidity: '',
+          morning_time: '08:00',
+          evening_temperature: '',
+          evening_humidity: '',
+          evening_time: '19:00',
+          notes: ''
+        });
+        setShowDailyMonitoringForm(false);
+        fetchMonitoringData();
+        fetchDashboard();
+      }
+    } catch (error) {
+      console.error('Error adding daily monitoring:', error);
+    }
+  };
+
+  // Helper function to check if readings are within acceptable range
+  const checkReadingAlerts = (temperature, humidity, incubator) => {
+    const alerts = [];
+    
+    // Parse temperature range (e.g., "37.2-37.8°C")
+    if (incubator?.temperature_range) {
+      const tempMatch = incubator.temperature_range.match(/(\d+\.?\d*)-(\d+\.?\d*)/);
+      if (tempMatch) {
+        const minTemp = parseFloat(tempMatch[1]);
+        const maxTemp = parseFloat(tempMatch[2]);
+        
+        if (temperature < minTemp) {
+          alerts.push({ type: 'temperature', level: 'low', message: `Temperature ${temperature}°C is below recommended range (${minTemp}-${maxTemp}°C)` });
+        } else if (temperature > maxTemp) {
+          alerts.push({ type: 'temperature', level: 'high', message: `Temperature ${temperature}°C is above recommended range (${minTemp}-${maxTemp}°C)` });
+        }
+      }
+    }
+    
+    // Parse humidity range (e.g., "55-65%")
+    if (incubator?.humidity_range) {
+      const humidMatch = incubator.humidity_range.match(/(\d+\.?\d*)-(\d+\.?\d*)/);
+      if (humidMatch) {
+        const minHumid = parseFloat(humidMatch[1]);
+        const maxHumid = parseFloat(humidMatch[2]);
+        
+        if (humidity < minHumid) {
+          alerts.push({ type: 'humidity', level: 'low', message: `Humidity ${humidity}% is below recommended range (${minHumid}-${maxHumid}%)` });
+        } else if (humidity > maxHumid) {
+          alerts.push({ type: 'humidity', level: 'high', message: `Humidity ${humidity}% is above recommended range (${minHumid}-${maxHumid}%)` });
+        }
+      }
+    }
+    
+    return alerts;
+  };
+
+  // Export monitoring data to CSV
+  const exportMonitoringData = () => {
+    const csvHeaders = [
+      'Date', 'Incubator', 'Species', 
+      'Morning Time', 'Morning Temperature (°C)', 'Morning Humidity (%)',
+      'Evening Time', 'Evening Temperature (°C)', 'Evening Humidity (%)',
+      'Daily Avg Temperature (°C)', 'Daily Avg Humidity (%)', 
+      'Notes'
+    ];
+    
+    const csvData = monitoringData.map(monitoring => [
+      monitoring.date,
+      monitoring.incubator?.name || '',
+      monitoring.species_name || '',
+      monitoring.morning_time,
+      monitoring.morning_temperature,
+      monitoring.morning_humidity,
+      monitoring.evening_time,
+      monitoring.evening_temperature,
+      monitoring.evening_humidity,
+      monitoring.daily_avg_temperature,
+      monitoring.daily_avg_humidity,
+      monitoring.notes || ''
+    ]);
+    
+    const csvContent = [csvHeaders, ...csvData]
+      .map(row => row.map(field => `"${field}"`).join(','))
+      .join('\n');
+    
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `incubator-monitoring-${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+    window.URL.revokeObjectURL(url);
+  };
+
+  // Print monitoring data
+  const printMonitoringData = () => {
+    const printWindow = window.open('', '_blank');
+    const printContent = `
+      <html>
+        <head>
+          <title>Incubator Monitoring Report</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            h1 { color: #333; text-align: center; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 12px; }
+            th { background-color: #f2f2f2; font-weight: bold; }
+            .alert { color: red; font-weight: bold; }
+            .header-info { margin-bottom: 20px; }
+          </style>
+        </head>
+        <body>
+          <h1>🔬 Incubator Daily Monitoring Report</h1>
+          <div class="header-info">
+            <p><strong>Generated:</strong> ${new Date().toLocaleString()}</p>
+            <p><strong>Total Records:</strong> ${monitoringData.length}</p>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Incubator</th>
+                <th>Species</th>
+                <th>Morning Reading</th>
+                <th>Evening Reading</th>
+                <th>Daily Average</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${monitoringData.map(monitoring => `
+                <tr>
+                  <td>${new Date(monitoring.date).toLocaleDateString()}</td>
+                  <td>${monitoring.incubator?.name || 'Unknown'}</td>
+                  <td>${monitoring.species_name || '-'}</td>
+                  <td>
+                    ${monitoring.morning_time}<br/>
+                    🌡️ ${monitoring.morning_temperature}°C<br/>
+                    💧 ${monitoring.morning_humidity}%
+                  </td>
+                  <td>
+                    ${monitoring.evening_time}<br/>
+                    🌡️ ${monitoring.evening_temperature}°C<br/>
+                    💧 ${monitoring.evening_humidity}%
+                  </td>
+                  <td>
+                    🌡️ ${monitoring.daily_avg_temperature}°C<br/>
+                    💧 ${monitoring.daily_avg_humidity}%
+                  </td>
+                  <td>${monitoring.notes || '-'}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </body>
+      </html>
+    `;
+    
+    printWindow.document.write(printContent);
+    printWindow.document.close();
+    printWindow.print();
   };
 
   // Render Dashboard
