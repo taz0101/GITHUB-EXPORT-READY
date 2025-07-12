@@ -887,6 +887,81 @@ function App() {
     </div>
   );
 
+  // Render Clutches
+  const renderClutches = () => (
+    <div className="clutches-section">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold">🥚 Clutches Management</h2>
+        <button 
+          onClick={() => setShowAddClutchForm(true)}
+          className="btn-primary"
+        >
+          Add New Clutch
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {clutches.map((clutch) => (
+          <div key={clutch.id} className="clutch-card">
+            <div className="flex justify-between items-start mb-2">
+              <h3 className="font-bold text-lg">
+                {clutch.breeding_pair?.male_bird?.species} × {clutch.breeding_pair?.female_bird?.species}
+              </h3>
+              <span className={`status-badge ${clutch.status}`}>{clutch.status}</span>
+            </div>
+            <div className="mb-4">
+              <p className="text-sm text-gray-600">
+                Cage {clutch.breeding_pair?.male_bird?.cage_number} × Cage {clutch.breeding_pair?.female_bird?.cage_number}
+              </p>
+              <p className="text-sm text-gray-600">Clutch #{clutch.clutch_number}</p>
+            </div>
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span className="text-sm">Eggs Laid:</span>
+                <span className="font-semibold">{clutch.eggs_laid}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm">Hatched:</span>
+                <span className="font-semibold">{clutch.hatched_count || 0}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm">Fertile:</span>
+                <span className="font-semibold">{clutch.fertile_eggs || 0}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm">Laid Date:</span>
+                <span className="text-sm">{new Date(clutch.egg_laying_date).toLocaleDateString()}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm">Expected Hatch:</span>
+                <span className="text-sm">{new Date(clutch.expected_hatch_date).toLocaleDateString()}</span>
+              </div>
+            </div>
+            
+            <div className="mt-4 space-y-2">
+              <button 
+                className="w-full btn-secondary text-sm"
+                onClick={() => {/* View clutch details */}}
+              >
+                View Eggs
+              </button>
+              <button 
+                className="w-full btn-secondary text-sm"
+                onClick={() => {/* Start artificial incubation */}}
+              >
+                🔬 Start Artificial Incubation
+              </button>
+            </div>
+            
+            {clutch.notes && (
+              <p className="text-sm text-gray-500 mt-2 italic">{clutch.notes}</p>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
   return (
     <div className="app">
       <header className="header">
