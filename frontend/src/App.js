@@ -1382,30 +1382,31 @@ function App() {
             <form onSubmit={handleAddBird} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-1">Species *</label>
-                <input
-                  type="text"
+                <select
                   value={birdForm.species}
                   onChange={(e) => setBirdForm({...birdForm, species: e.target.value})}
                   className="form-input"
                   required
-                  placeholder="Type species name or select from common ones"
-                  list="species-options"
-                />
-                <datalist id="species-options">
-                  <option value="African Grey">African Grey</option>
-                  <option value="Cockatiel">Cockatiel</option>
-                  <option value="Lovebird">Lovebird</option>
-                  <option value="Macaw">Macaw</option>
-                  <option value="Conure">Conure</option>
-                  <option value="Budgie">Budgie</option>
-                  <option value="Cockatoo">Cockatoo</option>
-                  <option value="Caique">Caique</option>
-                  <option value="Eclectus">Eclectus</option>
-                  <option value="Amazon">Amazon</option>
-                  <option value="Alexandrine">Alexandrine</option>
-                  <option value="Ringneck">Ringneck</option>
-                  <option value="Senegal">Senegal</option>
-                </datalist>
+                >
+                  <option value="">Select Species</option>
+                  {species.map((speciesItem) => (
+                    <option key={speciesItem.id} value={speciesItem.name}>
+                      {speciesItem.name}
+                    </option>
+                  ))}
+                </select>
+                <p className="text-xs text-gray-500 mt-1">
+                  Don't see your species? <button 
+                    type="button" 
+                    onClick={() => {
+                      setShowAddBirdForm(false);
+                      setShowAddSpeciesForm(true);
+                    }}
+                    className="text-blue-600 underline"
+                  >
+                    Add new species
+                  </button>
+                </p>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Gender *</label>
