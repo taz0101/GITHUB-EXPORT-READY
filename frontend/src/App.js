@@ -119,6 +119,18 @@ function App() {
     search_type: 'all'
   });
 
+  const [speciesForm, setSpeciesForm] = useState({
+    name: '',
+    scientific_name: '',
+    category: '',
+    incubation_period: '',
+    clutch_size_min: '',
+    clutch_size_max: '',
+    maturity_age: '',
+    average_lifespan: '',
+    notes: ''
+  });
+
   const [licenseForm, setLicenseForm] = useState({
     license_number: '',
     license_type: 'breeding',
