@@ -687,6 +687,37 @@ function App() {
     }
   };
 
+  const handleAddSpecies = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/species`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(speciesForm),
+      });
+      
+      if (response.ok) {
+        setSpeciesForm({
+          name: '',
+          scientific_name: '',
+          category: '',
+          incubation_period: '',
+          clutch_size_min: '',
+          clutch_size_max: '',
+          maturity_age: '',
+          average_lifespan: '',
+          notes: ''
+        });
+        setShowAddSpeciesForm(false);
+        fetchSpecies();
+      }
+    } catch (error) {
+      console.error('Error adding species:', error);
+    }
+  };
+
   // Render Dashboard
   const renderDashboard = () => (
     <div className="dashboard">
