@@ -83,10 +83,16 @@ function App() {
 
   const [transactionForm, setTransactionForm] = useState({
     transaction_type: 'expense',
+    bird_id: '',
+    chick_id: '',
     amount: 0,
+    currency: 'RM',
     date: '',
     category: 'food',
     description: '',
+    buyer_name: '',
+    buyer_contact: '',
+    seller_name: '',
     notes: ''
   });
 
