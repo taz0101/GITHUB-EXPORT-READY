@@ -1618,7 +1618,7 @@ function App() {
           </div>
           <div className="flex gap-2">
             <button 
-              onClick={() => setShowAddTransactionForm(true)}
+              onClick={() => setShowAddExpenseForm(true)}
               className="btn-primary"
             >
               Add Expense
