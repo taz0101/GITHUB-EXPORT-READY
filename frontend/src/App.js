@@ -1528,6 +1528,170 @@ function App() {
     );
   };
 
+  // Render Expenses
+  const renderExpenses = () => {
+    // Filter transactions that are expenses
+    const expenses = transactions.filter(t => t.transaction_type === 'expense');
+    
+    // Calculate totals
+    const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+    const currency = expenses[0]?.currency || 'RM';
+    
+    // Group expenses by month for filtering
+    const currentYear = new Date().getFullYear();
+    const currentMonth = new Date().getMonth();
+    
+    // Define expense categories with colors
+    const expenseCategories = {
+      'food': { name: 'Birds Food', color: 'bg-blue-500', icon: '🍽️' },
+      'supplements': { name: 'Supplements', color: 'bg-green-500', icon: '💊' },
+      'vet': { name: 'Veterinary', color: 'bg-red-500', icon: '🏥' },
+      'equipment': { name: 'Equipment', color: 'bg-purple-500', icon: '🔧' },
+      'setup': { name: 'Setup/Housing', color: 'bg-orange-500', icon: '🏠' },
+      'utilities': { name: 'Utilities', color: 'bg-yellow-500', icon: '⚡' },
+      'maintenance': { name: 'Maintenance', color: 'bg-indigo-500', icon: '🔨' },
+      'other': { name: 'Other', color: 'bg-gray-500', icon: '📦' }
+    };
+    
+    // Get category info for an expense
+    const getCategoryInfo = (category) => {
+      return expenseCategories[category] || expenseCategories['other'];
+    };
+    
+    return (
+      <div className="expenses-section">
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h2 className="text-2xl font-bold">💰 Expenses</h2>
+            <div className="text-sm text-gray-600 mt-1">
+              {expenses.length} expenses • {currency} {totalExpenses.toFixed(2)}
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <button 
+              onClick={() => setShowAddTransactionForm(true)}
+              className="btn-primary"
+            >
+              Add Expense
+            </button>
+            <select className="form-input text-sm">
+              <option value="">All Years</option>
+              <option value="2025">2025</option>
+              <option value="2024">2024</option>
+            </select>
+            <select className="form-input text-sm">
+              <option value="">All Months</option>
+              <option value="0">January</option>
+              <option value="1">February</option>
+              <option value="2">March</option>
+              <option value="3">April</option>
+              <option value="4">May</option>
+              <option value="5">June</option>
+              <option value="6">July</option>
+              <option value="7">August</option>
+              <option value="8">September</option>
+              <option value="9">October</option>
+              <option value="10">November</option>
+              <option value="11">December</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Expenses Summary Stats */}
+        <div className="bg-gray-50 p-4 rounded-lg mb-6">
+          <div className="grid grid-cols-4 gap-4 text-center">
+            <div>
+              <p className="text-2xl font-bold text-red-600">{expenses.length}</p>
+              <p className="text-sm text-gray-600">Total Expenses</p>
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-orange-600">{currency} {totalExpenses.toFixed(2)}</p>
+              <p className="text-sm text-gray-600">Total Amount</p>
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-purple-600">
+                {expenses.length > 0 ? `${currency} ${(totalExpenses / expenses.length).toFixed(2)}` : `${currency} 0.00`}
+              </p>
+              <p className="text-sm text-gray-600">Average Cost</p>
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-blue-600">
+                {currency} {(totalExpenses / 30).toFixed(2)}
+              </p>
+              <p className="text-sm text-gray-600">Daily Average</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Expenses List */}
+        <div className="space-y-3">
+          {expenses.map((expense) => {
+            const categoryInfo = getCategoryInfo(expense.category);
+            return (
+              <div key={expense.id} className="expense-card bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+                <div className="flex items-center gap-4">
+                  {/* Category Icon */}
+                  <div className={`w-12 h-12 ${categoryInfo.color} rounded-full flex items-center justify-center`}>
+                    <span className="text-white text-xl">{categoryInfo.icon}</span>
+                  </div>
+                  
+                  {/* Expense Info */}
+                  <div className="flex-1">
+                    <h3 className="font-bold text-lg">{categoryInfo.name.toUpperCase()}</h3>
+                    <p className="text-sm text-gray-600">{expense.description}</p>
+                    {expense.notes && (
+                      <p className="text-xs text-gray-500 mt-1">{expense.notes}</p>
+                    )}
+                  </div>
+                  
+                  {/* Amount and Date */}
+                  <div className="text-right">
+                    <p className="text-lg font-bold text-red-600">
+                      {expense.currency} {expense.amount.toFixed(2)}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {new Date(expense.date).toLocaleDateString()}
+                    </p>
+                  </div>
+                  
+                  {/* Actions */}
+                  <div className="flex flex-col gap-1">
+                    <button 
+                      className="btn-outline text-xs px-3 py-1"
+                      onClick={() => {
+                        // Edit expense
+                        console.log('Edit expense:', expense.id);
+                      }}
+                    >
+                      Edit
+                    </button>
+                    <button 
+                      className="btn-outline text-xs px-3 py-1 text-red-600"
+                      onClick={() => {
+                        // Delete expense
+                        console.log('Delete expense:', expense.id);
+                      }}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Empty State */}
+        {expenses.length === 0 && (
+          <div className="text-center py-12 text-gray-500">
+            <p className="text-lg">No expenses found</p>
+            <p className="text-sm">Add expense transactions to track your costs</p>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="app">
       <header className="header">
