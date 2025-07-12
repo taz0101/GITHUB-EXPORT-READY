@@ -35,6 +35,7 @@ incubators_collection = db.incubators
 artificial_incubation_collection = db.artificial_incubation
 incubation_logs_collection = db.incubation_logs
 species_collection = db.species
+daily_monitoring_collection = db.daily_monitoring
 
 # Pydantic models
 class Bird(BaseModel):
