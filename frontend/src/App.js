@@ -178,6 +178,11 @@ function App() {
     notes: ''
   });
   const [monitoringData, setMonitoringData] = useState([]);
+  
+  // History modal states
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [selectedIncubatorHistory, setSelectedIncubatorHistory] = useState(null);
+  const [historyData, setHistoryData] = useState([]);
 
   const [licenseForm, setLicenseForm] = useState({
     license_number: '',
