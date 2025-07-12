@@ -2520,6 +2520,12 @@ function App() {
           >
             Species
           </button>
+          <button 
+            onClick={() => setActiveTab('permits')}
+            className={`nav-btn ${activeTab === 'permits' ? 'active' : ''}`}
+          >
+            Permits
+          </button>
         </nav>
       </header>
 
