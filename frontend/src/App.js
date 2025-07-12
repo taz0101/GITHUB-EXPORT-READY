@@ -421,7 +421,14 @@ function App() {
           color_mutation: '',
           license_number: '',
           license_expiry: '',
-          notes: ''
+          notes: '',
+          // Purchase information
+          is_purchased: false,
+          purchase_date: '',
+          purchase_price: '',
+          purchase_currency: 'RM',
+          purchase_source: '',
+          purchase_notes: ''
         });
         setShowEditBirdForm(false);
         setEditingBird(null);
