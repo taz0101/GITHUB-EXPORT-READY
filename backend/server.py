@@ -109,9 +109,26 @@ class Transaction(BaseModel):
     bird_id: Optional[str] = None
     chick_id: Optional[str] = None
     amount: float
+    currency: str = "RM"  # Currency symbol/code
     date: str
     category: Optional[str] = None  # "food", "vet", "equipment", "setup", "bird_purchase", "bird_sale"
     description: str
+    buyer_name: Optional[str] = None  # For sales
+    buyer_contact: Optional[str] = None  # For sales
+    seller_name: Optional[str] = None  # For purchases
+    notes: Optional[str] = None
+    created_at: Optional[str] = None
+
+class Species(BaseModel):
+    id: Optional[str] = None
+    name: str
+    scientific_name: Optional[str] = None
+    category: Optional[str] = None  # "parrot", "finch", "canary", etc.
+    incubation_period: Optional[int] = None  # days
+    clutch_size_min: Optional[int] = None
+    clutch_size_max: Optional[int] = None
+    maturity_age: Optional[int] = None  # months
+    average_lifespan: Optional[int] = None  # years
     notes: Optional[str] = None
     created_at: Optional[str] = None
 
