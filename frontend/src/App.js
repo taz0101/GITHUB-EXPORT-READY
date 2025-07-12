@@ -1130,39 +1130,130 @@ function App() {
   );
 
   // Render Transactions
-  const renderTransactions = () => (
-    <div className="transactions-section">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">💰 Financial Transactions</h2>
-        <button 
-          onClick={() => setShowAddTransactionForm(true)}
-          className="btn-primary"
-        >
-          Add Transaction
-        </button>
-      </div>
-
-      <div className="space-y-4">
-        {transactions.map((transaction) => (
-          <div key={transaction.id} className="transaction-card">
-            <div className="flex justify-between items-center">
-              <div>
-                <h3 className="font-bold">{transaction.description}</h3>
-                <p className="text-sm text-gray-600">{transaction.category}</p>
-                <p className="text-sm text-gray-500">{new Date(transaction.date).toLocaleDateString()}</p>
-              </div>
-              <div className="text-right">
-                <p className={`font-bold ${transaction.transaction_type === 'sale' ? 'text-green-600' : transaction.transaction_type === 'purchase' ? 'text-blue-600' : 'text-red-600'}`}>
-                  {transaction.transaction_type === 'expense' ? '-' : '+'}${transaction.amount}
-                </p>
-                <p className="text-sm text-gray-500 capitalize">{transaction.transaction_type}</p>
-              </div>
+  const renderTransactions = () => {
+    // Group transactions by type
+    const sales = transactions.filter(t => t.transaction_type === 'sale');
+    const purchases = transactions.filter(t => t.transaction_type === 'purchase');
+    const expenses = transactions.filter(t => t.transaction_type === 'expense');
+    
+    // Calculate totals
+    const totalSales = sales.reduce((sum, t) => sum + t.amount, 0);
+    const totalPurchases = purchases.reduce((sum, t) => sum + t.amount, 0);
+    const totalExpenses = expenses.reduce((sum, t) => sum + t.amount, 0);
+    
+    return (
+      <div className="transactions-section">
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h2 className="text-2xl font-bold">💰 Sales & Financial Management</h2>
+            <div className="flex gap-6 mt-2 text-sm">
+              <span className="text-green-600 font-semibold">
+                {sales.length} birds • {(sales[0]?.currency || 'RM')} {totalSales.toFixed(2)}
+              </span>
+              <span className="text-blue-600 font-semibold">
+                Purchases: {(purchases[0]?.currency || 'RM')} {totalPurchases.toFixed(2)}
+              </span>
+              <span className="text-red-600 font-semibold">
+                Expenses: {(expenses[0]?.currency || 'RM')} {totalExpenses.toFixed(2)}
+              </span>
             </div>
           </div>
-        ))}
+          <div className="flex gap-2">
+            <button 
+              onClick={() => setShowAddTransactionForm(true)}
+              className="btn-primary"
+            >
+              Add Transaction
+            </button>
+            <button className="btn-outline">
+              📊 Reports
+            </button>
+          </div>
+        </div>
+
+        {/* Sales Cards - Enhanced Display */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {sales.map((sale) => {
+            // Find the bird associated with this sale
+            const soldBird = birds.find(b => b.id === sale.bird_id);
+            return (
+              <div key={sale.id} className="sale-card bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
+                    🦜
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-bold text-lg">
+                      {soldBird ? `${soldBird.species}` : sale.description}
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      {soldBird ? `Ring: ${soldBird.ring_number}` : 'Sale Transaction'}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-lg font-bold text-green-600">
+                      {sale.currency} {sale.amount.toFixed(2)}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {new Date(sale.date).toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
+                
+                {sale.buyer_name && (
+                  <div className="border-t pt-3 mt-3">
+                    <p className="text-sm"><strong>Buyer:</strong> {sale.buyer_name}</p>
+                    {sale.buyer_contact && (
+                      <p className="text-sm text-gray-600">{sale.buyer_contact}</p>
+                    )}
+                  </div>
+                )}
+                
+                {sale.notes && (
+                  <p className="text-sm text-gray-500 mt-2 italic">{sale.notes}</p>
+                )}
+                
+                <div className="mt-3 flex gap-2">
+                  <button className="btn-outline text-xs flex-1">View Details</button>
+                  <button className="btn-outline text-xs flex-1">Edit</button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Other Transactions Summary */}
+        {(purchases.length > 0 || expenses.length > 0) && (
+          <div className="mt-8">
+            <h3 className="text-lg font-bold mb-4">Other Transactions</h3>
+            <div className="space-y-2">
+              {purchases.concat(expenses).map((transaction) => (
+                <div key={transaction.id} className="transaction-row bg-gray-50 p-3 rounded flex justify-between items-center">
+                  <div>
+                    <h4 className="font-semibold">{transaction.description}</h4>
+                    <p className="text-sm text-gray-600 capitalize">
+                      {transaction.transaction_type} • {transaction.category}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {new Date(transaction.date).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className={`font-bold ${transaction.transaction_type === 'purchase' ? 'text-blue-600' : 'text-red-600'}`}>
+                      -{transaction.currency} {transaction.amount.toFixed(2)}
+                    </p>
+                    {transaction.seller_name && (
+                      <p className="text-xs text-gray-500">From: {transaction.seller_name}</p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
-    </div>
-  );
+    );
+  };
 
   // Render Reports
   const renderReports = () => (
