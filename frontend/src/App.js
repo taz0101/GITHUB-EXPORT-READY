@@ -154,6 +154,12 @@ function App() {
     notes: ''
   });
 
+  const [balanceFilter, setBalanceFilter] = useState({
+    from_date: '',
+    to_date: '',
+    currency: 'RM'
+  });
+
   const [licenseForm, setLicenseForm] = useState({
     license_number: '',
     license_type: 'breeding',
