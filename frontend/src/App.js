@@ -1646,6 +1646,7 @@ function App() {
         {activeTab === 'incubators' && renderIncubators()}
         {activeTab === 'transactions' && renderTransactions()}
         {activeTab === 'purchases' && renderPurchases()}
+        {activeTab === 'expenses' && renderExpenses()}
         {activeTab === 'reports' && renderReports()}
         {activeTab === 'species' && renderSpecies()}
       </main>
