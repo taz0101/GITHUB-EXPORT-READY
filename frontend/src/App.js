@@ -145,6 +145,15 @@ function App() {
     notes: ''
   });
 
+  const [expenseForm, setExpenseForm] = useState({
+    amount: '',
+    currency: 'RM',
+    date: new Date().toISOString().split('T')[0], // Today's date
+    category: 'food',
+    description: '',
+    notes: ''
+  });
+
   const [licenseForm, setLicenseForm] = useState({
     license_number: '',
     license_type: 'breeding',
