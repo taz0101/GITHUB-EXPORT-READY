@@ -922,7 +922,9 @@ function App() {
     } catch (error) {
       console.error('Error adding daily monitoring:', error);
     }
-  const handleAddDailyMonitoring = async (e) => {
+  };
+
+  // Helper function to check if readings are within acceptable range
     e.preventDefault();
     try {
       const monitoringData = {
