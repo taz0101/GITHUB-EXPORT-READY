@@ -208,6 +208,31 @@ class DailyMonitoring(BaseModel):
     notes: Optional[str] = None
     created_at: Optional[str] = None
 
+class WildlifePermit(BaseModel):
+    id: Optional[str] = None
+    permit_number: Optional[str] = None  # Auto-generated serial number
+    license_number: str
+    customer_name: str
+    customer_ic_passport: str
+    customer_address: str
+    customer_phone: str
+    customer_email: Optional[str] = None
+    purchase_date: str
+    expiry_date: str
+    birds: list  # List of bird objects with type, quantity, marking_number, price
+    total_amount: float
+    currency: str = "RM"
+    captive_breed_generation: Optional[str] = None
+    import_permit_number: Optional[str] = None
+    export_permit_number: Optional[str] = None
+    is_import: bool = False
+    is_export: bool = False
+    terms_accepted: bool = True
+    status: str = "active"  # "active", "expired", "revoked"
+    issued_by: str = "NEXUS PERROQUET & AVIAN RESEARCH SDN. BHD."
+    notes: Optional[str] = None
+    created_at: Optional[str] = None
+
 # Incubator endpoints
 @app.post("/api/incubators")
 async def create_incubator(incubator: Incubator):
