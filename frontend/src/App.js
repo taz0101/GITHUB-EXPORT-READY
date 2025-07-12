@@ -36,6 +36,8 @@ function App() {
   // Edit states
   const [editingBird, setEditingBird] = useState(null);
   const [editingPair, setEditingPair] = useState(null);
+  const [editingIncubator, setEditingIncubator] = useState(null);
+  const [showEditIncubatorForm, setShowEditIncubatorForm] = useState(false);
   const [mainLicense, setMainLicense] = useState(null);
 
   // Form states
