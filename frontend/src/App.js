@@ -1925,6 +1925,145 @@ function App() {
           </div>
         </div>
       )}
+
+      {/* Add Species Form Modal */}
+      {showAddSpeciesForm && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3 className="text-xl font-bold mb-4">Add New Species</h3>
+            <form onSubmit={handleAddSpecies} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Species Name *</label>
+                <input
+                  type="text"
+                  value={speciesForm.name}
+                  onChange={(e) => setSpeciesForm({...speciesForm, name: e.target.value})}
+                  className="form-input"
+                  required
+                  placeholder="e.g., African Grey Parrot"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-1">Scientific Name</label>
+                <input
+                  type="text"
+                  value={speciesForm.scientific_name}
+                  onChange={(e) => setSpeciesForm({...speciesForm, scientific_name: e.target.value})}
+                  className="form-input"
+                  placeholder="e.g., Psittacus erithacus"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-1">Category</label>
+                <select
+                  value={speciesForm.category}
+                  onChange={(e) => setSpeciesForm({...speciesForm, category: e.target.value})}
+                  className="form-input"
+                >
+                  <option value="">Select Category</option>
+                  <option value="Large Parrot">Large Parrot</option>
+                  <option value="Medium Parrot">Medium Parrot</option>
+                  <option value="Small Parrot">Small Parrot</option>
+                  <option value="Cockatoo">Cockatoo</option>
+                  <option value="Macaw">Macaw</option>
+                  <option value="Conure">Conure</option>
+                  <option value="Lovebird">Lovebird</option>
+                  <option value="Budgie">Budgie</option>
+                  <option value="Finch">Finch</option>
+                  <option value="Canary">Canary</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Incubation Period (days)</label>
+                  <input
+                    type="number"
+                    value={speciesForm.incubation_period}
+                    onChange={(e) => setSpeciesForm({...speciesForm, incubation_period: e.target.value})}
+                    className="form-input"
+                    min="1"
+                    placeholder="e.g., 28"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Maturity Age (months)</label>
+                  <input
+                    type="number"
+                    value={speciesForm.maturity_age}
+                    onChange={(e) => setSpeciesForm({...speciesForm, maturity_age: e.target.value})}
+                    className="form-input"
+                    min="1"
+                    placeholder="e.g., 18"
+                  />
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Min Clutch Size</label>
+                  <input
+                    type="number"
+                    value={speciesForm.clutch_size_min}
+                    onChange={(e) => setSpeciesForm({...speciesForm, clutch_size_min: e.target.value})}
+                    className="form-input"
+                    min="1"
+                    placeholder="e.g., 2"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Max Clutch Size</label>
+                  <input
+                    type="number"
+                    value={speciesForm.clutch_size_max}
+                    onChange={(e) => setSpeciesForm({...speciesForm, clutch_size_max: e.target.value})}
+                    className="form-input"
+                    min="1"
+                    placeholder="e.g., 4"
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-1">Average Lifespan (years)</label>
+                <input
+                  type="number"
+                  value={speciesForm.average_lifespan}
+                  onChange={(e) => setSpeciesForm({...speciesForm, average_lifespan: e.target.value})}
+                  className="form-input"
+                  min="1"
+                  placeholder="e.g., 50"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-1">Notes</label>
+                <textarea
+                  value={speciesForm.notes}
+                  onChange={(e) => setSpeciesForm({...speciesForm, notes: e.target.value})}
+                  className="form-input"
+                  rows="3"
+                  placeholder="Additional information about this species..."
+                />
+              </div>
+              
+              <div className="flex gap-2">
+                <button type="submit" className="btn-primary">Add Species</button>
+                <button 
+                  type="button" 
+                  onClick={() => setShowAddSpeciesForm(false)}
+                  className="btn-secondary"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
