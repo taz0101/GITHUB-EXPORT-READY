@@ -160,6 +160,23 @@ function App() {
     currency: 'RM'
   });
 
+  // Daily monitoring states
+  const [showDailyMonitoringForm, setShowDailyMonitoringForm] = useState(false);
+  const [selectedIncubator, setSelectedIncubator] = useState(null);
+  const [dailyMonitoringForm, setDailyMonitoringForm] = useState({
+    incubator_id: '',
+    date: new Date().toISOString().split('T')[0],
+    species_name: '',
+    morning_temperature: '',
+    morning_humidity: '',
+    morning_time: '08:00',
+    evening_temperature: '',
+    evening_humidity: '',
+    evening_time: '19:00',
+    notes: ''
+  });
+  const [monitoringData, setMonitoringData] = useState([]);
+
   const [licenseForm, setLicenseForm] = useState({
     license_number: '',
     license_type: 'breeding',
