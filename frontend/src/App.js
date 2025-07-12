@@ -4157,6 +4157,463 @@ function App() {
           </div>
         </div>
       )}
+
+      {/* Add Permit Form Modal */}
+      {showAddPermitForm && (
+        <div className="modal-overlay">
+          <div className="modal-content max-w-4xl">
+            <h3 className="text-xl font-bold mb-4">📋 Issue Wildlife Permit</h3>
+            <form onSubmit={handleAddPermit} className="space-y-6">
+              
+              {/* Customer Information */}
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <h4 className="font-bold text-blue-800 mb-3">Customer Information</h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Customer Name *</label>
+                    <input
+                      type="text"
+                      value={permitForm.customer_name}
+                      onChange={(e) => setPermitForm({...permitForm, customer_name: e.target.value})}
+                      className="form-input"
+                      required
+                      placeholder="Full Name"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">IC/Passport Number *</label>
+                    <input
+                      type="text"
+                      value={permitForm.customer_ic_passport}
+                      onChange={(e) => setPermitForm({...permitForm, customer_ic_passport: e.target.value})}
+                      className="form-input"
+                      required
+                      placeholder="123456-78-9012 or A12345678"
+                    />
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4 mt-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Phone Number *</label>
+                    <input
+                      type="tel"
+                      value={permitForm.customer_phone}
+                      onChange={(e) => setPermitForm({...permitForm, customer_phone: e.target.value})}
+                      className="form-input"
+                      required
+                      placeholder="+60123456789"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Email</label>
+                    <input
+                      type="email"
+                      value={permitForm.customer_email}
+                      onChange={(e) => setPermitForm({...permitForm, customer_email: e.target.value})}
+                      className="form-input"
+                      placeholder="customer@email.com"
+                    />
+                  </div>
+                </div>
+                
+                <div className="mt-4">
+                  <label className="block text-sm font-medium mb-1">Address *</label>
+                  <textarea
+                    value={permitForm.customer_address}
+                    onChange={(e) => setPermitForm({...permitForm, customer_address: e.target.value})}
+                    className="form-input"
+                    rows="2"
+                    required
+                    placeholder="Complete address"
+                  />
+                </div>
+              </div>
+
+              {/* License Information */}
+              <div className="bg-green-50 p-4 rounded-lg">
+                <h4 className="font-bold text-green-800 mb-3">License Information</h4>
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">License Number *</label>
+                    <input
+                      type="text"
+                      value={permitForm.license_number}
+                      onChange={(e) => setPermitForm({...permitForm, license_number: e.target.value})}
+                      className="form-input"
+                      required
+                      placeholder="LICENSE-2025-001"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Purchase Date *</label>
+                    <input
+                      type="date"
+                      value={permitForm.purchase_date}
+                      onChange={(e) => setPermitForm({...permitForm, purchase_date: e.target.value})}
+                      className="form-input"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Expiry Date *</label>
+                    <input
+                      type="date"
+                      value={permitForm.expiry_date}
+                      onChange={(e) => setPermitForm({...permitForm, expiry_date: e.target.value})}
+                      className="form-input"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Birds Information */}
+              <div className="bg-orange-50 p-4 rounded-lg">
+                <h4 className="font-bold text-orange-800 mb-3">Birds Information</h4>
+                {permitForm.birds.map((bird, index) => (
+                  <div key={index} className="grid grid-cols-5 gap-2 mb-3 p-3 bg-white rounded border">
+                    <div>
+                      <label className="block text-xs font-medium mb-1">Bird Type *</label>
+                      <select
+                        value={bird.type}
+                        onChange={(e) => {
+                          const newBirds = [...permitForm.birds];
+                          newBirds[index].type = e.target.value;
+                          setPermitForm({...permitForm, birds: newBirds});
+                        }}
+                        className="form-input text-sm"
+                        required
+                      >
+                        <option value="">Select Species</option>
+                        {species.map((speciesItem) => (
+                          <option key={speciesItem.id} value={speciesItem.name}>
+                            {speciesItem.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium mb-1">Quantity</label>
+                      <input
+                        type="number"
+                        min="1"
+                        value={bird.quantity}
+                        onChange={(e) => {
+                          const newBirds = [...permitForm.birds];
+                          newBirds[index].quantity = parseInt(e.target.value);
+                          setPermitForm({...permitForm, birds: newBirds});
+                        }}
+                        className="form-input text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium mb-1">Ring/ID Number</label>
+                      <input
+                        type="text"
+                        value={bird.marking_number}
+                        onChange={(e) => {
+                          const newBirds = [...permitForm.birds];
+                          newBirds[index].marking_number = e.target.value;
+                          setPermitForm({...permitForm, birds: newBirds});
+                        }}
+                        className="form-input text-sm"
+                        placeholder="Ring number"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium mb-1">Price (RM)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        value={bird.price}
+                        onChange={(e) => {
+                          const newBirds = [...permitForm.birds];
+                          newBirds[index].price = e.target.value;
+                          setPermitForm({...permitForm, birds: newBirds});
+                        }}
+                        className="form-input text-sm"
+                        placeholder="0.00"
+                      />
+                    </div>
+                    <div className="flex items-end">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newBirds = permitForm.birds.filter((_, i) => i !== index);
+                          setPermitForm({...permitForm, birds: newBirds});
+                        }}
+                        className="btn-outline text-xs text-red-600 w-full"
+                        disabled={permitForm.birds.length === 1}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                ))}
+                
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPermitForm({
+                      ...permitForm,
+                      birds: [...permitForm.birds, { type: '', quantity: 1, marking_number: '', price: '' }]
+                    });
+                  }}
+                  className="btn-outline text-sm"
+                >
+                  + Add Another Bird
+                </button>
+                
+                <div className="mt-4 text-right">
+                  <p className="text-lg font-bold">
+                    Total: RM {permitForm.birds.reduce((sum, bird) => sum + (parseFloat(bird.price) || 0), 0).toFixed(2)}
+                  </p>
+                </div>
+              </div>
+
+              {/* Additional Information */}
+              <div className="bg-purple-50 p-4 rounded-lg">
+                <h4 className="font-bold text-purple-800 mb-3">Additional Information</h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Captive Breed Generation</label>
+                    <input
+                      type="text"
+                      value={permitForm.captive_breed_generation}
+                      onChange={(e) => setPermitForm({...permitForm, captive_breed_generation: e.target.value})}
+                      className="form-input"
+                      placeholder="F1, F2, etc."
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={permitForm.is_import}
+                        onChange={(e) => setPermitForm({...permitForm, is_import: e.target.checked})}
+                        className="form-checkbox mr-2"
+                      />
+                      <span className="text-sm">Import Permit Required</span>
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={permitForm.is_export}
+                        onChange={(e) => setPermitForm({...permitForm, is_export: e.target.checked})}
+                        className="form-checkbox mr-2"
+                      />
+                      <span className="text-sm">Export Permit Required</span>
+                    </label>
+                  </div>
+                </div>
+                
+                {permitForm.is_import && (
+                  <div className="mt-4">
+                    <label className="block text-sm font-medium mb-1">Import Permit Number</label>
+                    <input
+                      type="text"
+                      value={permitForm.import_permit_number}
+                      onChange={(e) => setPermitForm({...permitForm, import_permit_number: e.target.value})}
+                      className="form-input"
+                      placeholder="IMPORT-2025-001"
+                    />
+                  </div>
+                )}
+                
+                {permitForm.is_export && (
+                  <div className="mt-4">
+                    <label className="block text-sm font-medium mb-1">Export Permit Number</label>
+                    <input
+                      type="text"
+                      value={permitForm.export_permit_number}
+                      onChange={(e) => setPermitForm({...permitForm, export_permit_number: e.target.value})}
+                      className="form-input"
+                      placeholder="EXPORT-2025-001"
+                    />
+                  </div>
+                )}
+                
+                <div className="mt-4">
+                  <label className="block text-sm font-medium mb-1">Notes</label>
+                  <textarea
+                    value={permitForm.notes}
+                    onChange={(e) => setPermitForm({...permitForm, notes: e.target.value})}
+                    className="form-input"
+                    rows="3"
+                    placeholder="Additional remarks or special conditions..."
+                  />
+                </div>
+              </div>
+              
+              <div className="flex gap-2">
+                <button type="submit" className="btn-primary">Issue Permit</button>
+                <button 
+                  type="button" 
+                  onClick={() => setShowAddPermitForm(false)}
+                  className="btn-secondary"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Permit Preview/Print Modal */}
+      {showPermitPreview && selectedPermit && (
+        <div className="modal-overlay">
+          <div className="modal-content max-w-4xl">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold">🖨️ Wildlife Permit - {selectedPermit.permit_number}</h3>
+              <div className="flex gap-2">
+                <button 
+                  onClick={() => {
+                    window.print();
+                  }}
+                  className="btn-primary text-sm"
+                >
+                  🖨️ Print
+                </button>
+                <button 
+                  onClick={() => {
+                    setShowPermitPreview(false);
+                    setSelectedPermit(null);
+                  }}
+                  className="btn-secondary text-sm"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+            
+            {/* Official Permit Layout */}
+            <div className="bg-white p-8 border-2 border-gray-300 print:border-black" id="permit-document">
+              {/* Header */}
+              <div className="text-center mb-6 border-b-2 border-gray-300 pb-4">
+                <div className="flex items-center justify-center gap-4 mb-2">
+                  <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center">
+                    <span className="text-white text-2xl">🦜</span>
+                  </div>
+                  <div>
+                    <h1 className="text-2xl font-bold text-blue-800">NEXUS PERROQUET & AVIAN RESEARCH SDN. BHD.</h1>
+                    <p className="text-sm text-gray-600">Licensed Wildlife Dealer & Breeder</p>
+                  </div>
+                </div>
+                <h2 className="text-xl font-bold text-red-600 mt-2">WILDLIFE PURCHASE PERMIT</h2>
+              </div>
+              
+              {/* Permit Information */}
+              <div className="grid grid-cols-2 gap-8 mb-6">
+                <div>
+                  <h3 className="font-bold text-lg mb-3 text-blue-800">PERMIT DETAILS</h3>
+                  <div className="space-y-2 text-sm">
+                    <p><strong>Permit Number:</strong> {selectedPermit.permit_number}</p>
+                    <p><strong>License Number:</strong> {selectedPermit.license_number}</p>
+                    <p><strong>Issue Date:</strong> {new Date(selectedPermit.purchase_date).toLocaleDateString()}</p>
+                    <p><strong>Expiry Date:</strong> {new Date(selectedPermit.expiry_date).toLocaleDateString()}</p>
+                    <p><strong>Status:</strong> <span className="uppercase font-bold text-green-600">{selectedPermit.status}</span></p>
+                  </div>
+                </div>
+                
+                <div>
+                  <h3 className="font-bold text-lg mb-3 text-blue-800">CUSTOMER INFORMATION</h3>
+                  <div className="space-y-2 text-sm">
+                    <p><strong>Name:</strong> {selectedPermit.customer_name}</p>
+                    <p><strong>IC/Passport:</strong> {selectedPermit.customer_ic_passport}</p>
+                    <p><strong>Phone:</strong> {selectedPermit.customer_phone}</p>
+                    {selectedPermit.customer_email && (
+                      <p><strong>Email:</strong> {selectedPermit.customer_email}</p>
+                    )}
+                    <p><strong>Address:</strong> {selectedPermit.customer_address}</p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Birds Table */}
+              <div className="mb-6">
+                <h3 className="font-bold text-lg mb-3 text-blue-800">WILDLIFE PURCHASED</h3>
+                <table className="w-full border-collapse border border-black text-sm">
+                  <thead>
+                    <tr className="bg-gray-100">
+                      <th className="border border-black p-2 text-left">No.</th>
+                      <th className="border border-black p-2 text-left">Species/Type</th>
+                      <th className="border border-black p-2 text-center">Quantity</th>
+                      <th className="border border-black p-2 text-left">Ring/ID Number</th>
+                      <th className="border border-black p-2 text-right">Price (RM)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {selectedPermit.birds.map((bird, index) => (
+                      <tr key={index}>
+                        <td className="border border-black p-2">{index + 1}</td>
+                        <td className="border border-black p-2">{bird.type}</td>
+                        <td className="border border-black p-2 text-center">{bird.quantity}</td>
+                        <td className="border border-black p-2">{bird.marking_number || '-'}</td>
+                        <td className="border border-black p-2 text-right">{parseFloat(bird.price).toFixed(2)}</td>
+                      </tr>
+                    ))}
+                    <tr className="bg-gray-100 font-bold">
+                      <td colSpan="4" className="border border-black p-2 text-right">TOTAL AMOUNT:</td>
+                      <td className="border border-black p-2 text-right">RM {selectedPermit.total_amount.toFixed(2)}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              
+              {/* Additional Information */}
+              {(selectedPermit.captive_breed_generation || selectedPermit.is_import || selectedPermit.is_export) && (
+                <div className="mb-6">
+                  <h3 className="font-bold text-lg mb-3 text-blue-800">ADDITIONAL INFORMATION</h3>
+                  <div className="text-sm space-y-1">
+                    {selectedPermit.captive_breed_generation && (
+                      <p><strong>Captive Breed Generation:</strong> {selectedPermit.captive_breed_generation}</p>
+                    )}
+                    {selectedPermit.is_import && (
+                      <p><strong>Import Permit Number:</strong> {selectedPermit.import_permit_number || 'Pending'}</p>
+                    )}
+                    {selectedPermit.is_export && (
+                      <p><strong>Export Permit Number:</strong> {selectedPermit.export_permit_number || 'Pending'}</p>
+                    )}
+                  </div>
+                </div>
+              )}
+              
+              {/* Terms & Conditions */}
+              <div className="mb-6">
+                <h3 className="font-bold text-lg mb-3 text-blue-800">TERMS & CONDITIONS</h3>
+                <div className="text-xs space-y-1 border border-gray-300 p-3">
+                  <p>1. This permit is valid only for the wildlife species and quantities specified above.</p>
+                  <p>2. The permit holder must comply with all relevant wildlife protection laws and regulations.</p>
+                  <p>3. This permit must be presented upon request by authorized wildlife officers.</p>
+                  <p>4. Any transfer or sale of the wildlife requires proper documentation and permits.</p>
+                  <p>5. This permit is non-transferable and expires on the date specified above.</p>
+                  <p>6. Violation of any conditions may result in permit revocation and legal action.</p>
+                </div>
+              </div>
+              
+              {/* Footer */}
+              <div className="flex justify-between items-end">
+                <div className="text-xs">
+                  <p><strong>Issued by:</strong> NEXUS PERROQUET & AVIAN RESEARCH SDN. BHD.</p>
+                  <p><strong>Date Issued:</strong> {new Date().toLocaleDateString()}</p>
+                  {selectedPermit.notes && (
+                    <p><strong>Remarks:</strong> {selectedPermit.notes}</p>
+                  )}
+                </div>
+                
+                <div className="text-center">
+                  <div className="border-t border-black w-48 mt-12 pt-2">
+                    <p className="text-xs">Authorized Signature & Company Stamp</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
