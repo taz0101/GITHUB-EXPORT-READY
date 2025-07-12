@@ -1106,6 +1106,104 @@ class ParrotBreedingAPITest(unittest.TestCase):
             else:
                 print(f"⚠️ Could not delete license: {self.license_id}")
 
+    def test_22_incubator_delete_endpoint(self):
+        """Test incubator DELETE endpoint functionality - CRITICAL TEST"""
+        print("\n--- Testing Incubator DELETE Endpoint ---")
+        
+        # First, create an incubator to test deletion
+        test_incubator = {
+            "name": f"Delete Test Incubator {datetime.now().strftime('%Y%m%d%H%M%S')}",
+            "model": "Test Model DELETE",
+            "capacity": 10,
+            "temperature_range": "37.5-37.8°C",
+            "humidity_range": "55-60%",
+            "turning_interval": 2,
+            "status": "active",
+            "notes": "Test incubator for DELETE endpoint testing"
+        }
+        
+        # Create incubator
+        response = requests.post(f"{BASE_URL}/api/incubators", json=test_incubator)
+        self.assertEqual(response.status_code, 200)
+        result = response.json()
+        self.assertIn("incubator_id", result)
+        test_incubator_id = result["incubator_id"]
+        print(f"✅ Created test incubator for deletion: {test_incubator_id}")
+        
+        # Verify incubator exists
+        response = requests.get(f"{BASE_URL}/api/incubators/{test_incubator_id}")
+        self.assertEqual(response.status_code, 200)
+        incubator = response.json()
+        self.assertEqual(incubator["id"], test_incubator_id)
+        print(f"✅ Verified incubator exists: {incubator['name']}")
+        
+        # Test DELETE endpoint for existing incubator
+        print(f"🔍 Testing DELETE /api/incubators/{test_incubator_id}")
+        response = requests.delete(f"{BASE_URL}/api/incubators/{test_incubator_id}")
+        
+        # Check response status and details
+        print(f"📊 DELETE Response Status: {response.status_code}")
+        print(f"📊 DELETE Response Headers: {dict(response.headers)}")
+        
+        try:
+            response_data = response.json()
+            print(f"📊 DELETE Response Body: {response_data}")
+        except:
+            print(f"📊 DELETE Response Text: {response.text}")
+        
+        # The DELETE endpoint should work (200) or be missing (404/405)
+        if response.status_code == 200:
+            print(f"✅ DELETE endpoint exists and works correctly")
+            
+            # Verify incubator was actually deleted
+            verify_response = requests.get(f"{BASE_URL}/api/incubators/{test_incubator_id}")
+            if verify_response.status_code == 404:
+                print(f"✅ Incubator successfully deleted - no longer exists")
+            else:
+                print(f"❌ Incubator still exists after DELETE - endpoint may not be working properly")
+                self.fail("Incubator was not actually deleted")
+                
+        elif response.status_code == 404:
+            print(f"❌ DELETE endpoint returns 404 - endpoint does not exist")
+            self.fail("DELETE /api/incubators/{incubator_id} endpoint is missing")
+            
+        elif response.status_code == 405:
+            print(f"❌ DELETE endpoint returns 405 - method not allowed")
+            self.fail("DELETE method not allowed for /api/incubators/{incubator_id}")
+            
+        else:
+            print(f"❌ DELETE endpoint returns unexpected status: {response.status_code}")
+            self.fail(f"Unexpected response status: {response.status_code}")
+        
+        # Test DELETE endpoint for non-existent incubator
+        fake_incubator_id = "non-existent-incubator-id-12345"
+        print(f"🔍 Testing DELETE with non-existent incubator: {fake_incubator_id}")
+        response = requests.delete(f"{BASE_URL}/api/incubators/{fake_incubator_id}")
+        
+        print(f"📊 DELETE Non-existent Response Status: {response.status_code}")
+        try:
+            response_data = response.json()
+            print(f"📊 DELETE Non-existent Response Body: {response_data}")
+        except:
+            print(f"📊 DELETE Non-existent Response Text: {response.text}")
+        
+        # For non-existent incubator, we expect either:
+        # - 404 if endpoint exists but incubator not found
+        # - 404/405 if endpoint doesn't exist
+        if response.status_code == 404:
+            try:
+                error_data = response.json()
+                if "not found" in error_data.get("detail", "").lower():
+                    print(f"✅ Correctly returns 404 for non-existent incubator")
+                else:
+                    print(f"❌ Returns 404 but endpoint may not exist")
+            except:
+                print(f"❌ Returns 404 but endpoint may not exist")
+        elif response.status_code == 405:
+            print(f"❌ DELETE method not allowed - endpoint missing")
+        else:
+            print(f"⚠️ Unexpected status for non-existent incubator: {response.status_code}")
+
 if __name__ == "__main__":
     # Run tests in order
     suite = unittest.TestSuite()
@@ -1129,6 +1227,7 @@ if __name__ == "__main__":
     suite.addTest(ParrotBreedingAPITest("test_18_enhanced_transactions"))
     suite.addTest(ParrotBreedingAPITest("test_19_financial_report_enhanced"))
     suite.addTest(ParrotBreedingAPITest("test_20_species_deletion_protection"))
+    suite.addTest(ParrotBreedingAPITest("test_22_incubator_delete_endpoint"))
     suite.addTest(ParrotBreedingAPITest("test_21_cleanup"))
     
     runner = unittest.TextTestRunner(verbosity=2)
