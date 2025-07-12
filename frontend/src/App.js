@@ -1293,6 +1293,7 @@ function App() {
         {activeTab === 'incubators' && renderIncubators()}
         {activeTab === 'transactions' && renderTransactions()}
         {activeTab === 'reports' && renderReports()}
+        {activeTab === 'species' && renderSpecies()}
       </main>
 
       {/* Add Bird Form Modal */}
