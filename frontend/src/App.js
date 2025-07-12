@@ -436,6 +436,7 @@ function App() {
     fetchArtificialIncubations();
     fetchSpecies();
     fetchMonitoringData();
+    fetchPermits();
     fetchDashboard();
     fetchMainLicense();
     fetchNotifications();
