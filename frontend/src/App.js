@@ -30,6 +30,7 @@ function App() {
   const [showAddArtificialIncubationForm, setShowAddArtificialIncubationForm] = useState(false);
   const [showLicenseForm, setShowLicenseForm] = useState(false);
   const [showAddSpeciesForm, setShowAddSpeciesForm] = useState(false);
+  const [showAddExpenseForm, setShowAddExpenseForm] = useState(false);
   const [showSearchModal, setShowSearchModal] = useState(false);
   
   // Edit states
