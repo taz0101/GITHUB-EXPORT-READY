@@ -1219,6 +1219,12 @@ function App() {
           >
             Reports
           </button>
+          <button 
+            onClick={() => setActiveTab('species')}
+            className={`nav-btn ${activeTab === 'species' ? 'active' : ''}`}
+          >
+            Species
+          </button>
         </nav>
       </header>
 
