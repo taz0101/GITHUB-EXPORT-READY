@@ -188,7 +188,23 @@ class IncubationLog(BaseModel):
     eggs_turned: bool = True
     candling_done: bool = False
     candling_results: Optional[str] = None  # "all_developing", "some_clear", "all_clear"
-    observations: Optional[str] = None
+    notes: Optional[str] = None
+    created_at: Optional[str] = None
+
+class DailyMonitoring(BaseModel):
+    id: Optional[str] = None
+    incubator_id: str
+    date: str
+    species_name: str
+    morning_temperature: float
+    morning_humidity: float
+    morning_time: str = "08:00"
+    evening_temperature: float
+    evening_humidity: float
+    evening_time: str = "19:00"
+    daily_avg_temperature: Optional[float] = None
+    daily_avg_humidity: Optional[float] = None
+    notes: Optional[str] = None
     created_at: Optional[str] = None
 
 # Incubator endpoints
