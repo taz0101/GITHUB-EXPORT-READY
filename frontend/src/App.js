@@ -325,6 +325,7 @@ function App() {
     fetchTransactions();
     fetchIncubators();
     fetchArtificialIncubations();
+    fetchSpecies();
     fetchDashboard();
     fetchMainLicense();
     fetchNotifications();
