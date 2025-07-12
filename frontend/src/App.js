@@ -755,6 +755,45 @@ function App() {
     }
   };
 
+  const handleAddExpense = async (e) => {
+    e.preventDefault();
+    try {
+      const expenseData = {
+        transaction_type: 'expense',
+        amount: parseFloat(expenseForm.amount),
+        currency: expenseForm.currency,
+        date: expenseForm.date,
+        category: expenseForm.category,
+        description: expenseForm.description,
+        notes: expenseForm.notes
+      };
+
+      const response = await fetch(`${BACKEND_URL}/api/transactions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(expenseData),
+      });
+      
+      if (response.ok) {
+        setExpenseForm({
+          amount: '',
+          currency: 'RM',
+          date: new Date().toISOString().split('T')[0],
+          category: 'food',
+          description: '',
+          notes: ''
+        });
+        setShowAddExpenseForm(false);
+        fetchTransactions();
+        fetchDashboard();
+      }
+    } catch (error) {
+      console.error('Error adding expense:', error);
+    }
+  };
+
   // Render Dashboard
   const renderDashboard = () => (
     <div className="dashboard">
