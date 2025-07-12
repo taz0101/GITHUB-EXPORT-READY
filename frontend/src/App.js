@@ -1187,6 +1187,84 @@ function App() {
     </div>
   );
 
+  // Render Species
+  const renderSpecies = () => (
+    <div className="species-section">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold">🦜 Species Management</h2>
+        <div className="flex gap-2">
+          <span className="text-sm text-gray-600">{species.length} species</span>
+          <button 
+            onClick={() => setShowAddSpeciesForm(true)}
+            className="btn-primary"
+          >
+            Add New Species
+          </button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {species.map((speciesItem) => (
+          <div key={speciesItem.id} className="species-card">
+            <div className="flex justify-between items-start mb-2">
+              <h3 className="font-bold text-lg">{speciesItem.name}</h3>
+              <span className="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                {speciesItem.bird_count || 0} birds
+              </span>
+            </div>
+            
+            {speciesItem.scientific_name && (
+              <p className="text-sm text-gray-600 italic mb-2">{speciesItem.scientific_name}</p>
+            )}
+            
+            <div className="space-y-1 text-sm">
+              {speciesItem.category && (
+                <p><strong>Category:</strong> {speciesItem.category}</p>
+              )}
+              {speciesItem.incubation_period && (
+                <p><strong>Incubation:</strong> {speciesItem.incubation_period} days</p>
+              )}
+              {speciesItem.clutch_size_min && speciesItem.clutch_size_max && (
+                <p><strong>Clutch Size:</strong> {speciesItem.clutch_size_min}-{speciesItem.clutch_size_max} eggs</p>
+              )}
+              {speciesItem.maturity_age && (
+                <p><strong>Maturity:</strong> {speciesItem.maturity_age} months</p>
+              )}
+              {speciesItem.average_lifespan && (
+                <p><strong>Lifespan:</strong> {speciesItem.average_lifespan} years</p>
+              )}
+            </div>
+            
+            {speciesItem.notes && (
+              <p className="text-sm text-gray-500 mt-2 italic">{speciesItem.notes}</p>
+            )}
+            
+            <div className="mt-4 flex gap-2">
+              <button 
+                className="btn-outline text-xs flex-1"
+                onClick={() => {
+                  // Navigate to species detail view
+                  console.log('View species details:', speciesItem.id);
+                }}
+              >
+                View Details
+              </button>
+              <button 
+                className="btn-outline text-xs flex-1"
+                onClick={() => {
+                  // Edit species
+                  console.log('Edit species:', speciesItem.id);
+                }}
+              >
+                Edit
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
   return (
     <div className="app">
       <header className="header">
