@@ -373,6 +373,16 @@ function App() {
     }
   };
 
+  const fetchPermits = async () => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/wildlife-permits`);
+      const data = await response.json();
+      setPermits(data.permits);
+    } catch (error) {
+      console.error('Error fetching permits:', error);
+    }
+  };
+
   const fetchMainLicense = async () => {
     try {
       const response = await fetch(`${BACKEND_URL}/api/license`);
