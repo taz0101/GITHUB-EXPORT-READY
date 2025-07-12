@@ -49,6 +49,13 @@ class Bird(BaseModel):
     license_expiry: Optional[str] = None
     status: str = "active"  # "active", "inactive", "deceased", "sold"
     notes: Optional[str] = None
+    # Purchase information
+    is_purchased: Optional[bool] = False
+    purchase_date: Optional[str] = None
+    purchase_price: Optional[float] = None
+    purchase_currency: Optional[str] = "RM"
+    purchase_source: Optional[str] = None
+    purchase_notes: Optional[str] = None
     created_at: Optional[str] = None
 
 class BreedingPair(BaseModel):
