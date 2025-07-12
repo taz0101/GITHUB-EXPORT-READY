@@ -320,6 +320,16 @@ function App() {
     }
   };
 
+  const fetchMonitoringData = async () => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/daily-monitoring`);
+      const data = await response.json();
+      setMonitoringData(data.monitoring_entries);
+    } catch (error) {
+      console.error('Error fetching monitoring data:', error);
+    }
+  };
+
   const fetchMainLicense = async () => {
     try {
       const response = await fetch(`${BACKEND_URL}/api/license`);
