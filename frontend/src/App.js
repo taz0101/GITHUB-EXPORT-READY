@@ -976,6 +976,59 @@ function App() {
     }
   };
 
+  const handleAddPermit = async (e) => {
+    e.preventDefault();
+    try {
+      // Calculate total amount from birds
+      const totalAmount = permitForm.birds.reduce((sum, bird) => sum + (parseFloat(bird.price) || 0), 0);
+      
+      const permitData = {
+        ...permitForm,
+        total_amount: totalAmount,
+        birds: permitForm.birds.filter(bird => bird.type && bird.quantity > 0)
+      };
+
+      const response = await fetch(`${BACKEND_URL}/api/wildlife-permits`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(permitData),
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        // Reset form
+        setPermitForm({
+          license_number: '',
+          customer_name: '',
+          customer_ic_passport: '',
+          customer_address: '',
+          customer_phone: '',
+          customer_email: '',
+          purchase_date: new Date().toISOString().split('T')[0],
+          expiry_date: '',
+          birds: [{ type: '', quantity: 1, marking_number: '', price: '' }],
+          total_amount: 0,
+          currency: 'RM',
+          captive_breed_generation: '',
+          import_permit_number: '',
+          export_permit_number: '',
+          is_import: false,
+          is_export: false,
+          notes: ''
+        });
+        setShowAddPermitForm(false);
+        fetchPermits();
+        
+        // Show success message with permit number
+        alert(`Wildlife Permit created successfully!\nPermit Number: ${result.permit_number}`);
+      }
+    } catch (error) {
+      console.error('Error adding permit:', error);
+    }
+  };
+
   // Helper function to check if readings are within acceptable range
   const checkReadingAlerts = (temperature, humidity, incubator) => {
     const alerts = [];
