@@ -2943,6 +2943,110 @@ function App() {
           </div>
         </div>
       )}
+
+      {/* Add Incubator Form Modal */}
+      {showAddIncubatorForm && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3 className="text-xl font-bold mb-4">Add New Incubator</h3>
+            <form onSubmit={handleAddIncubator} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Incubator Name *</label>
+                <input
+                  type="text"
+                  value={incubatorForm.name}
+                  onChange={(e) => setIncubatorForm({...incubatorForm, name: e.target.value})}
+                  className="form-input"
+                  required
+                  placeholder="e.g., Incubator A, Main Incubator"
+                />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Model</label>
+                  <input
+                    type="text"
+                    value={incubatorForm.model}
+                    onChange={(e) => setIncubatorForm({...incubatorForm, model: e.target.value})}
+                    className="form-input"
+                    placeholder="e.g., HovaBator 1588, Brinsea Octagon 20"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Capacity (eggs)</label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={incubatorForm.capacity}
+                    onChange={(e) => setIncubatorForm({...incubatorForm, capacity: parseInt(e.target.value)})}
+                    className="form-input"
+                    placeholder="e.g., 20"
+                  />
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Temperature Range</label>
+                  <input
+                    type="text"
+                    value={incubatorForm.temperature_range}
+                    onChange={(e) => setIncubatorForm({...incubatorForm, temperature_range: e.target.value})}
+                    className="form-input"
+                    placeholder="e.g., 37.2-37.8°C"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Humidity Range</label>
+                  <input
+                    type="text"
+                    value={incubatorForm.humidity_range}
+                    onChange={(e) => setIncubatorForm({...incubatorForm, humidity_range: e.target.value})}
+                    className="form-input"
+                    placeholder="e.g., 55-65%"
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-1">Turning Interval (hours)</label>
+                <input
+                  type="number"
+                  min="1"
+                  step="0.5"
+                  value={incubatorForm.turning_interval}
+                  onChange={(e) => setIncubatorForm({...incubatorForm, turning_interval: parseFloat(e.target.value)})}
+                  className="form-input"
+                  placeholder="e.g., 2"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-1">Notes</label>
+                <textarea
+                  value={incubatorForm.notes}
+                  onChange={(e) => setIncubatorForm({...incubatorForm, notes: e.target.value})}
+                  className="form-input"
+                  rows="3"
+                  placeholder="Additional notes about this incubator..."
+                />
+              </div>
+              
+              <div className="flex gap-2">
+                <button type="submit" className="btn-primary">Add Incubator</button>
+                <button 
+                  type="button" 
+                  onClick={() => setShowAddIncubatorForm(false)}
+                  className="btn-secondary"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
