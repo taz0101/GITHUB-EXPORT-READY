@@ -1609,8 +1609,24 @@ function App() {
 
       {/* Daily Monitoring Table */}
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-        <div className="bg-gray-50 px-6 py-4 border-b">
+        <div className="bg-gray-50 px-6 py-4 border-b flex justify-between items-center">
           <h3 className="text-lg font-bold">📊 Daily Monitoring Records</h3>
+          {monitoringData.length > 0 && (
+            <div className="flex gap-2">
+              <button 
+                onClick={exportMonitoringData}
+                className="btn-outline text-sm"
+              >
+                📄 Export CSV
+              </button>
+              <button 
+                onClick={printMonitoringData}
+                className="btn-outline text-sm"
+              >
+                🖨️ Print Report
+              </button>
+            </div>
+          )}
         </div>
         
         {monitoringData.length > 0 ? (
