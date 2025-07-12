@@ -1533,9 +1533,10 @@ function App() {
                   </button>
                   <button 
                     className="btn-outline text-xs flex-1"
-                    onClick={() => {
-                      // View monitoring history
-                      console.log('View monitoring history for:', incubator.id);
+                    onClick={async () => {
+                      setSelectedIncubatorHistory(incubator);
+                      await fetchIncubatorHistory(incubator.id);
+                      setShowHistoryModal(true);
                     }}
                   >
                     📈 History
