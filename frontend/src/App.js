@@ -2542,6 +2542,7 @@ function App() {
         {activeTab === 'balance' && renderBalance()}
         {activeTab === 'reports' && renderReports()}
         {activeTab === 'species' && renderSpecies()}
+        {activeTab === 'permits' && renderPermits()}
       </main>
 
       {/* Add Bird Form Modal */}
