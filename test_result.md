@@ -222,9 +222,10 @@
 
 ## test_plan:
   current_focus:
-    - "Clutches UI rendering"
-    - "Breeding pairs clutch integration"
-    - "Artificial incubation integration"
+    - "Species Management API endpoints"
+    - "Enhanced Transaction Model"
+    - "Species and Bird Integration"
+    - "Transaction and Bird Linking"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
@@ -232,3 +233,5 @@
 ## agent_communication:
     - agent: "main"
       message: "Starting Step 2 implementation: Adding clutches management and artificial incubation. Current error: renderClutches function missing."
+    - agent: "testing"
+      message: "Completed comprehensive testing of Species API endpoints and Enhanced Transaction model. All new features working correctly: 1) Species CRUD operations with bird count tracking and deletion protection, 2) Enhanced transactions with currency, buyer/seller info, and bird/chick linking, 3) Species-bird integration with automatic statistics, 4) All existing endpoints remain functional. No critical issues found. Ready for frontend integration."
