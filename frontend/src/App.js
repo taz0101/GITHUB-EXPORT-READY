@@ -1741,6 +1741,88 @@ function App() {
                   rows="3"
                 />
               </div>
+              
+              {/* Purchase Information Section */}
+              <div className="border-t pt-4 mt-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <input
+                    type="checkbox"
+                    id="is_purchased"
+                    checked={birdForm.is_purchased}
+                    onChange={(e) => setBirdForm({...birdForm, is_purchased: e.target.checked})}
+                    className="form-checkbox"
+                  />
+                  <label htmlFor="is_purchased" className="text-sm font-medium">
+                    🛒 This bird was purchased
+                  </label>
+                </div>
+                
+                {birdForm.is_purchased && (
+                  <div className="space-y-4 bg-blue-50 p-4 rounded-lg">
+                    <h4 className="font-medium text-blue-800">Purchase Information</h4>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Purchase Date *</label>
+                        <input
+                          type="date"
+                          value={birdForm.purchase_date}
+                          onChange={(e) => setBirdForm({...birdForm, purchase_date: e.target.value})}
+                          className="form-input"
+                          required={birdForm.is_purchased}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Purchase Price *</label>
+                        <div className="flex">
+                          <select
+                            value={birdForm.purchase_currency}
+                            onChange={(e) => setBirdForm({...birdForm, purchase_currency: e.target.value})}
+                            className="form-input rounded-r-none w-20"
+                          >
+                            <option value="RM">RM</option>
+                            <option value="$">$</option>
+                            <option value="€">€</option>
+                            <option value="£">£</option>
+                          </select>
+                          <input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            value={birdForm.purchase_price}
+                            onChange={(e) => setBirdForm({...birdForm, purchase_price: e.target.value})}
+                            className="form-input rounded-l-none flex-1"
+                            placeholder="0.00"
+                            required={birdForm.is_purchased}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Purchase Source</label>
+                      <input
+                        type="text"
+                        value={birdForm.purchase_source}
+                        onChange={(e) => setBirdForm({...birdForm, purchase_source: e.target.value})}
+                        className="form-input"
+                        placeholder="e.g., Premium Bird Breeder, Pet Store Name"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Purchase Notes</label>
+                      <textarea
+                        value={birdForm.purchase_notes}
+                        onChange={(e) => setBirdForm({...birdForm, purchase_notes: e.target.value})}
+                        className="form-input"
+                        rows="2"
+                        placeholder="Additional notes about the purchase..."
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
               <div className="flex gap-2">
                 <button type="submit" className="btn-primary">Add Bird</button>
                 <button 
