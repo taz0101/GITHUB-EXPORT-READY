@@ -76,6 +76,53 @@ class ParrotBreedingAPITest(unittest.TestCase):
             "observations": "Test incubation log entry"
         }
         
+        # New Species test data
+        self.test_species = {
+            "name": "African Grey Parrot",
+            "scientific_name": "Psittacus erithacus",
+            "category": "parrot",
+            "incubation_period": 28,
+            "clutch_size_min": 2,
+            "clutch_size_max": 5,
+            "maturity_age": 36,
+            "average_lifespan": 50,
+            "notes": "Test species for API testing"
+        }
+        
+        # Enhanced Transaction test data
+        self.test_transaction_purchase = {
+            "transaction_type": "purchase",
+            "amount": 1500.00,
+            "currency": "RM",
+            "date": datetime.now().strftime("%Y-%m-%d"),
+            "category": "bird_purchase",
+            "description": "Purchase of African Grey breeding pair",
+            "seller_name": "Premium Bird Breeder",
+            "notes": "Test purchase transaction with enhanced fields"
+        }
+        
+        self.test_transaction_sale = {
+            "transaction_type": "sale",
+            "amount": 800.00,
+            "currency": "RM", 
+            "date": datetime.now().strftime("%Y-%m-%d"),
+            "category": "bird_sale",
+            "description": "Sale of hand-fed African Grey chick",
+            "buyer_name": "John Smith",
+            "buyer_contact": "+60123456789",
+            "notes": "Test sale transaction with enhanced fields"
+        }
+        
+        self.test_transaction_expense = {
+            "transaction_type": "expense",
+            "amount": 250.00,
+            "currency": "RM",
+            "date": datetime.now().strftime("%Y-%m-%d"),
+            "category": "food",
+            "description": "Premium parrot pellets and supplements",
+            "notes": "Monthly food supply"
+        }
+        
         # IDs to be set during tests
         self.male_bird_id = None
         self.female_bird_id = None
@@ -86,6 +133,11 @@ class ParrotBreedingAPITest(unittest.TestCase):
         self.incubator_id = None
         self.artificial_incubation_id = None
         self.incubation_log_id = None
+        self.species_id = None
+        self.transaction_purchase_id = None
+        self.transaction_sale_id = None
+        self.transaction_expense_id = None
+        self.chick_id = None
 
     def test_01_birds_crud(self):
         """Test bird CRUD operations"""
