@@ -254,8 +254,22 @@
   test_all: false
   test_priority: "high_first"
 
+  - task: "Incubator DELETE endpoint"
+    implemented: false
+    working: false
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: false
+          agent: "testing"
+          comment: "CRITICAL ISSUE FOUND: DELETE /api/incubators/{incubator_id} endpoint is completely missing from the backend API. Testing confirmed that attempting to DELETE an incubator returns 405 Method Not Allowed. The backend only supports GET, POST, and PUT methods for incubators. This explains why the frontend delete button is not working. Other incubator endpoints (CREATE, READ, UPDATE) are working correctly."
+
 ## agent_communication:
     - agent: "main"
       message: "Starting Step 2 implementation: Adding clutches management and artificial incubation. Current error: renderClutches function missing."
     - agent: "testing"
       message: "Completed comprehensive testing of Species API endpoints and Enhanced Transaction model. All new features working correctly: 1) Species CRUD operations with bird count tracking and deletion protection, 2) Enhanced transactions with currency, buyer/seller info, and bird/chick linking, 3) Species-bird integration with automatic statistics, 4) All existing endpoints remain functional. No critical issues found. Ready for frontend integration."
+    - agent: "testing"
+      message: "CRITICAL ISSUE IDENTIFIED: Incubator DELETE endpoint is completely missing from the backend API. Testing confirmed DELETE /api/incubators/{incubator_id} returns 405 Method Not Allowed. This is why the frontend delete button is not working. The backend needs to implement the DELETE endpoint for incubators. All other incubator endpoints (POST, GET, PUT) are working correctly."
