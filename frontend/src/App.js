@@ -183,6 +183,12 @@ function App() {
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [selectedIncubatorHistory, setSelectedIncubatorHistory] = useState(null);
   const [historyData, setHistoryData] = useState([]);
+  
+  // Permits states
+  const [permits, setPermits] = useState([]);
+  const [showAddPermitForm, setShowAddPermitForm] = useState(false);
+  const [showPermitPreview, setShowPermitPreview] = useState(false);
+  const [selectedPermit, setSelectedPermit] = useState(null);
 
   const [licenseForm, setLicenseForm] = useState({
     license_number: '',
