@@ -337,6 +337,16 @@ function App() {
     }
   };
 
+  const fetchIncubatorHistory = async (incubatorId) => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/daily-monitoring?incubator_id=${incubatorId}`);
+      const data = await response.json();
+      setHistoryData(data.monitoring_entries);
+    } catch (error) {
+      console.error('Error fetching incubator history:', error);
+    }
+  };
+
   const fetchMainLicense = async () => {
     try {
       const response = await fetch(`${BACKEND_URL}/api/license`);
