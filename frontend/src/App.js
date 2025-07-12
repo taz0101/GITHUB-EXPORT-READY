@@ -147,6 +147,26 @@ function App() {
     notes: ''
   });
 
+  const [permitForm, setPermitForm] = useState({
+    license_number: '',
+    customer_name: '',
+    customer_ic_passport: '',
+    customer_address: '',
+    customer_phone: '',
+    customer_email: '',
+    purchase_date: new Date().toISOString().split('T')[0],
+    expiry_date: '',
+    birds: [{ type: '', quantity: 1, marking_number: '', price: '' }],
+    total_amount: 0,
+    currency: 'RM',
+    captive_breed_generation: '',
+    import_permit_number: '',
+    export_permit_number: '',
+    is_import: false,
+    is_export: false,
+    notes: ''
+  });
+
   const [expenseForm, setExpenseForm] = useState({
     amount: '',
     currency: 'RM',
