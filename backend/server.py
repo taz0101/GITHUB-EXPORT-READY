@@ -1330,6 +1330,103 @@ async def delete_species(species_id: str):
         return {"message": "Species deleted successfully"}
     raise HTTPException(status_code=404, detail="Species not found")
 
+# Daily Monitoring endpoints
+@app.post("/api/daily-monitoring")
+async def create_daily_monitoring(monitoring: DailyMonitoring):
+    """Create daily monitoring entry"""
+    monitoring_dict = monitoring.dict()
+    monitoring_dict["id"] = str(uuid.uuid4())
+    monitoring_dict["created_at"] = datetime.now().isoformat()
+    
+    # Calculate daily averages
+    morning_temp = monitoring_dict["morning_temperature"]
+    evening_temp = monitoring_dict["evening_temperature"]
+    morning_humid = monitoring_dict["morning_humidity"]
+    evening_humid = monitoring_dict["evening_humidity"]
+    
+    monitoring_dict["daily_avg_temperature"] = round((morning_temp + evening_temp) / 2, 1)
+    monitoring_dict["daily_avg_humidity"] = round((morning_humid + evening_humid) / 2, 1)
+    
+    result = daily_monitoring_collection.insert_one(monitoring_dict)
+    if result.inserted_id:
+        return {"message": "Daily monitoring entry created successfully", "monitoring_id": monitoring_dict["id"]}
+    raise HTTPException(status_code=500, detail="Failed to create daily monitoring entry")
+
+@app.get("/api/daily-monitoring")
+async def get_daily_monitoring(incubator_id: str = None, date_from: str = None, date_to: str = None):
+    """Get daily monitoring entries with optional filters"""
+    query = {}
+    
+    if incubator_id:
+        query["incubator_id"] = incubator_id
+    
+    if date_from or date_to:
+        date_query = {}
+        if date_from:
+            date_query["$gte"] = date_from
+        if date_to:
+            date_query["$lte"] = date_to
+        query["date"] = date_query
+    
+    monitoring_entries = list(daily_monitoring_collection.find(query, {"_id": 0}))
+    
+    # Enrich with incubator details
+    for entry in monitoring_entries:
+        incubator = incubators_collection.find_one({"id": entry["incubator_id"]}, {"_id": 0})
+        if incubator:
+            entry["incubator"] = incubator
+    
+    # Sort by date (newest first)
+    monitoring_entries.sort(key=lambda x: x["date"], reverse=True)
+    
+    return {"monitoring_entries": monitoring_entries}
+
+@app.get("/api/daily-monitoring/{monitoring_id}")
+async def get_daily_monitoring_detail(monitoring_id: str):
+    """Get detailed daily monitoring entry"""
+    monitoring = daily_monitoring_collection.find_one({"id": monitoring_id}, {"_id": 0})
+    if not monitoring:
+        raise HTTPException(status_code=404, detail="Daily monitoring entry not found")
+    
+    # Add incubator details
+    incubator = incubators_collection.find_one({"id": monitoring["incubator_id"]}, {"_id": 0})
+    if incubator:
+        monitoring["incubator"] = incubator
+    
+    return monitoring
+
+@app.put("/api/daily-monitoring/{monitoring_id}")
+async def update_daily_monitoring(monitoring_id: str, monitoring: DailyMonitoring):
+    """Update daily monitoring entry"""
+    monitoring_dict = monitoring.dict()
+    monitoring_dict["id"] = monitoring_id
+    monitoring_dict["updated_at"] = datetime.now().isoformat()
+    
+    # Recalculate daily averages
+    morning_temp = monitoring_dict["morning_temperature"]
+    evening_temp = monitoring_dict["evening_temperature"]
+    morning_humid = monitoring_dict["morning_humidity"]
+    evening_humid = monitoring_dict["evening_humidity"]
+    
+    monitoring_dict["daily_avg_temperature"] = round((morning_temp + evening_temp) / 2, 1)
+    monitoring_dict["daily_avg_humidity"] = round((morning_humid + evening_humid) / 2, 1)
+    
+    result = daily_monitoring_collection.update_one(
+        {"id": monitoring_id}, 
+        {"$set": monitoring_dict}
+    )
+    if result.modified_count:
+        return {"message": "Daily monitoring entry updated successfully"}
+    raise HTTPException(status_code=404, detail="Daily monitoring entry not found")
+
+@app.delete("/api/daily-monitoring/{monitoring_id}")
+async def delete_daily_monitoring(monitoring_id: str):
+    """Delete daily monitoring entry"""
+    result = daily_monitoring_collection.delete_one({"id": monitoring_id})
+    if result.deleted_count:
+        return {"message": "Daily monitoring entry deleted successfully"}
+    raise HTTPException(status_code=404, detail="Daily monitoring entry not found")
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)
