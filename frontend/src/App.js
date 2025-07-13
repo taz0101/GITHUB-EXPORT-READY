@@ -4731,15 +4731,48 @@ function App() {
                     <h5 className="font-medium text-blue-600 mb-2">Birds ({searchResults.birds.length})</h5>
                     <div className="space-y-2 max-h-40 overflow-y-auto">
                       {searchResults.birds.map((bird) => (
-                        <div key={bird.id} className="p-2 bg-gray-50 rounded text-sm">
-                          <span className="font-medium">{bird.species}</span> - 
-                          Ring: {bird.ring_number || 'None'} - 
-                          Cage: {bird.cage_number || 'None'} - 
-                          {bird.gender} - 
-                          <span className={`capitalize ${bird.status === 'active' ? 'text-green-600' : 'text-gray-600'}`}>
-                            {bird.status}
-                          </span>
-                        </div>
+                        <button
+                          key={bird.id}
+                          onClick={() => {
+                            // Set the bird for editing and open edit form
+                            setEditingBird(bird);
+                            setBirdForm({
+                              species: bird.species,
+                              gender: bird.gender,
+                              birth_date: bird.birth_date || '',
+                              ring_number: bird.ring_number || '',
+                              cage_number: bird.cage_number || '',
+                              color_mutation: bird.color_mutation || '',
+                              license_number: bird.license_number || '',
+                              license_expiry: bird.license_expiry || '',
+                              notes: bird.notes || '',
+                              is_purchased: bird.is_purchased || false,
+                              purchase_date: bird.purchase_date || '',
+                              purchase_price: bird.purchase_price || '',
+                              purchase_currency: bird.purchase_currency || 'RM',
+                              purchase_source: bird.purchase_source || '',
+                              purchase_notes: bird.purchase_notes || ''
+                            });
+                            setShowEditBirdForm(true);
+                            setShowSearchModal(false);
+                          }}
+                          className="w-full p-2 bg-gray-50 hover:bg-blue-50 rounded text-sm text-left transition-colors border border-transparent hover:border-blue-200"
+                        >
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <span className="font-medium text-blue-800">{bird.species}</span> - 
+                              Ring: {bird.ring_number || 'None'} - 
+                              Cage: {bird.cage_number || 'None'} - 
+                              {bird.gender}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className={`capitalize text-xs px-2 py-1 rounded ${bird.status === 'active' ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-600'}`}>
+                                {bird.status}
+                              </span>
+                              <span className="text-xs text-blue-600">✏️ Edit</span>
+                            </div>
+                          </div>
+                        </button>
                       ))}
                     </div>
                   </div>
@@ -4750,11 +4783,40 @@ function App() {
                     <h5 className="font-medium text-purple-600 mb-2">Breeding Pairs ({searchResults.pairs.length})</h5>
                     <div className="space-y-2 max-h-40 overflow-y-auto">
                       {searchResults.pairs.map((pair) => (
-                        <div key={pair.id} className="p-2 bg-gray-50 rounded text-sm">
-                          Cage {pair.male_bird?.cage_number} × Cage {pair.female_bird?.cage_number} - 
-                          {pair.male_bird?.species} × {pair.female_bird?.species} - 
-                          <span className="capitalize">{pair.status}</span>
-                        </div>
+                        <button
+                          key={pair.id}
+                          onClick={() => {
+                            // Set the pair for editing and open edit form
+                            setEditingPair(pair);
+                            setPairForm({
+                              male_bird_id: pair.male_bird_id,
+                              female_bird_id: pair.female_bird_id,
+                              pair_date: pair.pair_date || '',
+                              status: pair.status,
+                              license_number: pair.license_number || '',
+                              license_expiry: pair.license_expiry || '',
+                              notes: pair.notes || ''
+                            });
+                            setShowEditPairForm(true);
+                            setShowSearchModal(false);
+                          }}
+                          className="w-full p-2 bg-gray-50 hover:bg-purple-50 rounded text-sm text-left transition-colors border border-transparent hover:border-purple-200"
+                        >
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <span className="font-medium text-purple-800">
+                                Cage {pair.male_bird?.cage_number} × Cage {pair.female_bird?.cage_number}
+                              </span> - 
+                              {pair.male_bird?.species} × {pair.female_bird?.species}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className={`capitalize text-xs px-2 py-1 rounded ${pair.status === 'active' ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-600'}`}>
+                                {pair.status}
+                              </span>
+                              <span className="text-xs text-purple-600">✏️ Edit</span>
+                            </div>
+                          </div>
+                        </button>
                       ))}
                     </div>
                   </div>
