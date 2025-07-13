@@ -4614,6 +4614,261 @@ function App() {
           </div>
         </div>
       )}
+
+      {/* Search Modal */}
+      {showSearchModal && (
+        <div className="modal-overlay">
+          <div className="modal-content max-w-2xl">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold">🔍 Search</h3>
+              <button 
+                onClick={() => {
+                  setShowSearchModal(false);
+                  setSearchResults(null);
+                }}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                ✕
+              </button>
+            </div>
+            
+            <form onSubmit={handleSearch} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Search Query</label>
+                <input
+                  type="text"
+                  value={searchForm.query}
+                  onChange={(e) => setSearchForm({...searchForm, query: e.target.value})}
+                  className="form-input"
+                  placeholder="Search birds, species, cage numbers, ring numbers..."
+                />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Species</label>
+                  <select
+                    value={searchForm.species}
+                    onChange={(e) => setSearchForm({...searchForm, species: e.target.value})}
+                    className="form-input"
+                  >
+                    <option value="">All Species</option>
+                    {species.map((speciesItem) => (
+                      <option key={speciesItem.id} value={speciesItem.name}>
+                        {speciesItem.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium mb-1">Status</label>
+                  <select
+                    value={searchForm.status}
+                    onChange={(e) => setSearchForm({...searchForm, status: e.target.value})}
+                    className="form-input"
+                  >
+                    <option value="">All Status</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                    <option value="sold">Sold</option>
+                    <option value="deceased">Deceased</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-1">Search Type</label>
+                <select
+                  value={searchForm.search_type}
+                  onChange={(e) => setSearchForm({...searchForm, search_type: e.target.value})}
+                  className="form-input"
+                >
+                  <option value="all">All Records</option>
+                  <option value="birds">Birds Only</option>
+                  <option value="pairs">Breeding Pairs Only</option>
+                  <option value="clutches">Clutches Only</option>
+                  <option value="transactions">Transactions Only</option>
+                </select>
+              </div>
+              
+              <div className="flex gap-2">
+                <button type="submit" className="btn-primary">🔍 Search</button>
+                <button 
+                  type="button" 
+                  onClick={() => {
+                    setSearchForm({
+                      query: '',
+                      species: '',
+                      status: '',
+                      search_type: 'all'
+                    });
+                    setSearchResults(null);
+                  }}
+                  className="btn-outline"
+                >
+                  Clear
+                </button>
+                <button 
+                  type="button" 
+                  onClick={() => {
+                    setShowSearchModal(false);
+                    setSearchResults(null);
+                  }}
+                  className="btn-secondary"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+            
+            {/* Search Results */}
+            {searchResults && (
+              <div className="mt-6 border-t pt-4">
+                <h4 className="font-bold text-lg mb-3">Search Results</h4>
+                {searchResults.birds && searchResults.birds.length > 0 && (
+                  <div className="mb-4">
+                    <h5 className="font-medium text-blue-600 mb-2">Birds ({searchResults.birds.length})</h5>
+                    <div className="space-y-2 max-h-40 overflow-y-auto">
+                      {searchResults.birds.map((bird) => (
+                        <div key={bird.id} className="p-2 bg-gray-50 rounded text-sm">
+                          <span className="font-medium">{bird.species}</span> - 
+                          Ring: {bird.ring_number || 'None'} - 
+                          Cage: {bird.cage_number || 'None'} - 
+                          {bird.gender} - 
+                          <span className={`capitalize ${bird.status === 'active' ? 'text-green-600' : 'text-gray-600'}`}>
+                            {bird.status}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {searchResults.pairs && searchResults.pairs.length > 0 && (
+                  <div className="mb-4">
+                    <h5 className="font-medium text-purple-600 mb-2">Breeding Pairs ({searchResults.pairs.length})</h5>
+                    <div className="space-y-2 max-h-40 overflow-y-auto">
+                      {searchResults.pairs.map((pair) => (
+                        <div key={pair.id} className="p-2 bg-gray-50 rounded text-sm">
+                          Cage {pair.male_bird?.cage_number} × Cage {pair.female_bird?.cage_number} - 
+                          {pair.male_bird?.species} × {pair.female_bird?.species} - 
+                          <span className="capitalize">{pair.status}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {(!searchResults.birds || searchResults.birds.length === 0) && 
+                 (!searchResults.pairs || searchResults.pairs.length === 0) && (
+                  <p className="text-gray-500 text-center py-4">No results found</p>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* License Form Modal */}
+      {showLicenseForm && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3 className="text-xl font-bold mb-4">
+              {mainLicense ? '📄 Update Main License' : '📄 Add Main License'}
+            </h3>
+            <form onSubmit={handleAddLicense} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">License Type *</label>
+                <select
+                  value={licenseForm.license_type}
+                  onChange={(e) => setLicenseForm({...licenseForm, license_type: e.target.value})}
+                  className="form-input"
+                  required
+                >
+                  <option value="">Select Type</option>
+                  <option value="main">Main License</option>
+                  <option value="breeding">Breeding License</option>
+                  <option value="dealer">Dealer License</option>
+                  <option value="import">Import License</option>
+                  <option value="export">Export License</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-1">License Number *</label>
+                <input
+                  type="text"
+                  value={licenseForm.license_number}
+                  onChange={(e) => setLicenseForm({...licenseForm, license_number: e.target.value})}
+                  className="form-input"
+                  required
+                  placeholder="e.g., WL-2025-001"
+                />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Issue Date *</label>
+                  <input
+                    type="date"
+                    value={licenseForm.issue_date}
+                    onChange={(e) => setLicenseForm({...licenseForm, issue_date: e.target.value})}
+                    className="form-input"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Expiry Date *</label>
+                  <input
+                    type="date"
+                    value={licenseForm.expiry_date}
+                    onChange={(e) => setLicenseForm({...licenseForm, expiry_date: e.target.value})}
+                    className="form-input"
+                    required
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-1">Issuing Authority *</label>
+                <input
+                  type="text"
+                  value={licenseForm.issuing_authority}
+                  onChange={(e) => setLicenseForm({...licenseForm, issuing_authority: e.target.value})}
+                  className="form-input"
+                  required
+                  placeholder="e.g., Department of Wildlife and National Parks"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-1">Notes</label>
+                <textarea
+                  value={licenseForm.notes}
+                  onChange={(e) => setLicenseForm({...licenseForm, notes: e.target.value})}
+                  className="form-input"
+                  rows="3"
+                  placeholder="Additional license details or conditions..."
+                />
+              </div>
+              
+              <div className="flex gap-2">
+                <button type="submit" className="btn-primary">
+                  {mainLicense ? 'Update License' : 'Add License'}
+                </button>
+                <button 
+                  type="button" 
+                  onClick={() => setShowLicenseForm(false)}
+                  className="btn-secondary"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
