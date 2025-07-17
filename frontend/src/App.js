@@ -2672,6 +2672,15 @@ function App() {
             </div>
           </div>
           <div className="flex gap-2">
+            {showInstallButton && (
+              <button 
+                onClick={handleInstallPWA}
+                className="btn-primary bg-green-600 hover:bg-green-700"
+                title="Install as Desktop App"
+              >
+                📱 Install App
+              </button>
+            )}
             <button 
               onClick={() => setShowSearchModal(true)}
               className="btn-secondary"
