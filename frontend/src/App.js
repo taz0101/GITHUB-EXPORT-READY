@@ -18,6 +18,10 @@ function App() {
   const [searchResults, setSearchResults] = useState(null);
   const [breedingReport, setBreedingReport] = useState(null);
   
+  // PWA Installation
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [showInstallButton, setShowInstallButton] = useState(false);
+  
   // Form visibility states
   const [showAddBirdForm, setShowAddBirdForm] = useState(false);
   const [showEditBirdForm, setShowEditBirdForm] = useState(false);
