@@ -1,0 +1,9 @@
+{
+  "name": "electron-is-dev",
+  "version": "2.0.0",
+  "description": "Check if Electron is running in development",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
