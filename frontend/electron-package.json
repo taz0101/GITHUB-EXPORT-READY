@@ -1,0 +1,50 @@
+{
+  "name": "parrot-breeding-desktop",
+  "version": "1.0.0",
+  "description": "NEXUS PERROQUET & AVIAN RESEARCH - Desktop Application",
+  "main": "electron/main.js",
+  "homepage": "./",
+  "scripts": {
+    "electron": "electron .",
+    "electron:dev": "concurrently \"npm start\" \"wait-on http://localhost:3000 && electron .\"",
+    "electron:pack": "electron-builder",
+    "electron:build": "npm run build && electron-builder",
+    "electron:build-win": "npm run build && electron-builder --win",
+    "preelectron:pack": "npm run build"
+  },
+  "build": {
+    "appId": "com.nexusperroquet.breeding",
+    "productName": "NEXUS PERROQUET Breeding Manager",
+    "directories": {
+      "buildResources": "build"
+    },
+    "files": [
+      "build/**/*",
+      "node_modules/**/*",
+      "electron/**/*"
+    ],
+    "mac": {
+      "icon": "build/icon.icns"
+    },
+    "win": {
+      "icon": "build/icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "linux": {
+      "icon": "build/icon.png"
+    }
+  },
+  "devDependencies": {
+    "concurrently": "^7.6.0",
+    "electron": "^22.0.0",
+    "electron-builder": "^23.6.0",
+    "wait-on": "^7.0.1"
+  }
+}
