@@ -255,8 +255,8 @@
   test_priority: "high_first"
 
   - task: "Incubator DELETE endpoint"
-    implemented: false
-    working: false
+    implemented: true
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
@@ -265,6 +265,9 @@
         - working: false
           agent: "testing"
           comment: "CRITICAL ISSUE FOUND: DELETE /api/incubators/{incubator_id} endpoint is completely missing from the backend API. Testing confirmed that attempting to DELETE an incubator returns 405 Method Not Allowed. The backend only supports GET, POST, and PUT methods for incubators. This explains why the frontend delete button is not working. Other incubator endpoints (CREATE, READ, UPDATE) are working correctly."
+        - working: true
+          agent: "testing"
+          comment: "ISSUE RESOLVED: Comprehensive testing confirms DELETE /api/incubators/{incubator_id} endpoint is now working correctly. The endpoint is implemented at lines 274-303 in server.py with proper validation (prevents deletion if incubator is in use for active artificial incubation). Successfully tested creation and deletion of test incubator. Previous testing may have been incorrect or the issue was fixed."
 
 ## agent_communication:
     - agent: "main"
