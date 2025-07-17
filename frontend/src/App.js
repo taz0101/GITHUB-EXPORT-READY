@@ -446,6 +446,35 @@ function App() {
     fetchNotifications();
   }, []);
 
+  // PWA Installation handling
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowInstallButton(true);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, []);
+
+  const handleInstallPWA = async () => {
+    if (!deferredPrompt) return;
+
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    
+    if (outcome === 'accepted') {
+      setShowInstallButton(false);
+      alert('🎉 App installed successfully! You can now use it from your desktop.');
+    }
+    
+    setDeferredPrompt(null);
+  };
+
   // Handle form submissions
   const handleAddBird = async (e) => {
     e.preventDefault();
